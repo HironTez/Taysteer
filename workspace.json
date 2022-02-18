@@ -1,0 +1,8 @@
+{
+  "version": 2,
+  "projects": {
+    "taysteer-backend": "apps/taysteer-backend",
+    "taysteer-frontend": "apps/taysteer-frontend",
+    "taysteer-frontend-e2e": "apps/taysteer-frontend-e2e"
+  }
+}
