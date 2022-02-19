@@ -1,8 +1,8 @@
 interface UserT {
-    id: string;
-    name: string;
-    login: string;
-    password: string;
+  id: string;
+  name: string;
+  login: string;
+  password: string;
 }
 
 export { UserT };
