@@ -3,6 +3,16 @@ interface UserT {
   name: string;
   login: string;
   password: string;
+  image: string;
+  rating: number;
 }
 
-export { UserT };
+interface UserToResponseT {
+  id: string;
+  name: string;
+  login: string;
+  image: string;
+  rating: number;
+}
+
+export { UserT, UserToResponseT };

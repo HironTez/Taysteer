@@ -38,8 +38,8 @@ export class UsersController {
   @Put(':id')
   async updateUserById(@Res() res: Response, @Param('id') id: string, @Body() body: UserDataDto) {
     const newUser = new User(body);
-    const userUpdated = await this.usersService.updateUser(id, newUser);
-    return userUpdated ? res.status(HttpStatus.OK).send(userUpdated) : res.status(HttpStatus.BAD_REQUEST).send();
+    const updatedUser = await this.usersService.updateUser(id, newUser);
+    return updatedUser ? res.status(HttpStatus.OK).send(User.toResponse(updatedUser)) : res.status(HttpStatus.BAD_REQUEST).send();
   };
 
   @Delete(':id')
@@ -48,5 +48,4 @@ export class UsersController {
     if (userExists) this.usersService.deleteUser(id); // Delete user
     return userExists ? res.status(HttpStatus.NO_CONTENT).send() : res.status(HttpStatus.NOT_FOUND).send();
   };
-
 };

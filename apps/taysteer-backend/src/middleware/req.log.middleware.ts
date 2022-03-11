@@ -1,7 +1,7 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import logger from '../services/logger';
-import { getTime } from '../services/current.time';
+import logger from '../utils/logger';
+import { getTime } from '../utils/current.time';
 
 @Injectable()
 export class ReqLogMiddleware implements NestMiddleware {
