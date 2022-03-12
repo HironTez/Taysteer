@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { PORT_BACKEND } from './common/config';
+import { PORT_BACKEND } from '../../../configs/common/config';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import path from 'path';
 import YAML from 'yamljs';

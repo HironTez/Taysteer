@@ -1,6 +1,6 @@
 import { Injectable, ExecutionContext, UnauthorizedException, HttpStatus } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { JWT_SECRET_KEY } from '../common/config';
+import { JWT_SECRET_KEY } from '../../../../configs/common/config';
 import * as jwt from 'jsonwebtoken';
 
 @Injectable()

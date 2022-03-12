@@ -1,5 +1,5 @@
 import { ConnectionOptions } from 'typeorm';
-import { POSTGRES_HOST, POSTGRES_PORT, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DATABASE } from './common/config';
+import { POSTGRES_HOST, POSTGRES_PORT, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DATABASE } from '../../../configs/common/config';
 import { User } from './resources/users/user.model';
 
 export const connectionOptions = {

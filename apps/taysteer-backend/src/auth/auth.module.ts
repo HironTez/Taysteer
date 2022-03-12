@@ -4,7 +4,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { UserModule } from '../resources/users/user.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { JWT_SECRET_KEY as secretKey } from '../common/config';
+import { JWT_SECRET_KEY as secretKey } from '../../../../configs/common/config';
 
 @Module({
   imports: [
