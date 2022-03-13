@@ -56,20 +56,24 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              type: object
-              title: example
-              properties:
-                name:
-                  type: string
-                  description: The user's name
-                login:
-                  type: string
-                  description: The user's login
-                password:
-                  type: string
-                  description: The user's password
+              type: input
+              title: name
+          # application/json:
+          #   schema:
+          #     type: object
+          #     title: example
+          #     properties:
+          #       name:
+          #         type: string
+          #         description: The user's name
+          #       login:
+          #         type: string
+          #         description: The user's login
+          #       password:
+          #         type: string
+          #         description: The user's password
               required:
                 - name
           
@@ -85,18 +89,23 @@ paths:
         401:
           $ref: '#/components/responses/UnauthorizedError'
   /users/{userId}:
-    parameters:
-      - name: userId
-        in: path
-        required: true
-        schema:
-          type: string
     get:
+      parameters:
+        - name: detailed
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
       tags:
         - Users
       summary: Get user by ID
-      description: Gets a user by ID
-        e.g. “/users/123” (remove password from response)
+      description: Gets a user by ID / gets my account by "me" instead id
+        e.g. “/users/123” or "/users/me" (remove password from response)
       responses:
         200:
           description: Successful operation
@@ -109,6 +118,12 @@ paths:
         404:
           description: User not found
     put:
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
       tags:
         - Users
       summary: Update a user
@@ -144,6 +159,12 @@ paths:
         401:
           $ref: '#/components/responses/UnauthorizedError'
     delete:
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
       tags:
         - Users
       summary: Delete user
@@ -157,6 +178,53 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         404:
           description: User not found
+  /users/rating:
+    get:
+      tags:
+        - Users
+      parameters:
+        - name: number
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Got rating
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+  /users/{userId}/rate:
+    post:
+      tags:
+        - Users
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: rating
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: The user has been rated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: Bad request
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          description: Forbidden
   
   /login:
     post:

@@ -5,6 +5,9 @@ import {
   AddUserT,
   UpdateUserT,
   DeleteUserT,
+  GetUsersByRatingT,
+  RateUserT,
+  CheckAccessT,
 } from './user.service.types';
 import { UserT } from './user.type';
 import { User } from './user.model';
@@ -20,16 +23,22 @@ export class UsersService {
     private usersRepository: Repository<UserT>
   ) {}
 
+  checkAccess: CheckAccessT = async (user, requestedId, shouldBeOwner = true) => {
+    const isOwner = user.id == requestedId;
+    const isAdmin = user.id == (await this.getByLogin('admin')).id;
+    return (isOwner && shouldBeOwner) || isAdmin;
+  }
+
   getAllUsers: GetAllT = () => this.usersRepository.find();
 
-  getById: GetByIdT = (id: string) => this.usersRepository.findOne(id);
+  getById: GetByIdT = (id) => this.usersRepository.findOne(id);
 
-  getByLogin: GetByLoginT = (login: string) =>
+  getByLogin: GetByLoginT = (login) =>
     this.usersRepository.findOne({ login: login });
 
-  addUser: AddUserT = async (user: UserT) => {
+  addUser: AddUserT = async (user) => {
     const login = user.login;
-    if (await this.usersRepository.findOne({ login })) return false; // Exit if user already exist
+    if (!login || await this.usersRepository.findOne({ login })) return false; // Exit if user already exist
     return this.usersRepository.save({
       // Save user with password hash
       ...user,
@@ -37,12 +46,14 @@ export class UsersService {
     });
   };
 
-  updateUser: UpdateUserT = async (id: string, newUser: UserT) => {
+  updateUser: UpdateUserT = async (id, newUser) => {
     const login = newUser.login;
-    if (await this.usersRepository.findOne({ login })) return false; // Exit if user with same login already exist
+    if (!login || await this.usersRepository.findOne({ login })) return false; // Exit if user with same login already exist
+
+    const user = await this.getById(id);
 
     return this.usersRepository.save({
-      ...(await this.getById(id)),
+      ...user,
       ...{
         ...newUser,
         ...{
@@ -52,5 +63,33 @@ export class UsersService {
     });
   };
 
-  deleteUser: DeleteUserT = (id: string) => this.usersRepository.delete(id);
+  deleteUser: DeleteUserT = (id) => this.usersRepository.delete(id);
+
+  getUsersByRating: GetUsersByRatingT = async (num = 10) => {
+    const users = await this.usersRepository.find({
+      order: { rating: 'DESC' },
+      take: num,
+    });
+    return users;
+  };
+
+  rateUser: RateUserT = async (id, rating) => {
+    if (!rating) return false;
+    else if (rating > 5) rating = 5;
+    const user = await this.getById(id);
+    if (!user) return false;
+
+    const new_ratings_number = user.ratings_number + 1;
+    const new_ratings_sum = user.ratings_sum + rating;
+    const new_rating = new_ratings_sum / new_ratings_number;
+
+    return this.usersRepository.save({
+      ...user,
+      ...{
+        ratings_number: new_ratings_number,
+        ratings_sum: new_ratings_sum,
+        rating: new_rating,
+      },
+    });
+  };
 }

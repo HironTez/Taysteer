@@ -1,5 +1,4 @@
-export class UserDataDto {
-  readonly id!: string;
+export class LoginDataDto {
   readonly login!: string;
   readonly password!: string;
 };

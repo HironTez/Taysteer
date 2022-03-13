@@ -4,7 +4,10 @@ interface UserT {
   login: string;
   password: string;
   image: string;
+  description: string;
   rating: number;
+  ratings_number: number;
+  ratings_sum: number;
 }
 
 interface UserToResponseT {
@@ -15,4 +18,19 @@ interface UserToResponseT {
   rating: number;
 }
 
-export { UserT, UserToResponseT };
+interface UserToResponseDetailedT {
+  id: string;
+  name: string;
+  login: string;
+  image: string;
+  description: string;
+  rating: number;
+  ratings_number: number;
+}
+
+interface UserMinT {
+  id: string;
+  login: string;
+}
+
+export { UserT, UserToResponseT, UserToResponseDetailedT, UserMinT };
