@@ -4,7 +4,7 @@ import { Controller, Get, Post, Req, Res, Body, HttpStatus, UseGuards } from '@n
 import { Response } from 'express';
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
-import { RequestWithUser } from './typification/interfaces';
+import { ExtendedRequest } from './typification/interfaces';
 
 @Controller()
 export class AppController {
@@ -21,7 +21,7 @@ export class AppController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Req() req: RequestWithUser, @Res() res: Response, @Body() body: LoginDataDto) {
+  async login(@Req() req: ExtendedRequest, @Res() res: Response, @Body() body: LoginDataDto) {
     const token = await this.authService.login(body);
     return token ? res.status(HttpStatus.OK).send({ token: token }) : res.status(HttpStatus.FORBIDDEN).send();
   };

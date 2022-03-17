@@ -12,7 +12,7 @@ export class User extends BaseEntity {
   @Column('varchar', { length: 50 })
   login: string;
 
-  @Column('text')
+  @Column('varchar', { length: 60 })
   password: string;
 
   @Column('varchar', { length: 150 })
@@ -31,18 +31,20 @@ export class User extends BaseEntity {
   ratings_sum: number;
 
   constructor({
-    name = 'USER',
+    name = 'User',
     login = '',
     password = '',
-    image = '',
-    description = '',
+    description = ''
   } = {}) {
     super();
     this.name = name;
     this.login = login;
     this.password = password;
-    this.image = image;
     this.description = description;
+    this.image = '';
+    this.rating = 0;
+    this.ratings_number = 0;
+    this.ratings_sum = 0;
   }
 
   static toResponse(user: UserT): UserToResponseT {

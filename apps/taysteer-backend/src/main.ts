@@ -5,6 +5,7 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import path from 'path';
 import YAML from 'yamljs';
 import { SwaggerModule } from '@nestjs/swagger';
+import fastifyMultiPart from 'fastify-multipart';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -15,6 +16,8 @@ async function bootstrap() {
       logger: ['error', 'warn']
     }
   );
+
+  app.register(fastifyMultiPart);
 
   const swaggerDocument = YAML.load(path.join(__dirname, '../../../apps/taysteer-backend/doc/api.yaml'));
   SwaggerModule.setup('doc', app, swaggerDocument);

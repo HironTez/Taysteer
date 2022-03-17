@@ -56,26 +56,26 @@ paths:
       requestBody:
         required: true
         content:
-          multipart/form-data:
+          application/json:
             schema:
-              type: input
-              title: name
-          # application/json:
-          #   schema:
-          #     type: object
-          #     title: example
-          #     properties:
-          #       name:
-          #         type: string
-          #         description: The user's name
-          #       login:
-          #         type: string
-          #         description: The user's login
-          #       password:
-          #         type: string
-          #         description: The user's password
+              type: object
+              title: example
+              properties:
+                name:
+                  type: string
+                  description: The user's name
+                login:
+                  type: string
+                  description: The user's login
+                password:
+                  type: string
+                  description: The user's password
+                description:
+                  type: string
+                  description: The user's description
               required:
-                - name
+                - login
+                - password
           
       responses:
         201:
@@ -215,6 +215,38 @@ paths:
       responses:
         200:
           description: The user has been rated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: Bad request
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          description: Forbidden
+  /users/{userId}/change_image:
+    post:
+      tags:
+        - Users
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                fileName:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: The profile image has been changed
           content:
             application/json:
               schema:

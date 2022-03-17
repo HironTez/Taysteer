@@ -1,3 +1,4 @@
+import { MultipartFile } from './../../typification/interfaces';
 import {
   Controller,
   Req,
@@ -17,7 +18,9 @@ import { UsersService } from './user.service';
 import { User } from './user.model';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { UserT } from './user.type';
-import { RequestWithUser } from '../../typification/interfaces';
+import { ExtendedRequest } from '../../typification/interfaces';
+import { UploadGuard } from '../../middleware/guards/upload.guard';
+import { File } from '../../decorators/file.decorator';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard)
@@ -35,7 +38,7 @@ export class UsersController {
 
   @Get(':id')
   async getUserById(
-    @Req() req: RequestWithUser,
+    @Req() req: ExtendedRequest,
     @Res() res: Response,
     @Param('id') id: string,
     @Query('detailed') detailed: boolean = false
@@ -44,7 +47,6 @@ export class UsersController {
     const response = detailed
       ? User.toResponseDetailed(user)
       : User.toResponse(user);
-      console.log(response);
     return user
       ? res.status(HttpStatus.OK).send(response)
       : res.status(HttpStatus.NOT_FOUND).send();
@@ -61,7 +63,7 @@ export class UsersController {
 
   @Put(':id')
   async updateUserById(
-    @Req() req: RequestWithUser,
+    @Req() req: ExtendedRequest,
     @Res() res: Response,
     @Param('id') id: string,
     @Body() body: UserT
@@ -79,7 +81,7 @@ export class UsersController {
 
   @Delete(':id')
   async deleteUserById(
-    @Req() req: RequestWithUser,
+    @Req() req: ExtendedRequest,
     @Res() res: Response,
     @Param('id') id: string
   ) {
@@ -102,7 +104,7 @@ export class UsersController {
 
   @Post(':id/rate')
   async rateUser(
-    @Req() req: RequestWithUser,
+    @Req() req: ExtendedRequest,
     @Res() res: Response,
     @Param('id') id: string,
     @Query('rating') rating: number = 0
@@ -111,8 +113,27 @@ export class UsersController {
     if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();
 
     const ratedUser = await this.usersService.rateUser(id, Number(rating));
+    const userToResponse = ratedUser ? User.toResponse(ratedUser) : null;
     return ratedUser
-      ? res.status(HttpStatus.OK).send(ratedUser)
+      ? res.status(HttpStatus.OK).send(userToResponse)
+      : res.status(HttpStatus.BAD_REQUEST).send();
+  }
+
+  @Post(':id/change_image')
+  @UseGuards(UploadGuard)
+  async changeProfileImage(
+    @Req() req: ExtendedRequest,
+    @Res() res: Response,
+    @Param('id') id: string,
+    @File() file: MultipartFile
+  ) {
+    const hasAccess = await this.usersService.checkAccess(req.user, id, true);
+    if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();
+
+    const uploaded = await this.usersService.changeUserImage(id, file.file);
+    const userToResponse = User.toResponse(await this.usersService.getById(id));
+    return uploaded
+      ? res.status(HttpStatus.OK).send(userToResponse)
       : res.status(HttpStatus.BAD_REQUEST).send();
   }
 }
