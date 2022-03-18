@@ -21,12 +21,13 @@ import { UserT } from './user.type';
 import { ExtendedRequest } from '../../typification/interfaces';
 import { UploadGuard } from '../../middleware/guards/upload.guard';
 import { File } from '../../decorators/file.decorator';
+import { ADMIN_PASSWORD } from 'configs/common/config';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {
-    const admin = new User({ login: 'admin', password: 'admin' });
+    const admin = new User({ login: 'admin', password: ADMIN_PASSWORD });
     this.usersService.addUser(admin);
   }
 
