@@ -10,6 +10,8 @@ import {
   CheckAccessT,
   ValidateUserDataT,
   ChangeUserImageT,
+  DeleteUserImageT,
+  UserStringTypes,
 } from './user.service.types';
 import { UserT } from './user.type';
 import { User } from './user.model';
@@ -18,8 +20,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import bcrypt from 'bcryptjs';
 import { cloudinary } from 'configs/utils/cloudinary';
-import streamifier from 'streamifier';
 import { PromiseController } from '../../utils/promise.controller';
+import { ADMIN_LOGIN } from 'configs/common/config';
 
 @Injectable()
 export class UsersService {
@@ -34,7 +36,7 @@ export class UsersService {
     shouldBeOwner = true
   ) => {
     const isOwner = user.id == requestedId;
-    const isAdmin = user.id == (await this.getByLogin('admin')).id;
+    const isAdmin = user.id == (await this.getByLogin(ADMIN_LOGIN)).id;
     return (isOwner && shouldBeOwner) || isAdmin;
   };
 
@@ -118,25 +120,40 @@ export class UsersService {
   };
 
   changeUserImage: ChangeUserImageT = async (id, fileReadStream) => {
-    const user = await this.getById(id);
-    if (user.image) await cloudinary.uploader.destroy(user.id); // Delete old image
+    const user = await this.getById(id); // Get user
+    if (user.image) await this.deleteUserImage(id); // Delete old image
     const promiseController = new PromiseController(); // Create new promise controller
     // Create upload stream
     const uploadStream = cloudinary.uploader.upload_stream(
-      { public_id: user.id, upload_preset: 'user_avatar' },
+      { public_id: user.id, folder: UserStringTypes.IMAGES_FOLDER },
       (error, result) => {
         if (!error) {
-          promiseController.resolve(result); // Return response using promise
+          promiseController.resolve(result); // Return a response using the promise
         } else promiseController.resolve(false);
       }
     );
-    fileReadStream.pipe(uploadStream); // Connect file read stream
-    const uploadedResponse = await promiseController.promise; // Get response
+    fileReadStream.pipe(uploadStream); // Connect the file read stream
+    const uploadedResponse = await promiseController.promise; // Get a response
+    // Update the user
     return uploadedResponse
       ? this.usersRepository.save({
           ...user,
           ...{
-            image: uploadedResponse.url, // New url
+            image: uploadedResponse.url, // A new url
+          },
+        })
+      : false;
+  };
+
+  deleteUserImage: DeleteUserImageT = async (id) => {
+    const user = await this.getById(id); // Get user
+    const response = await cloudinary.uploader.destroy(`${UserStringTypes.IMAGES_FOLDER}/${user.id}`); // Delete old image
+
+    return response.result == 'ok'
+      ? this.usersRepository.save({
+          ...user,
+          ...{
+            image: '', // Delete a url
           },
         })
       : false;

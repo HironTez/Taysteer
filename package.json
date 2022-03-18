@@ -34,7 +34,6 @@
     "reflect-metadata": "^0.1.13",
     "regenerator-runtime": "0.13.7",
     "rxjs": "^7.0.0",
-    "streamifier": "^0.1.1",
     "tslib": "^2.0.0",
     "typeorm": "^0.2.43",
     "yamljs": "^0.3.0"

@@ -21,13 +21,13 @@ import { UserT } from './user.type';
 import { ExtendedRequest } from '../../typification/interfaces';
 import { UploadGuard } from '../../middleware/guards/upload.guard';
 import { File } from '../../decorators/file.decorator';
-import { ADMIN_PASSWORD } from 'configs/common/config';
+import { ADMIN_PASSWORD, ADMIN_LOGIN } from 'configs/common/config';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {
-    const admin = new User({ login: 'admin', password: ADMIN_PASSWORD });
+    const admin = new User({ login: ADMIN_LOGIN, password: ADMIN_PASSWORD });
     this.usersService.addUser(admin);
   }
 
@@ -97,7 +97,7 @@ export class UsersController {
   }
 
   @Get('rating')
-  async getUsersByRating(@Res() res: Response, @Query('number') num: number) {
+  async getUsersByRating(@Res() res: Response, @Query('number') num: number = 10) {
     const users = await this.usersService.getUsersByRating(num);
     const usersToResponse = users.map((user) => User.toResponse(user));
     return res.status(HttpStatus.OK).send(usersToResponse);
@@ -134,6 +134,22 @@ export class UsersController {
     const uploaded = await this.usersService.changeUserImage(id, file.file);
     const userToResponse = User.toResponse(await this.usersService.getById(id));
     return uploaded
+      ? res.status(HttpStatus.OK).send(userToResponse)
+      : res.status(HttpStatus.BAD_REQUEST).send();
+  }
+
+  @Post(':id/delete_image')
+  async deleteProfileImage(
+    @Req() req: ExtendedRequest,
+    @Res() res: Response,
+    @Param('id') id: string
+  ) {
+    const hasAccess = await this.usersService.checkAccess(req.user, id, true);
+    if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();
+
+    const deleted = await this.usersService.deleteUserImage(id);
+    const userToResponse = User.toResponse(await this.usersService.getById(id));
+    return deleted
       ? res.status(HttpStatus.OK).send(userToResponse)
       : res.status(HttpStatus.BAD_REQUEST).send();
   }

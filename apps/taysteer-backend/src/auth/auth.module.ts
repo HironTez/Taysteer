@@ -13,7 +13,7 @@ import { JWT_SECRET_KEY } from '../../../../configs/common/config';
     PassportModule,
     JwtModule.register({
       secret: JWT_SECRET_KEY,
-      signOptions: { expiresIn: '60s' },
+      signOptions: { expiresIn: '120s' },
     }),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],

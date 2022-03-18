@@ -257,6 +257,29 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         404:
           description: Forbidden
+  /users/{userId}/delete_image:
+    post:
+      tags:
+        - Users
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: The profile image has been deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: Bad request
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          description: Forbidden
   
   /login:
     post:

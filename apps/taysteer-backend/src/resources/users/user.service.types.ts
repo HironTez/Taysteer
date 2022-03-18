@@ -12,5 +12,24 @@ type DeleteUserT = (id: string) => Promise<DeleteResult>;
 type GetUsersByRatingT = (num: number) => Promise<Array<UserT>>;
 type RateUserT = (id: string, rating: number) => Promise<UserT | false>;
 type ChangeUserImageT = (id: string, fileReadStream: NodeJS.ReadableStream) => Promise<UserT | false>;
+type DeleteUserImageT = (id: string) => Promise<UserT | false>;
 
-export { GetAllT, GetByIdT, GetByLoginT, AddUserT, UpdateUserT, DeleteUserT, GetUsersByRatingT, RateUserT, CheckAccessT, ValidateUserDataT, ChangeUserImageT };
+enum UserStringTypes {
+  IMAGES_FOLDER = 'user_avatar',
+}
+
+export {
+  GetAllT,
+  GetByIdT,
+  GetByLoginT,
+  AddUserT,
+  UpdateUserT,
+  DeleteUserT,
+  GetUsersByRatingT,
+  RateUserT,
+  CheckAccessT,
+  ValidateUserDataT,
+  ChangeUserImageT,
+  DeleteUserImageT,
+  UserStringTypes,
+};
