@@ -48,10 +48,13 @@ export class UsersService {
       !user.login ||
       !user.password ||
       (await this.usersRepository.findOne({ login: user.login })) || // Check if the same user already exists
+      user.image ||
+      user.rating ||
+      user.ratings_number ||
+      user.ratings_sum ||
       user.name.length > 50 ||
       user.login.length > 50 ||
       user.password.length > 50 ||
-      user.image.length > 150 ||
       user.description.length > 500
     )
       return false;
@@ -93,7 +96,10 @@ export class UsersService {
     });
   };
 
-  deleteUser: DeleteUserT = (id) => this.usersRepository.delete(id);
+  deleteUser: DeleteUserT = (id) => {
+    this.deleteUserImage(id);
+    return this.usersRepository.delete(id);
+  };
 
   getUsersByRating: GetUsersByRatingT = async (num = 10) => {
     // Find users by rating in descending order
@@ -119,9 +125,11 @@ export class UsersService {
       ? findingResult
       : new UserRater({ raterId: raterId, rating: rating });
 
-    let new_ratings_number: number = 0, new_ratings_sum: number = 0;
+    let new_ratings_number: number = 0,
+      new_ratings_sum: number = 0;
 
-    if (!findingResult) { // If it's new rating
+    // If it's a first rating
+    if (!findingResult) {
       new_ratings_number = user.ratings_number + 1;
       new_ratings_sum = user.ratings_sum + rating;
 
@@ -129,7 +137,9 @@ export class UsersService {
       await this.userRatersRepository.save(rater);
       if (user.raters) user.raters.push(rater);
       else user.raters = [rater];
-    } else { // If it's updating of the rating
+    }
+    // If it's an updating of the rating
+    else {
       new_ratings_number = user.ratings_number;
       new_ratings_sum = user.ratings_sum - rater.rating + rating;
 

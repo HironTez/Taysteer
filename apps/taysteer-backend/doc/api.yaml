@@ -18,6 +18,55 @@ components:
           type: string
         login:
           type: string
+        password:
+          type: string
+        image:
+          type: string
+        description:
+          type: string
+        rating:
+          type: number
+        ratings_number:
+          type: number
+        ratings_sum:
+          type: number
+    UserToResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        login:
+          type: string
+        image:
+          type: string
+        rating:
+          type: number
+    UserToResponseDetailed:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        login:
+          type: string
+        image:
+          type: string
+        description:
+          type: string
+        rating:
+          type: number
+        ratings_number:
+          type: number
+    # UserToResponseMin:
+    #   type: object
+    #   properties:
+    #     id:
+    #       type: string;
+    #     login:
+    #       type: string;
   responses:
     UnauthorizedError:
       description: Access token is missing or invalid
@@ -31,6 +80,45 @@ security:
   - bearerAuth: []
 
 paths:
+  /login:
+    post:
+      tags:
+        - Login
+      security:
+        []
+      summary: Login
+      description: Logins a user and returns a JWT-token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                login:
+                  type: string
+                  description: Username
+                password:
+                  type: string
+                  description: Password
+              required:
+                - user
+                - login
+      responses:
+        200:
+          description: Successful login.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                description: JWT Token
+        403:
+          description: Incorrect login or password
+
   /users:
     get:
       tags:
@@ -45,7 +133,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/User"
+                  $ref: "#/components/schemas/UserToResponse"
         401:
           $ref: '#/components/responses/UnauthorizedError'
     post:
@@ -83,7 +171,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/UserToResponse"
         400:
           description: Bad request
         401:
@@ -112,7 +200,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                oneOf:
+                  - $ref: "#/components/schemas/UserToResponseDetailed"
+                  - $ref: "#/components/schemas/UserToResponse"
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
@@ -145,15 +235,19 @@ paths:
                 password:
                   type: string
                   description: The user's password
+                description:
+                  type: string
+                  description: The user's description
               required:
-                - name
+                - login
+                - password
       responses:
         200:
           description: The user has been updated.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/UserToResponse"
         400:
           description: Bad request
         401:
@@ -194,7 +288,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/UserToResponse"
         401:
           $ref: '#/components/responses/UnauthorizedError'
   /users/{userId}/rate:
@@ -218,7 +312,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/UserToResponse"
         400:
           description: Bad request
         401:
@@ -250,7 +344,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/UserToResponse"
         400:
           description: Bad request
         401:
@@ -273,49 +367,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/UserToResponse"
         400:
           description: Bad request
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
           description: Forbidden
-  
-  /login:
-    post:
-      tags:
-        - Login
-      security:
-        []
-      summary: Login
-      description: Logins a user and returns a JWT-token
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              title: example
-              properties:
-                login:
-                  type: string
-                  description: Username
-                password:
-                  type: string
-                  description: Password
-              required:
-                - user
-                - login
-      responses:
-        200:
-          description: Successful login.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-                description: JWT Token
-        403:
-          description: Incorrect login or password
