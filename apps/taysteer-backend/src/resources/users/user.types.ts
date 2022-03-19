@@ -8,6 +8,7 @@ interface UserT {
   rating: number;
   ratings_number: number;
   ratings_sum: number;
+  raters: UserRaterT[];
 }
 
 interface UserToResponseT {
@@ -33,4 +34,11 @@ interface UserMinT {
   login: string;
 }
 
-export { UserT, UserToResponseT, UserToResponseDetailedT, UserMinT };
+interface UserRaterT {
+  id: number;
+  raterId: string;
+  rating: number;
+  user: UserT;
+}
+
+export { UserT, UserToResponseT, UserToResponseDetailedT, UserMinT, UserRaterT };

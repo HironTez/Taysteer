@@ -1,5 +1,6 @@
-import { UserT, UserMinT, UserToResponseT, UserToResponseDetailedT } from './user.type';
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from 'typeorm';
+import { UserT, UserMinT, UserToResponseT, UserToResponseDetailedT, UserRaterT } from './user.types';
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany } from 'typeorm';
+import { UserRater } from './user.rater.model';
 
 @Entity('User')
 export class User extends BaseEntity {
@@ -29,6 +30,9 @@ export class User extends BaseEntity {
 
   @Column('int')
   ratings_sum: number;
+
+  @OneToMany(() => UserRater, rater => rater.user)
+  raters: UserRaterT[];
 
   constructor({
     name = 'User',

@@ -13,7 +13,7 @@ import {
   DeleteUserImageT,
   UserStringTypes,
 } from './user.service.types';
-import { UserT } from './user.type';
+import { UserT } from './user.types';
 import { User } from './user.model';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -22,12 +22,15 @@ import bcrypt from 'bcryptjs';
 import { cloudinary } from 'configs/utils/cloudinary';
 import { PromiseController } from '../../utils/promise.controller';
 import { ADMIN_LOGIN } from 'configs/common/config';
+import { UserRater } from './user.rater.model';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private usersRepository: Repository<UserT>
+    private usersRepository: Repository<UserT>,
+    @InjectRepository(UserRater)
+    private userRatersRepository: Repository<UserRater>
   ) {}
 
   checkAccess: CheckAccessT = async (
@@ -75,13 +78,14 @@ export class UsersService {
     if (!(await this.validateUserData(newUser))) return false; // Validate data
 
     const user = await this.getById(id);
+    if (!user) return false; // Exit if user does not exist
     // Update the user
     return this.usersRepository.save({
       ...user,
       ...{
         ...newUser,
         ...{
-          password: newUser.password
+          password: newUser.password // Set a hash of the password
             ? await bcrypt.hash(newUser.password, bcrypt.genSaltSync(10))
             : user.password,
         },
@@ -92,6 +96,7 @@ export class UsersService {
   deleteUser: DeleteUserT = (id) => this.usersRepository.delete(id);
 
   getUsersByRating: GetUsersByRatingT = async (num = 10) => {
+    // Find users by rating in descending order
     const users = await this.usersRepository.find({
       order: { rating: 'DESC' },
       take: num,
@@ -99,30 +104,59 @@ export class UsersService {
     return users;
   };
 
-  rateUser: RateUserT = async (id, rating) => {
+  rateUser: RateUserT = async (id, raterId, rating) => {
+    // Validate data
     if (!rating) return false;
     else if (rating > 5) rating = 5;
     const user = await this.getById(id);
     if (!user) return false;
 
-    const new_ratings_number = user.ratings_number + 1;
-    const new_ratings_sum = user.ratings_sum + rating;
+    // Try to find the rater
+    const findingResult = await this.userRatersRepository.findOne({
+      raterId: raterId,
+    });
+    const rater = findingResult // Create a new rater if doesn't found
+      ? findingResult
+      : new UserRater({ raterId: raterId, rating: rating });
+
+    let new_ratings_number: number = 0, new_ratings_sum: number = 0;
+
+    if (!findingResult) { // If it's new rating
+      new_ratings_number = user.ratings_number + 1;
+      new_ratings_sum = user.ratings_sum + rating;
+
+      // Save the rater
+      await this.userRatersRepository.save(rater);
+      if (user.raters) user.raters.push(rater);
+      else user.raters = [rater];
+    } else { // If it's updating of the rating
+      new_ratings_number = user.ratings_number;
+      new_ratings_sum = user.ratings_sum - rater.rating + rating;
+
+      rater.rating = rating;
+      await this.userRatersRepository.save(rater);
+    }
+
+    // Calculate the rating
     const new_rating = new_ratings_sum / new_ratings_number;
 
+    // Update the user
     return this.usersRepository.save({
       ...user,
       ...{
         ratings_number: new_ratings_number,
         ratings_sum: new_ratings_sum,
         rating: new_rating,
+        raters: user.raters,
       },
     });
   };
 
   changeUserImage: ChangeUserImageT = async (id, fileReadStream) => {
-    const user = await this.getById(id); // Get user
-    if (user.image) await this.deleteUserImage(id); // Delete old image
-    const promiseController = new PromiseController(); // Create new promise controller
+    const user = await this.getById(id); // Get a user
+    if (!user) return false; // Exit if user does not exist
+    if (user.image) await this.deleteUserImage(id); // Delete a old image
+    const promiseController = new PromiseController(); // Create a new promise controller
     // Create upload stream
     const uploadStream = cloudinary.uploader.upload_stream(
       { public_id: user.id, folder: UserStringTypes.IMAGES_FOLDER },
@@ -147,7 +181,10 @@ export class UsersService {
 
   deleteUserImage: DeleteUserImageT = async (id) => {
     const user = await this.getById(id); // Get user
-    const response = await cloudinary.uploader.destroy(`${UserStringTypes.IMAGES_FOLDER}/${user.id}`); // Delete old image
+    if (!user) return false; // Exit if user does not exist
+    const response = await cloudinary.uploader.destroy(
+      `${UserStringTypes.IMAGES_FOLDER}/${user.id}`
+    ); // Delete a old image
 
     return response.result == 'ok'
       ? this.usersRepository.save({

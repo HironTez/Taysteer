@@ -17,7 +17,7 @@ import { Response } from 'express';
 import { UsersService } from './user.service';
 import { User } from './user.model';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { UserT } from './user.type';
+import { UserT } from './user.types';
 import { ExtendedRequest } from '../../typification/interfaces';
 import { UploadGuard } from '../../middleware/guards/upload.guard';
 import { File } from '../../decorators/file.decorator';
@@ -113,7 +113,7 @@ export class UsersController {
     const hasAccess = await this.usersService.checkAccess(req.user, id, false);
     if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();
 
-    const ratedUser = await this.usersService.rateUser(id, Number(rating));
+    const ratedUser = await this.usersService.rateUser(id, req.user.id, Number(rating));
     const userToResponse = ratedUser ? User.toResponse(ratedUser) : null;
     return ratedUser
       ? res.status(HttpStatus.OK).send(userToResponse)
