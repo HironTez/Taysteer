@@ -40,7 +40,7 @@ export class UsersService {
   ) => {
     const isOwner = user.id == requestedId;
     const isAdmin = user.id == (await this.getByLogin(ADMIN_LOGIN)).id;
-    return (isOwner == shouldBeOwner) || isAdmin;
+    return isOwner == shouldBeOwner || isAdmin;
   };
 
   validateUserData: ValidateUserDataT = async (user) => {
@@ -96,9 +96,15 @@ export class UsersService {
     });
   };
 
-  deleteUser: DeleteUserT = (id) => {
-    this.deleteUserImage(id);
-    return this.usersRepository.delete(id);
+  deleteUser: DeleteUserT = async (id) => {
+    // Get the user
+    const user = await this.usersRepository.findOne(id, {
+      relations: ['raters'],
+    });
+    for (const rater of user.raters) this.userRatersRepository.delete(rater); // Delete the all raters
+    this.deleteUserImage(id); // Delete the image
+    const deleteResult = await this.usersRepository.delete(id); // Delete the user
+    return deleteResult.affected; // Return a result
   };
 
   getUsersByRating: GetUsersByRatingT = async (num = 10) => {
@@ -114,14 +120,19 @@ export class UsersService {
     // Validate data
     if (!rating) return false;
     else if (rating > 5) rating = 5;
-    const user = await this.getById(id);
+    
+    // Get the user with relations
+    const user = await this.usersRepository.findOne(id, {
+      relations: ['raters'],
+    });
     if (!user) return false;
 
     // Try to find the rater
     const findingResult = await this.userRatersRepository.findOne({
       raterId: raterId,
     });
-    const rater = findingResult // Create a new rater if not found
+    // Create a new rater if not found
+    const rater = findingResult
       ? findingResult
       : new UserRater({ raterId: raterId, rating: rating });
 

@@ -8,7 +8,7 @@ type GetByIdT = (id: string) => Promise<UserT | undefined>;
 type GetByLoginT = (login: string) => Promise<UserT | undefined>;
 type AddUserT = (user: UserT) => Promise<UserT | false>;
 type UpdateUserT = (id: string, newUser: UserT) => Promise<UserT | false>;
-type DeleteUserT = (id: string) => Promise<DeleteResult>;
+type DeleteUserT = (id: string) => Promise<number>;
 type GetUsersByRatingT = (num: number) => Promise<Array<UserT>>;
 type RateUserT = (id: string, raterId: string, rating: number) => Promise<UserT | false>;
 type ChangeUserImageT = (id: string, fileReadStream: NodeJS.ReadableStream) => Promise<UserT | false>;
