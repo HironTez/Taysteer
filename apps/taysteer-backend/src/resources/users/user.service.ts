@@ -40,7 +40,7 @@ export class UsersService {
   ) => {
     const isOwner = user.id == requestedId;
     const isAdmin = user.id == (await this.getByLogin(ADMIN_LOGIN)).id;
-    return (isOwner && shouldBeOwner) || isAdmin;
+    return (isOwner == shouldBeOwner) || isAdmin;
   };
 
   validateUserData: ValidateUserDataT = async (user) => {
@@ -121,7 +121,7 @@ export class UsersService {
     const findingResult = await this.userRatersRepository.findOne({
       raterId: raterId,
     });
-    const rater = findingResult // Create a new rater if doesn't found
+    const rater = findingResult // Create a new rater if not found
       ? findingResult
       : new UserRater({ raterId: raterId, rating: rating });
 
@@ -148,7 +148,7 @@ export class UsersService {
     }
 
     // Calculate the rating
-    const new_rating = new_ratings_sum / new_ratings_number;
+    const new_rating = Math.round(new_ratings_sum / new_ratings_number);
 
     // Update the user
     return this.usersRepository.save({
