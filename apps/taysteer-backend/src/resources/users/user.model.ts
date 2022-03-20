@@ -1,6 +1,8 @@
+import { Recipe } from './../recipes/recipe.model';
 import { UserT, UserMinT, UserToResponseT, UserToResponseDetailedT, UserRaterT } from './user.types';
 import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany } from 'typeorm';
 import { UserRater } from './user.rater.model';
+import { RecipeT } from '../recipes/recipe.types';
 
 @Entity('User')
 export class User extends BaseEntity {
@@ -26,13 +28,16 @@ export class User extends BaseEntity {
   rating: number;
 
   @Column('int')
-  ratings_number: number;
+  ratings_count: number;
 
   @Column('int')
   ratings_sum: number;
 
-  @OneToMany(() => UserRater, rater => rater.user)
+  @OneToMany(() => UserRater, (rater) => rater.user)
   raters: UserRaterT[];
+
+  @OneToMany(() => Recipe, (recipe) => recipe.user)
+  recipes: RecipeT[];
 
   constructor({
     name = 'User',
@@ -47,7 +52,7 @@ export class User extends BaseEntity {
     this.description = description;
     this.image = '';
     this.rating = 0;
-    this.ratings_number = 0;
+    this.ratings_count = 0;
     this.ratings_sum = 0;
   }
 
@@ -57,8 +62,8 @@ export class User extends BaseEntity {
   }
 
   static toResponseDetailed(user: UserT): UserToResponseDetailedT {
-    const { id, name, login, image, rating, ratings_number, description } = user;
-    return { id, name, login, image, rating, ratings_number, description } as User;
+    const { id, name, login, image, rating, ratings_count, description } = user;
+    return { id, name, login, image, rating, ratings_count, description } as User;
   }
 
   static toResponseMin(user: UserT): UserMinT {

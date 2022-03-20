@@ -50,7 +50,7 @@ export class UsersService {
       (await this.usersRepository.findOne({ login: user.login })) || // Check if the same user already exists
       user.image ||
       user.rating ||
-      user.ratings_number ||
+      user.ratings_count ||
       user.ratings_sum ||
       user.name.length > 50 ||
       user.login.length > 50 ||
@@ -136,12 +136,12 @@ export class UsersService {
       ? findingResult
       : new UserRater({ raterId: raterId, rating: rating });
 
-    let new_ratings_number: number = 0,
+    let new_ratings_count: number = 0,
       new_ratings_sum: number = 0;
 
     // If it's a first rating
     if (!findingResult) {
-      new_ratings_number = user.ratings_number + 1;
+      new_ratings_count = user.ratings_count + 1;
       new_ratings_sum = user.ratings_sum + rating;
 
       // Save the rater
@@ -151,7 +151,7 @@ export class UsersService {
     }
     // If it's an updating of the rating
     else {
-      new_ratings_number = user.ratings_number;
+      new_ratings_count = user.ratings_count;
       new_ratings_sum = user.ratings_sum - rater.rating + rating;
 
       rater.rating = rating;
@@ -159,13 +159,13 @@ export class UsersService {
     }
 
     // Calculate the rating
-    const new_rating = Math.round(new_ratings_sum / new_ratings_number);
+    const new_rating = Math.round(new_ratings_sum / new_ratings_count);
 
     // Update the user
     return this.usersRepository.save({
       ...user,
       ...{
-        ratings_number: new_ratings_number,
+        ratings_count: new_ratings_count,
         ratings_sum: new_ratings_sum,
         rating: new_rating,
         raters: user.raters,

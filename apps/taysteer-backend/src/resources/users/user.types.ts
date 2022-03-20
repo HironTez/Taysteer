@@ -6,7 +6,7 @@ interface UserT {
   image: string;
   description: string;
   rating: number;
-  ratings_number: number;
+  ratings_count: number;
   ratings_sum: number;
   raters: UserRaterT[];
 }
@@ -26,7 +26,7 @@ interface UserToResponseDetailedT {
   image: string;
   description: string;
   rating: number;
-  ratings_number: number;
+  ratings_count: number;
 }
 
 interface UserMinT {
@@ -41,4 +41,10 @@ interface UserRaterT {
   user: UserT;
 }
 
-export { UserT, UserToResponseT, UserToResponseDetailedT, UserMinT, UserRaterT };
+export {
+  UserT,
+  UserToResponseT,
+  UserToResponseDetailedT,
+  UserMinT,
+  UserRaterT,
+};

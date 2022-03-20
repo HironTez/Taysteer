@@ -26,7 +26,7 @@ components:
           type: string
         rating:
           type: number
-        ratings_number:
+        ratings_count:
           type: number
         ratings_sum:
           type: number
@@ -58,7 +58,7 @@ components:
           type: string
         rating:
           type: number
-        ratings_number:
+        ratings_count:
           type: number
     # UserToResponseMin:
     #   type: object
@@ -277,7 +277,7 @@ paths:
       tags:
         - Users
       parameters:
-        - name: number
+        - name: count
           in: query
           required: false
           schema:
