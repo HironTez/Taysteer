@@ -43,7 +43,7 @@ export class User extends BaseEntity {
     name = 'User',
     login = '',
     password = '',
-    description = ''
+    description = '',
   } = {}) {
     super();
     this.name = name;

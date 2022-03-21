@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
-  title: Trello Service
-  description: Let's try to create a competitor for Trello!
+  title: Taysteer
+  description: The best platform to share your recipes!
   version: 1.0.0
 
 servers:
@@ -84,8 +84,7 @@ paths:
     post:
       tags:
         - Login
-      security:
-        []
+      security: []
       summary: Login
       description: Logins a user and returns a JWT-token
       requestBody:
@@ -133,7 +132,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/UserToResponse"
+                  $ref: '#/components/schemas/UserToResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
     post:
@@ -142,12 +141,10 @@ paths:
       summary: Create user
       description: Creates a new user (remove password from response)
       requestBody:
-        required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
-              title: example
               properties:
                 name:
                   type: string
@@ -161,34 +158,97 @@ paths:
                 description:
                   type: string
                   description: The user's description
+                image:
+                  type: string
+                  format: binary
+                  description: The user's image
               required:
                 - login
                 - password
-          
+
       responses:
         201:
           description: The user has been created.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserToResponse"
+                $ref: '#/components/schemas/UserToResponse'
         400:
           description: Bad request
         401:
           $ref: '#/components/responses/UnauthorizedError'
+        409:
+          description: The user already exist
+    put:
+      tags:
+        - Users
+      summary: Update a user
+      description: Updates a user by ID
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The user's name
+                login:
+                  type: string
+                  description: The user's login
+                password:
+                  type: string
+                  description: The user's password
+                description:
+                  type: string
+                  description: The user's description
+                image:
+                  type: string
+                  format: binary
+                  description: The user's image
+              required:
+                - login
+                - password
+      responses:
+        200:
+          description: The user has been updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserToResponse'
+        400:
+          description: Bad request
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          description: Not found
+    delete:
+      tags:
+        - Users
+      summary: Delete user
+      description: Deletes user by ID. When somebody
+        DELETE User, all Tasks where User is assignee
+        should be updated to put userId=null
+      responses:
+        204:
+          description: The user has been deleted
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+        404:
+          description: User not found
   /users/{userId}:
     get:
       parameters:
-        - name: detailed
-          in: query
-          required: false
-          schema:
-            type: boolean
         - name: userId
           in: path
           required: true
           schema:
             type: string
+        - name: detailed
+          in: query
+          required: false
+          schema:
+            type: boolean
       tags:
         - Users
       summary: Get user by ID
@@ -201,73 +261,8 @@ paths:
             application/json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/UserToResponseDetailed"
-                  - $ref: "#/components/schemas/UserToResponse"
-        401:
-          $ref: '#/components/responses/UnauthorizedError'
-        404:
-          description: User not found
-    put:
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
-      tags:
-        - Users
-      summary: Update a user
-      description: Updates a user by ID
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              title: example
-              properties:
-                name:
-                  type: string
-                  description: The user's name
-                login:
-                  type: string
-                  description: The user's login
-                password:
-                  type: string
-                  description: The user's password
-                description:
-                  type: string
-                  description: The user's description
-              required:
-                - login
-                - password
-      responses:
-        200:
-          description: The user has been updated.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserToResponse"
-        400:
-          description: Bad request
-        401:
-          $ref: '#/components/responses/UnauthorizedError'
-    delete:
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
-      tags:
-        - Users
-      summary: Delete user
-      description: Deletes user by ID. When somebody
-        DELETE User, all Tasks where User is assignee
-        should be updated to put userId=null
-      responses:
-        204:
-          description: The user has been deleted
+                  - $ref: '#/components/schemas/UserToResponseDetailed'
+                  - $ref: '#/components/schemas/UserToResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
@@ -288,7 +283,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserToResponse"
+                $ref: '#/components/schemas/UserToResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
   /users/{userId}/rate:
@@ -312,65 +307,27 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserToResponse"
+                $ref: '#/components/schemas/UserToResponse'
         400:
           description: Bad request
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
-          description: Forbidden
-  /users/{userId}/change_image:
+          description: Not found
+  /users/delete_image:
     post:
       tags:
         - Users
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                fileName:
-                  type: string
-                  format: binary
-      responses:
-        200:
-          description: The profile image has been changed
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserToResponse"
-        400:
-          description: Bad request
-        401:
-          $ref: '#/components/responses/UnauthorizedError'
-        404:
-          description: Forbidden
-  /users/{userId}/delete_image:
-    post:
-      tags:
-        - Users
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: string
       responses:
         200:
           description: The profile image has been deleted
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserToResponse"
+                $ref: '#/components/schemas/UserToResponse'
         400:
           description: Bad request
         401:
           $ref: '#/components/responses/UnauthorizedError'
         404:
-          description: Forbidden
+          description: Not found

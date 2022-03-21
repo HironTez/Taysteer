@@ -1,4 +1,3 @@
-import { MultipartFile } from './../../typification/interfaces';
 import {
   Controller,
   Req,
@@ -8,7 +7,6 @@ import {
   Put,
   Delete,
   Param,
-  Body,
   HttpStatus,
   UseGuards,
   Query,
@@ -17,27 +15,26 @@ import { Response } from 'express';
 import { UsersService } from './user.service';
 import { User } from './user.model';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { UserT } from './user.types';
 import { ExtendedRequest } from '../../typification/interfaces';
-import { UploadGuard } from '../../middleware/guards/upload.guard';
-import { File } from '../../decorators/file.decorator';
-import { ADMIN_PASSWORD, ADMIN_LOGIN } from 'configs/common/config';
+import { FormGuard } from '../../middleware/guards/form.guard';
+import { FormData } from '../../decorators/file.decorator';
+import { UserDataDto } from './user.dto';
+import { deleteImage } from '../../utils/image.uploader';
+import { UserStringTypes } from './user.service.types';
 
 @Controller('users')
-@UseGuards(JwtAuthGuard)
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {
-    const admin = new User({ login: ADMIN_LOGIN, password: ADMIN_PASSWORD });
-    this.usersService.addUser(admin);
-  }
+  constructor(private readonly usersService: UsersService) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   async getAllUsers(@Res() res: Response) {
     const users = await this.usersService.getAllUsers();
     return res.status(HttpStatus.OK).send(users.map(User.toResponse));
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   async getUserById(
     @Req() req: ExtendedRequest,
     @Res() res: Response,
@@ -54,56 +51,72 @@ export class UsersController {
   }
 
   @Post()
-  async createUser(@Res() res: Response, @Body() body: UserT) {
-    const newUser = new User(body);
-    const userCreated = await this.usersService.addUser(newUser);
-    return userCreated
-      ? res.status(HttpStatus.CREATED).send(User.toResponse(newUser))
+  @UseGuards(FormGuard)
+  async createUser(
+    @Req() req: ExtendedRequest,
+    @Res() res: Response,
+    @FormData() formData: UserDataDto
+  ) {
+    const userExists = await this.usersService.getByLogin(formData.login); // Check if user don't exists
+    const createdUser = await this.usersService.addUser(formData, req.fileStreams); // Create an account
+    return createdUser
+      ? res.status(HttpStatus.CREATED).send(User.toResponse(createdUser))
+      : userExists
+      ? res.status(HttpStatus.CONFLICT).send()
       : res.status(HttpStatus.BAD_REQUEST).send();
   }
 
-  @Put(':id')
+  @Put()
+  @UseGuards(JwtAuthGuard)
   async updateUserById(
     @Req() req: ExtendedRequest,
     @Res() res: Response,
-    @Param('id') id: string,
-    @Body() body: UserT
+    @FormData() formData: UserDataDto
   ) {
     // Check access to an account
-    const hasAccess = await this.usersService.checkAccess(req.user, id, true);
+    const hasAccess = await this.usersService.checkAccess(req.user, req.user.id, true);
     if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();
+
+    const userExists = await this.usersService.getById(formData.id); // Check if user exists
 
     // Update the account
-    const updatedUser = await this.usersService.updateUser(id, body);
+    const updatedUser = await this.usersService.updateUser(req.user.id, formData, req.fileStreams);
     return updatedUser
       ? res.status(HttpStatus.OK).send(User.toResponse(updatedUser))
-      : res.status(HttpStatus.BAD_REQUEST).send();
+      : userExists
+      ? res.status(HttpStatus.BAD_REQUEST).send()
+      : res.status(HttpStatus.NOT_FOUND).send();
   }
 
-  @Delete(':id')
+  @Delete()
+  @UseGuards(JwtAuthGuard)
   async deleteUserById(
     @Req() req: ExtendedRequest,
-    @Res() res: Response,
-    @Param('id') id: string
+    @Res() res: Response
   ) {
-    const hasAccess = await this.usersService.checkAccess(req.user, id, true);
+    const hasAccess = await this.usersService.checkAccess(req.user, req.user.id, true);
     if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();
 
-    const userExists = Boolean(await this.usersService.getById(id));
-    if (userExists) this.usersService.deleteUser(id); // Delete user
-    return userExists
+    const userDeleted = await this.usersService.deleteUser(req.user.id); // Delete user
+    // if (userDeleted) res.removeHeader('Authorization');
+    return userDeleted
       ? res.status(HttpStatus.NO_CONTENT).send()
       : res.status(HttpStatus.NOT_FOUND).send();
   }
 
   @Get('rating')
-  async getUsersByRating(@Res() res: Response, @Query('number') num: number = 10) {
+  @UseGuards(JwtAuthGuard)
+  async getUsersByRating(
+    @Res() res: Response,
+    @Query('number') num: number = 10
+  ) {
     const users = await this.usersService.getUsersByRating(num);
     const usersToResponse = users.map((user) => User.toResponse(user));
     return res.status(HttpStatus.OK).send(usersToResponse);
   }
 
   @Post(':id/rate')
+  @UseGuards(JwtAuthGuard)
   async rateUser(
     @Req() req: ExtendedRequest,
     @Res() res: Response,
@@ -113,44 +126,38 @@ export class UsersController {
     const hasAccess = await this.usersService.checkAccess(req.user, id, false);
     if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();
 
-    const ratedUser = await this.usersService.rateUser(id, req.user.id, Number(rating));
+    const userExists = await this.usersService.getById(req.user.id);
+
+    const ratedUser = await this.usersService.rateUser(
+      id,
+      req.user.id,
+      Number(rating)
+    );
     const userToResponse = ratedUser ? User.toResponse(ratedUser) : null;
     return ratedUser
       ? res.status(HttpStatus.OK).send(userToResponse)
-      : res.status(HttpStatus.BAD_REQUEST).send();
+      : userExists
+      ? res.status(HttpStatus.BAD_REQUEST).send()
+      : res.status(HttpStatus.NOT_FOUND).send();
   }
 
-  @Post(':id/change_image')
-  @UseGuards(UploadGuard)
-  async changeProfileImage(
-    @Req() req: ExtendedRequest,
-    @Res() res: Response,
-    @Param('id') id: string,
-    @File() file: MultipartFile
-  ) {
-    const hasAccess = await this.usersService.checkAccess(req.user, id, true);
-    if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();
-
-    const uploaded = await this.usersService.changeUserImage(id, file.file);
-    const userToResponse = User.toResponse(await this.usersService.getById(id));
-    return uploaded
-      ? res.status(HttpStatus.OK).send(userToResponse)
-      : res.status(HttpStatus.BAD_REQUEST).send();
-  }
-
-  @Post(':id/delete_image')
+  @Post('delete_image')
+  @UseGuards(JwtAuthGuard)
   async deleteProfileImage(
     @Req() req: ExtendedRequest,
-    @Res() res: Response,
-    @Param('id') id: string
+    @Res() res: Response
   ) {
-    const hasAccess = await this.usersService.checkAccess(req.user, id, true);
+    const hasAccess = await this.usersService.checkAccess(req.user, req.user.id, true);
     if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();
 
-    const deleted = await this.usersService.deleteUserImage(id);
-    const userToResponse = User.toResponse(await this.usersService.getById(id));
+    const userExists = await this.usersService.getById(req.user.id);
+
+    const deleted = await deleteImage(req.user.id, UserStringTypes.IMAGES_FOLDER);
+    const userToResponse = User.toResponse(await this.usersService.getById(req.user.id));
     return deleted
       ? res.status(HttpStatus.OK).send(userToResponse)
-      : res.status(HttpStatus.BAD_REQUEST).send();
+      ? userExists
+      : res.status(HttpStatus.BAD_REQUEST).send()
+      : res.status(HttpStatus.NOT_FOUND).send();
   }
 }

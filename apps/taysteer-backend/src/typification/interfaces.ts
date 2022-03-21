@@ -1,20 +1,11 @@
 import { FastifyRequest } from 'fastify';
+import { UserDataDto } from '../resources/users/user.dto';
 
 export interface ExtendedRequest extends FastifyRequest {
   user: {
     id: string;
     login: string;
   };
-  incomingFile: MultipartFile;
-}
-
-export interface MultipartFile {
-  toBuffer: () => Promise<Buffer>;
-  file: NodeJS.ReadableStream;
-  filepath: string;
-  fieldname: string;
-  filename: string;
-  encoding: string;
-  mimetype: string;
-  fields: import('fastify-multipart').MultipartFields;
+  formData: UserDataDto;
+  fileStreams: AsyncIterableIterator<NodeJS.ReadableStream>
 }
