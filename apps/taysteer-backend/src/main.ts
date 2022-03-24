@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { JWT_SECRET_KEY, PORT_BACKEND } from '../../../configs/common/config';
+import { SESSION_SECRET_KEY, PORT_BACKEND, SESSION_SECRET_SALT } from '../../../configs/common/config';
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -23,8 +23,8 @@ async function bootstrap() {
   );
 
   app.register(secureSession, {
-    secret: JWT_SECRET_KEY,
-    salt: 'mq9hDxBVDbspDR6n',
+    secret: SESSION_SECRET_KEY,
+    salt: SESSION_SECRET_SALT,
   });
   app.register(fastifyPassport.initialize());
   app.register(fastifyPassport.secureSession());
