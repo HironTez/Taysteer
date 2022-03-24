@@ -83,10 +83,10 @@ paths:
   /login:
     post:
       tags:
-        - Login
+        - Authorization
       security: []
       summary: Login
-      description: Logins a user and returns a JWT-token
+      description: Logins a user
       requestBody:
         required: true
         content:
@@ -107,16 +107,20 @@ paths:
       responses:
         200:
           description: Successful login.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-                description: JWT Token
         403:
           description: Incorrect login or password
+  /logout:
+    post:
+      tags:
+        - Authorization
+      security: []
+      summary: Logout
+      description: Logouts a user
+      responses:
+        200:
+          description: Successful logout.
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
 
   /users:
     get:

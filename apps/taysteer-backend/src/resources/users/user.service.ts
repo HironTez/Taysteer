@@ -26,7 +26,7 @@ import { UserDataDto } from './user.dto';
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private usersRepository: Repository<UserT>,
+    private userRepository: Repository<UserT>,
     @InjectRepository(UserRater)
     private userRatersRepository: Repository<UserRater>
   ) {
@@ -70,12 +70,12 @@ export class UsersService {
     return true;
   };
 
-  getAllUsers: GetAllT = () => this.usersRepository.find();
+  getAllUsers: GetAllT = () => this.userRepository.find();
 
-  getById: GetByIdT = (id) => this.usersRepository.findOne(id);
+  getById: GetByIdT = (id) => this.userRepository.findOne(id);
 
   getByLogin: GetByLoginT = (login) =>
-    this.usersRepository.findOne({ login: login });
+    this.userRepository.findOne({ login: login });
 
   addUser: AddUserT = async (userData, images) => {
     if (!(await this.validateUserData(userData, false))) return false; // Validate data
@@ -99,7 +99,7 @@ export class UsersService {
       if (uploadedResponse) user.image = uploadedResponse;
     }
     // Save user with password hash
-    return this.usersRepository.save({
+    return this.userRepository.save({
       ...user,
       ...{ password: await bcrypt.hash(user.password, bcrypt.genSaltSync(10)) },
     });
@@ -129,7 +129,7 @@ export class UsersService {
     }
 
     // Update the user
-    return this.usersRepository.save({
+    return this.userRepository.save({
       ...user,
       ...{
         ...userData,
@@ -144,7 +144,7 @@ export class UsersService {
 
   deleteUser: DeleteUserT = async (id) => {
     // Get the user
-    const user = await this.usersRepository.findOne(id, {
+    const user = await this.userRepository.findOne(id, {
       relations: ['raters'],
     });
     if (!user) return false;
@@ -155,13 +155,13 @@ export class UsersService {
       }
     }
     deleteImage(id, UserStringTypes.IMAGES_FOLDER); // Delete the image
-    const deleteResult = await this.usersRepository.delete(id); // Delete the user
+    const deleteResult = await this.userRepository.delete(id); // Delete the user
     return deleteResult.affected; // Return a result
   };
 
   getUsersByRating: GetUsersByRatingT = async (num = 10) => {
     // Find users by rating in descending order
-    const users = await this.usersRepository.find({
+    const users = await this.userRepository.find({
       order: { rating: 'DESC' },
       take: num,
     });
@@ -174,7 +174,7 @@ export class UsersService {
     else if (rating > 5) rating = 5;
 
     // Get the user with relations
-    const user = await this.usersRepository.findOne(id, {
+    const user = await this.userRepository.findOne(id, {
       relations: ['raters'],
     });
     if (!user) return false;
@@ -214,7 +214,7 @@ export class UsersService {
     const new_rating = Math.round(new_ratings_sum / new_ratings_count);
 
     // Update the user
-    return this.usersRepository.save({
+    return this.userRepository.save({
       ...user,
       ...{
         ratings_count: new_ratings_count,

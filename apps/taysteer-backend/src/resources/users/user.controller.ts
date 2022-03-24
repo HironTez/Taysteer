@@ -14,27 +14,27 @@ import {
 import { Response } from 'express';
 import { UsersService } from './user.service';
 import { User } from './user.model';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { ExtendedRequest } from '../../typification/interfaces';
 import { FormGuard } from '../../middleware/guards/form.guard';
 import { FormData } from '../../decorators/file.decorator';
 import { UserDataDto } from './user.dto';
 import { deleteImage } from '../../utils/image.uploader';
 import { UserStringTypes } from './user.service.types';
+import { CookieAuthGuard } from '../../auth/guards/cookie-auth.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(CookieAuthGuard)
   async getAllUsers(@Res() res: Response) {
     const users = await this.usersService.getAllUsers();
     return res.status(HttpStatus.OK).send(users.map(User.toResponse));
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(CookieAuthGuard)
   async getUserById(
     @Req() req: ExtendedRequest,
     @Res() res: Response,
@@ -67,7 +67,7 @@ export class UsersController {
   }
 
   @Put()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(CookieAuthGuard)
   async updateUserById(
     @Req() req: ExtendedRequest,
     @Res() res: Response,
@@ -89,7 +89,7 @@ export class UsersController {
   }
 
   @Delete()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(CookieAuthGuard)
   async deleteUserById(
     @Req() req: ExtendedRequest,
     @Res() res: Response
@@ -98,14 +98,14 @@ export class UsersController {
     if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();
 
     const userDeleted = await this.usersService.deleteUser(req.user.id); // Delete user
-    // if (userDeleted) res.removeHeader('Authorization');
+    req.logOut(); // Log out a session
     return userDeleted
       ? res.status(HttpStatus.NO_CONTENT).send()
       : res.status(HttpStatus.NOT_FOUND).send();
   }
 
   @Get('rating')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(CookieAuthGuard)
   async getUsersByRating(
     @Res() res: Response,
     @Query('number') num: number = 10
@@ -116,7 +116,7 @@ export class UsersController {
   }
 
   @Post(':id/rate')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(CookieAuthGuard)
   async rateUser(
     @Req() req: ExtendedRequest,
     @Res() res: Response,
@@ -142,7 +142,7 @@ export class UsersController {
   }
 
   @Post('delete_image')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(CookieAuthGuard)
   async deleteProfileImage(
     @Req() req: ExtendedRequest,
     @Res() res: Response

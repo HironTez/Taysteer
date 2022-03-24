@@ -1,10 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { PORT_BACKEND } from '../../../configs/common/config';
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import { JWT_SECRET_KEY, PORT_BACKEND } from '../../../configs/common/config';
+import {
+  FastifyAdapter,
+  NestFastifyApplication,
+} from '@nestjs/platform-fastify';
 import path from 'path';
 import YAML from 'yamljs';
 import { SwaggerModule } from '@nestjs/swagger';
+import secureSession from 'fastify-secure-session';
+import fastifyPassport from 'fastify-passport';
 import fastifyMultiPart from 'fastify-multipart';
 
 async function bootstrap() {
@@ -13,13 +18,21 @@ async function bootstrap() {
     new FastifyAdapter(),
     {
       cors: true,
-      logger: ['error', 'warn']
+      logger: ['error', 'warn'],
     }
   );
 
+  app.register(secureSession, {
+    secret: JWT_SECRET_KEY,
+    salt: 'mq9hDxBVDbspDR6n',
+  });
+  app.register(fastifyPassport.initialize());
+  app.register(fastifyPassport.secureSession());
   app.register(fastifyMultiPart);
 
-  const swaggerDocument = YAML.load(path.join(__dirname, '../../../apps/taysteer-backend/doc/api.yaml'));
+  const swaggerDocument = YAML.load(
+    path.join(__dirname, '../../../apps/taysteer-backend/doc/api.yaml')
+  );
   SwaggerModule.setup('doc', app, swaggerDocument);
 
   await app.listen(PORT_BACKEND);
