@@ -1,4 +1,3 @@
-import { FastifyRequest } from 'fastify/types/request';
 import { Injectable } from '@nestjs/common';
 import { User } from '../../resources/users/user.model';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,11 +14,11 @@ export class LocalSerializer extends PassportSerializer {
     super();
   }
 
-  serializeUser(user: UserT, _request: FastifyRequest) {
+  serializeUser(user: UserT) {
     return user.id;
   }
 
-  async deserializeUser(userId: string, _request: FastifyRequest) {
+  async deserializeUser(userId: string) {
     const user = await this.userRepository.findOne(userId);
     return user;
   }

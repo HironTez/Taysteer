@@ -10,7 +10,7 @@ export class FormGuard implements CanActivate {
     const isMultipart = req.isMultipart();
     if (!isMultipart) return false;
     // Set options for files
-    const filesOptions: Object = {
+    const filesOptions: {limits: {fileSize: number}} = {
       limits: { fileSize: 20000 },
     };
     // Extract form data

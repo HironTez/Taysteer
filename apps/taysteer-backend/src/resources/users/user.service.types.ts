@@ -1,4 +1,3 @@
-import { MultipartFile } from 'fastify-multipart';
 import { UserDataDto } from './user.dto';
 import { UserMinT, UserT } from './user.types';
 

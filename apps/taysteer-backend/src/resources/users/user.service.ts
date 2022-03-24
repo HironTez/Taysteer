@@ -20,7 +20,6 @@ import bcrypt from 'bcryptjs';
 import { ADMIN_LOGIN, ADMIN_PASSWORD } from 'configs/common/config';
 import { UserRater } from './user.rater.model';
 import { deleteImage, uploadImage } from '../../utils/image.uploader';
-import { UserDataDto } from './user.dto';
 
 @Injectable()
 export class UsersService {
@@ -188,8 +187,8 @@ export class UsersService {
       ? findingResult
       : new UserRater({ raterId: raterId, rating: rating });
 
-    let new_ratings_count: number = 0,
-      new_ratings_sum: number = 0;
+    let new_ratings_count = 0,
+      new_ratings_sum = 0;
 
     // If it's a first rating
     if (!findingResult) {

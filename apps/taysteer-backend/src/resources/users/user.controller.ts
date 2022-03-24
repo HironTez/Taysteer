@@ -39,7 +39,7 @@ export class UsersController {
     @Req() req: ExtendedRequest,
     @Res() res: Response,
     @Param('id') id: string,
-    @Query('detailed') detailed: boolean = false
+    @Query('detailed') detailed = false
   ) {
     const user = await this.usersService.getById(id == 'me' ? req.user.id : id);
     const response = detailed
@@ -108,7 +108,7 @@ export class UsersController {
   @UseGuards(CookieAuthGuard)
   async getUsersByRating(
     @Res() res: Response,
-    @Query('number') num: number = 10
+    @Query('number') num = 10
   ) {
     const users = await this.usersService.getUsersByRating(num);
     const usersToResponse = users.map((user) => User.toResponse(user));
@@ -121,7 +121,7 @@ export class UsersController {
     @Req() req: ExtendedRequest,
     @Res() res: Response,
     @Param('id') id: string,
-    @Query('rating') rating: number = 0
+    @Query('rating') rating = 0
   ) {
     const hasAccess = await this.usersService.checkAccess(req.user, id, false);
     if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();

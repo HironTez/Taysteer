@@ -2,8 +2,9 @@ import bcrypt from 'bcryptjs';
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from '../resources/users/user.model';
-import { UserT } from '../resources/users/user.types';
+import { UserMinT, UserT } from '../resources/users/user.types';
 import { InjectRepository } from '@nestjs/typeorm';
+import { LoginDataDto } from '../typification/dto';
 
 @Injectable()
 export class AuthService {
@@ -12,7 +13,7 @@ export class AuthService {
     private userRepository: Repository<UserT>
   ) {}
 
-  async validateUser(login: string, password: string): Promise<any> {
+  async validateUser(login: string, password: string): Promise<UserMinT | null> {
     const user = await this.userRepository.findOne({ login }); // Find user by login
     const verified = user && (await bcrypt.compare(password, user.password)); // Check password
 
@@ -21,7 +22,7 @@ export class AuthService {
     } else return null;
   }
 
-  async login(user: any) {
+  async login(user: LoginDataDto) {
     const verified = await this.validateUser(user.login, user.password); // Validate user
     return Boolean(verified);
   }

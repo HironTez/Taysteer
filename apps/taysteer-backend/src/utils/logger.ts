@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 
 // Write log to the file
-const log = (message: string, consoleLog: boolean = false): void => {
+const log = (message: string, consoleLog = false): void => {
   if (consoleLog) console.log(message);
   fs.appendFile('./logs/logs.txt', `${message}\n`);
 };

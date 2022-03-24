@@ -6,6 +6,6 @@ export class PromiseController {
     })
   }
   promise: Promise<any>;
-  resolve: Function;
-  reject: Function;
+  resolve: (reason?: any) => void;
+  reject: (value: any) => void;
 }
