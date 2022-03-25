@@ -1,4 +1,4 @@
-import { UserDataDto } from './../../resources/users/user.dto';
+import { RegisterUserDataDto } from './../../resources/users/user.dto';
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { ExtendedRequest } from '../../typification/interfaces';
 
@@ -14,13 +14,13 @@ export class FormGuard implements CanActivate {
       limits: { fileSize: 20000 },
     };
     // Extract form data
-    const newData: UserDataDto = {};
+    const newData: RegisterUserDataDto = {};
     const parts = req.parts(filesOptions);
     if (!parts) return false;
     for await (const part of parts) { // For each field in the form
       if (!part.file) { // If it's not a file
         newData[part.fieldname] = part['value']; // Extract value
-      } else { // If it's a file'
+      } else { // If it's a file
         for (const key of Object.keys(part.fields)) { // For each
           // Validate
           const field = part.fields[key];

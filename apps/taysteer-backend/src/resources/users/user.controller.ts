@@ -17,7 +17,7 @@ import { User } from './user.model';
 import { ExtendedRequest } from '../../typification/interfaces';
 import { FormGuard } from '../../middleware/guards/form.guard';
 import { FormData } from '../../decorators/file.decorator';
-import { UserDataDto } from './user.dto';
+import { RegisterUserDataDto } from './user.dto';
 import { deleteImage } from '../../utils/image.uploader';
 import { UserStringTypes } from './user.service.types';
 import { CookieAuthGuard } from '../../auth/guards/cookie-auth.guard';
@@ -41,7 +41,7 @@ export class UsersController {
     @Param('id') id: string,
     @Query('detailed') detailed = false
   ) {
-    const user = await this.usersService.getById(id == 'me' ? req.user.id : id);
+    const user = await this.usersService.getUserById(id == 'me' ? req.user.id : id);
     const response = detailed
       ? User.toResponseDetailed(user)
       : User.toResponse(user);
@@ -55,9 +55,9 @@ export class UsersController {
   async createUser(
     @Req() req: ExtendedRequest,
     @Res() res: Response,
-    @FormData() formData: UserDataDto
+    @FormData() formData: RegisterUserDataDto
   ) {
-    const userExists = await this.usersService.getByLogin(formData.login); // Check if user don't exists
+    const userExists = await this.usersService.getUserByLogin(formData.login); // Check if user don't exists
     const createdUser = await this.usersService.addUser(formData, req.fileStreams); // Create an account
     return createdUser
       ? res.status(HttpStatus.CREATED).send(User.toResponse(createdUser))
@@ -71,13 +71,13 @@ export class UsersController {
   async updateUserById(
     @Req() req: ExtendedRequest,
     @Res() res: Response,
-    @FormData() formData: UserDataDto
+    @FormData() formData: RegisterUserDataDto
   ) {
     // Check access to an account
     const hasAccess = await this.usersService.checkAccess(req.user, req.user.id, true);
     if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();
 
-    const userExists = await this.usersService.getById(formData.id); // Check if user exists
+    const userExists = await this.usersService.getUserById(formData.id); // Check if user exists
 
     // Update the account
     const updatedUser = await this.usersService.updateUser(req.user.id, formData, req.fileStreams);
@@ -126,7 +126,7 @@ export class UsersController {
     const hasAccess = await this.usersService.checkAccess(req.user, id, false);
     if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();
 
-    const userExists = await this.usersService.getById(req.user.id);
+    const userExists = await this.usersService.getUserById(req.user.id);
 
     const ratedUser = await this.usersService.rateUser(
       id,
@@ -150,10 +150,10 @@ export class UsersController {
     const hasAccess = await this.usersService.checkAccess(req.user, req.user.id, true);
     if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();
 
-    const userExists = await this.usersService.getById(req.user.id);
+    const userExists = await this.usersService.getUserById(req.user.id);
 
     const deleted = await deleteImage(req.user.id, UserStringTypes.IMAGES_FOLDER);
-    const userToResponse = User.toResponse(await this.usersService.getById(req.user.id));
+    const userToResponse = User.toResponse(await this.usersService.getUserById(req.user.id));
     return deleted
       ? res.status(HttpStatus.OK).send(userToResponse)
       ? userExists

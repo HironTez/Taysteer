@@ -1,3 +1,4 @@
+import { RegisterUserDataDto } from './user.dto';
 import {
   GetAllT,
   GetByIdT,
@@ -11,7 +12,7 @@ import {
   ValidateUserDataT,
   UserStringTypes,
 } from './user.service.types';
-import { UserT } from './user.types';
+import { UserRaterT, UserT } from './user.types';
 import { User } from './user.model';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -27,7 +28,7 @@ export class UsersService {
     @InjectRepository(User)
     private userRepository: Repository<UserT>,
     @InjectRepository(UserRater)
-    private userRatersRepository: Repository<UserRater>
+    private userRatersRepository: Repository<UserRaterT>
   ) {
     const admin = new User({ login: ADMIN_LOGIN, password: ADMIN_PASSWORD });
     this.addUser(admin);
@@ -39,27 +40,18 @@ export class UsersService {
     shouldBeOwner = true
   ) => {
     const isOwner = user.id == requestedId;
-    const isAdmin = user.id == (await this.getByLogin(ADMIN_LOGIN)).id;
+    const isAdmin = user.id == (await this.getUserByLogin(ADMIN_LOGIN)).id;
     return isOwner == shouldBeOwner || isAdmin;
   };
 
-  validateUserData: ValidateUserDataT = async (userData, updating = false) => {
+  validateUserData: ValidateUserDataT = async (userData: RegisterUserDataDto, updating = false) => {
     if (!updating) {
       // If it's a data for creating a new user
-      if (!userData.login || !userData.password) return false; // Check if the login and password exists
-    } else {
-      // If it's a data for updating a user
-      if (
-        // Check if rating don't exist in the data
-        'rating' in userData ||
-        'ratings_count' in userData ||
-        'ratings_sum' in userData
-      )
-        return false;
+      if (!userData.password) return false; // Check if the login and password exists
     }
     if (
       // Check if the data is valid
-      (await this.getByLogin(userData.login)) || // Check if the same user don't exists
+      (await this.getUserByLogin(userData.login)) || // Check if the same user don't exists
       userData.name.length > 50 ||
       userData.login.length > 50 ||
       userData.password.length > 50 ||
@@ -71,9 +63,9 @@ export class UsersService {
 
   getAllUsers: GetAllT = () => this.userRepository.find();
 
-  getById: GetByIdT = (id) => this.userRepository.findOne(id);
+  getUserById: GetByIdT = (id) => this.userRepository.findOne(id);
 
-  getByLogin: GetByLoginT = (login) =>
+  getUserByLogin: GetByLoginT = (login) =>
     this.userRepository.findOne({ login: login });
 
   addUser: AddUserT = async (userData, images) => {
@@ -107,7 +99,7 @@ export class UsersService {
   updateUser: UpdateUserT = async (id, userData, images) => {
     if (!(await this.validateUserData(userData, true))) return false; // Validate data
 
-    const user = await this.getById(id);
+    const user = await this.getUserById(id);
     if (!user) return false; // Exit if user does not exist
 
     // Upload image

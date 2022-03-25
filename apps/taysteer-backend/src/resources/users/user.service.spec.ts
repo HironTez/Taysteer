@@ -23,7 +23,7 @@ describe('UsersController', () => {
 
   describe('findByLogin', () => {
     it('should return user by login', async () => {
-      expect(await usersService.getByLogin('admin')).toEqual(
+      expect(await usersService.getUserByLogin('admin')).toEqual(
         expect.objectContaining({ login: 'admin' })
       );
     });
@@ -31,15 +31,15 @@ describe('UsersController', () => {
 
   describe('findById', () => {
     it('should return user by id', async () => {
-      const expectedResult: UserT = await usersService.getByLogin('admin');
-      const id: string = (await usersService.getByLogin('admin')).id;
-      expect(await usersService.getById(id)).toStrictEqual(expectedResult);
+      const expectedResult: UserT = await usersService.getUserByLogin('admin');
+      const id: string = (await usersService.getUserByLogin('admin')).id;
+      expect(await usersService.getUserById(id)).toStrictEqual(expectedResult);
     });
   });
 
   describe('findAll', () => {
     it('should return all users', async () => {
-      const expectedResult: Array<UserT> = [await usersService.getByLogin('admin')];
+      const expectedResult: Array<UserT> = [await usersService.getUserByLogin('admin')];
       expect(await usersService.getAllUsers()).toEqual(
         expect.arrayContaining(expectedResult)
       );
@@ -53,16 +53,16 @@ describe('UsersController', () => {
         password: 'qwerty',
       });
       await usersService.addUser(newUser);
-      expect(await usersService.getByLogin('testUser')).toBeTruthy();
+      expect(await usersService.getUserByLogin('testUser')).toBeTruthy();
     });
   });
 
   describe('editUser', () => {
     it('should edit user', async () => {
-      const user = await usersService.getByLogin('testUser');
+      const user = await usersService.getUserByLogin('testUser');
       const newUser = { ...user, ...{ login: 'testUser1' } };
       await usersService.updateUser(user.id, newUser);
-      expect(await usersService.getById(user.id)).toEqual(
+      expect(await usersService.getUserById(user.id)).toEqual(
         expect.objectContaining({ login: 'testUser1' })
       );
     });
@@ -70,7 +70,7 @@ describe('UsersController', () => {
 
   describe('deleteUser', () => {
     it('should delete user', async () => {
-      const user = await usersService.getByLogin('testUser1');
+      const user = await usersService.getUserByLogin('testUser1');
       expect(await usersService.deleteUser(user.id)).toBeTruthy();
     });
   });

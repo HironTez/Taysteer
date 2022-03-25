@@ -1,4 +1,4 @@
-export class UserDataDto {
+export class RegisterUserDataDto {
   readonly id?: string;
   readonly name?: string;
   readonly login?: string

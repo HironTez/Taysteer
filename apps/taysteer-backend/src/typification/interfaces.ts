@@ -1,11 +1,11 @@
 import { FastifyRequest } from 'fastify';
-import { UserDataDto } from '../resources/users/user.dto';
+import { RegisterUserDataDto } from '../resources/users/user.dto';
 
 export interface ExtendedRequest extends FastifyRequest {
   user: {
     id: string;
     login: string;
   };
-  formData: UserDataDto;
+  formData: RegisterUserDataDto;
   fileStreams: AsyncIterableIterator<NodeJS.ReadableStream>
 }
