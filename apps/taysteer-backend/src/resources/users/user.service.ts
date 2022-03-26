@@ -1,5 +1,6 @@
-import { RegisterUserDataDto } from './user.dto';
+import { FormDataDto } from './../../typification/dto';
 import {
+  CreateAdminT,
   GetAllT,
   GetByIdT,
   GetByLoginT,
@@ -30,9 +31,23 @@ export class UsersService {
     @InjectRepository(UserRater)
     private userRatersRepository: Repository<UserRaterT>
   ) {
-    const admin = new User({ login: ADMIN_LOGIN, password: ADMIN_PASSWORD });
-    this.addUser(admin);
+    this.createAdmin();
   }
+
+  createAdmin: CreateAdminT = async () => {
+    const adminExists = await this.userRepository.findOne({
+      login: ADMIN_LOGIN,
+    });
+    if (!adminExists) {
+      const admin = new User({ login: ADMIN_LOGIN, password: ADMIN_PASSWORD });
+      this.userRepository.save({
+        ...admin,
+        ...{
+          password: await bcrypt.hash(ADMIN_PASSWORD, bcrypt.genSaltSync(10)),
+        },
+      });
+    }
+  };
 
   checkAccess: CheckAccessT = async (
     user,
@@ -44,18 +59,17 @@ export class UsersService {
     return isOwner == shouldBeOwner || isAdmin;
   };
 
-  validateUserData: ValidateUserDataT = async (userData: RegisterUserDataDto, updating = false) => {
+  validateUserData: ValidateUserDataT = async (userData, updating = false) => {
     if (!updating) {
       // If it's a data for creating a new user
       if (!userData.password) return false; // Check if the login and password exists
     }
     if (
       // Check if the data is valid
-      (await this.getUserByLogin(userData.login)) || // Check if the same user don't exists
-      userData.name.length > 50 ||
-      userData.login.length > 50 ||
-      userData.password.length > 50 ||
-      userData.description.length > 500
+      userData.name?.length > 50 ||
+      userData.login?.length > 50 ||
+      userData.password?.length > 50 ||
+      userData.description?.length > 500
     )
       return false;
     return true;
@@ -68,27 +82,28 @@ export class UsersService {
   getUserByLogin: GetByLoginT = (login) =>
     this.userRepository.findOne({ login: login });
 
-  addUser: AddUserT = async (userData, images) => {
-    if (!(await this.validateUserData(userData, false))) return false; // Validate data
+  addUser: AddUserT = async (form) => {
+    const user = new User(); // Create new user
 
-    const user = new User(userData); // Create user
-
-    // Upload image
-    if (images) {
-      // Get image
-      let image: NodeJS.ReadableStream;
-      for await (const img of images) {
-        image = img;
-        break;
+    // Extract form data
+    for await (const part of form) {
+      // Insert field if it's a field
+      if (part['value']) user[part.fieldname] = part['value'];
+      // Upload if it's a file
+      else if (part.file) {
+        // Upload image
+        const uploadedResponse = await uploadImage(
+          user.id,
+          part.file,
+          UserStringTypes.IMAGES_FOLDER
+        );
+        if (uploadedResponse) user.image = uploadedResponse;
       }
-      // Upload image
-      const uploadedResponse = await uploadImage(
-        user.id,
-        image,
-        UserStringTypes.IMAGES_FOLDER
-      );
-      if (uploadedResponse) user.image = uploadedResponse;
     }
+
+    if (await this.getUserByLogin(user.login)) return UserStringTypes.CONFLICT; // Check if the user does not exist
+    if (!(await this.validateUserData(user, false))) return false; // Validate data
+
     // Save user with password hash
     return this.userRepository.save({
       ...user,
@@ -96,28 +111,28 @@ export class UsersService {
     });
   };
 
-  updateUser: UpdateUserT = async (id, userData, images) => {
-    if (!(await this.validateUserData(userData, true))) return false; // Validate data
+  updateUser: UpdateUserT = async (id, form) => {
+    const user = await this.getUserById(id); // Get user
 
-    const user = await this.getUserById(id);
-    if (!user) return false; // Exit if user does not exist
-
-    // Upload image
-    if (images) {
-      // Get image
-      let image: NodeJS.ReadableStream;
-      for await (const img of images) {
-        image = img;
-        break;
+    // Extract form data
+    let userData: FormDataDto = {};
+    for await (const part of form) {
+      // If it's a field
+      if (part['value']) userData[part.fieldname] = part['value'];
+      // If it's a file
+      else if (part.file) {
+        // Upload image
+        const uploadedResponse = await uploadImage(
+          user.id,
+          part.file,
+          UserStringTypes.IMAGES_FOLDER
+        );
+        if (uploadedResponse) userData.image = uploadedResponse;
       }
-      // Upload image
-      const uploadedResponse = await uploadImage(
-        user.id,
-        image,
-        UserStringTypes.IMAGES_FOLDER
-      );
-      if (uploadedResponse) user.image = uploadedResponse;
     }
+
+    // Validate data
+    if (!(await this.validateUserData(userData, true))) return false;
 
     // Update the user
     return this.userRepository.save({

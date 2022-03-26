@@ -1,3 +1,4 @@
+import { FormDataDto } from './../../typification/dto';
 import {
   Controller,
   Req,
@@ -15,9 +16,7 @@ import { Response } from 'express';
 import { UsersService } from './user.service';
 import { User } from './user.model';
 import { ExtendedRequest } from '../../typification/interfaces';
-import { FormGuard } from '../../middleware/guards/form.guard';
 import { FormData } from '../../decorators/file.decorator';
-import { RegisterUserDataDto } from './user.dto';
 import { deleteImage } from '../../utils/image.uploader';
 import { UserStringTypes } from './user.service.types';
 import { CookieAuthGuard } from '../../auth/guards/cookie-auth.guard';
@@ -41,7 +40,9 @@ export class UsersController {
     @Param('id') id: string,
     @Query('detailed') detailed = false
   ) {
-    const user = await this.usersService.getUserById(id == 'me' ? req.user.id : id);
+    const user = await this.usersService.getUserById(
+      id == 'me' ? req.user.id : id
+    );
     const response = detailed
       ? User.toResponseDetailed(user)
       : User.toResponse(user);
@@ -51,50 +52,51 @@ export class UsersController {
   }
 
   @Post()
-  @UseGuards(FormGuard)
-  async createUser(
-    @Req() req: ExtendedRequest,
-    @Res() res: Response,
-    @FormData() formData: RegisterUserDataDto
-  ) {
-    const userExists = await this.usersService.getUserByLogin(formData.login); // Check if user don't exists
-    const createdUser = await this.usersService.addUser(formData, req.fileStreams); // Create an account
-    return createdUser
+  async createUser(@Req() req: ExtendedRequest, @Res() res: Response) {
+    // Create an account
+    const createdUser = await this.usersService.addUser(req.parts());
+
+    if (createdUser == UserStringTypes.CONFLICT)
+      return res.status(HttpStatus.CONFLICT).send(); // Response if user already exist
+
+    return createdUser && typeof createdUser != 'string'
       ? res.status(HttpStatus.CREATED).send(User.toResponse(createdUser))
-      : userExists
-      ? res.status(HttpStatus.CONFLICT).send()
       : res.status(HttpStatus.BAD_REQUEST).send();
   }
 
   @Put()
   @UseGuards(CookieAuthGuard)
-  async updateUserById(
-    @Req() req: ExtendedRequest,
-    @Res() res: Response,
-    @FormData() formData: RegisterUserDataDto
-  ) {
+  async updateUserById(@Req() req: ExtendedRequest, @Res() res: Response) {
     // Check access to an account
-    const hasAccess = await this.usersService.checkAccess(req.user, req.user.id, true);
+    const hasAccess = await this.usersService.checkAccess(
+      req.user,
+      req.user.id,
+      true
+    );
     if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();
 
-    const userExists = await this.usersService.getUserById(formData.id); // Check if user exists
+    // Check if user exists
+    const userExists = await this.usersService.getUserById(req.user.id);
+    if (!userExists) return res.status(HttpStatus.NOT_FOUND).send();
 
     // Update the account
-    const updatedUser = await this.usersService.updateUser(req.user.id, formData, req.fileStreams);
+    const updatedUser = await this.usersService.updateUser(
+      req.user.id,
+      req.parts()
+    );
     return updatedUser
       ? res.status(HttpStatus.OK).send(User.toResponse(updatedUser))
-      : userExists
-      ? res.status(HttpStatus.BAD_REQUEST).send()
-      : res.status(HttpStatus.NOT_FOUND).send();
+      : res.status(HttpStatus.BAD_REQUEST).send();
   }
 
   @Delete()
   @UseGuards(CookieAuthGuard)
-  async deleteUserById(
-    @Req() req: ExtendedRequest,
-    @Res() res: Response
-  ) {
-    const hasAccess = await this.usersService.checkAccess(req.user, req.user.id, true);
+  async deleteUserById(@Req() req: ExtendedRequest, @Res() res: Response) {
+    const hasAccess = await this.usersService.checkAccess(
+      req.user,
+      req.user.id,
+      true
+    );
     if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();
 
     const userDeleted = await this.usersService.deleteUser(req.user.id); // Delete user
@@ -106,10 +108,7 @@ export class UsersController {
 
   @Get('rating')
   @UseGuards(CookieAuthGuard)
-  async getUsersByRating(
-    @Res() res: Response,
-    @Query('number') num = 10
-  ) {
+  async getUsersByRating(@Res() res: Response, @Query('number') num = 10) {
     const users = await this.usersService.getUsersByRating(num);
     const usersToResponse = users.map((user) => User.toResponse(user));
     return res.status(HttpStatus.OK).send(usersToResponse);
@@ -143,21 +142,26 @@ export class UsersController {
 
   @Post('delete_image')
   @UseGuards(CookieAuthGuard)
-  async deleteProfileImage(
-    @Req() req: ExtendedRequest,
-    @Res() res: Response
-  ) {
-    const hasAccess = await this.usersService.checkAccess(req.user, req.user.id, true);
+  async deleteProfileImage(@Req() req: ExtendedRequest, @Res() res: Response) {
+    const hasAccess = await this.usersService.checkAccess(
+      req.user,
+      req.user.id,
+      true
+    );
     if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();
 
     const userExists = await this.usersService.getUserById(req.user.id);
+    if (!userExists) return res.status(HttpStatus.NOT_FOUND).send();
 
-    const deleted = await deleteImage(req.user.id, UserStringTypes.IMAGES_FOLDER);
-    const userToResponse = User.toResponse(await this.usersService.getUserById(req.user.id));
+    const deleted = await deleteImage(
+      req.user.id,
+      UserStringTypes.IMAGES_FOLDER
+    );
+    const userToResponse = User.toResponse(
+      await this.usersService.getUserById(req.user.id)
+    );
     return deleted
       ? res.status(HttpStatus.OK).send(userToResponse)
-      ? userExists
-      : res.status(HttpStatus.BAD_REQUEST).send()
-      : res.status(HttpStatus.NOT_FOUND).send();
+      : res.status(HttpStatus.BAD_REQUEST).send();
   }
 }

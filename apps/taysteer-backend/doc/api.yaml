@@ -212,7 +212,6 @@ paths:
                   description: The user's image
               required:
                 - login
-                - password
       responses:
         200:
           description: The user has been updated.
