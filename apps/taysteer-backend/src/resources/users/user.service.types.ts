@@ -9,7 +9,7 @@ export type GetAllT = () => Promise<Array<UserT>>;
 export type GetByIdT = (id: string) => Promise<UserT | undefined>;
 export type GetByLoginT = (login: string) => Promise<UserT | undefined>;
 export type AddUserT = (data: AsyncIterableIterator<MultipartFile>) => Promise<UserT | false | string>;
-export type UpdateUserT = (id: string, data: AsyncIterableIterator<MultipartFile>) => Promise<UserT | false>;
+export type UpdateUserT = (id: string, data: AsyncIterableIterator<MultipartFile>) => Promise<UserT | false | string>;
 export type DeleteUserT = (id: string) => Promise<number | false>;
 export type GetUsersByRatingT = (num: number) => Promise<Array<UserT>>;
 export type RateUserT = (id: string, raterId: string, rating: number) => Promise<UserT | false>;

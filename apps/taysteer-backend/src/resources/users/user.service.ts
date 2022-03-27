@@ -115,7 +115,7 @@ export class UsersService {
     const user = await this.getUserById(id); // Get user
 
     // Extract form data
-    let userData: FormDataDto = {};
+    const userData: FormDataDto = {};
     for await (const part of form) {
       // If it's a field
       if (part['value']) userData[part.fieldname] = part['value'];
@@ -130,9 +130,9 @@ export class UsersService {
         if (uploadedResponse) userData.image = uploadedResponse;
       }
     }
-
-    // Validate data
-    if (!(await this.validateUserData(userData, true))) return false;
+    
+    if (await this.getUserByLogin(userData.login)) return UserStringTypes.CONFLICT; // Check if the user does not exist
+    if (!(await this.validateUserData(userData, true))) return false; // Validate data
 
     // Update the user
     return this.userRepository.save({

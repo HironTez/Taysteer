@@ -1,4 +1,4 @@
-interface UserT {
+export interface UserT {
   id: string;
   name: string;
   login: string;
@@ -11,7 +11,7 @@ interface UserT {
   raters: UserRaterT[];
 }
 
-interface UserToResponseT {
+export interface UserToResponseT {
   id: string;
   name: string;
   login: string;
@@ -19,7 +19,7 @@ interface UserToResponseT {
   rating: number;
 }
 
-interface UserToResponseDetailedT {
+export interface UserToResponseDetailedT {
   id: string;
   name: string;
   login: string;
@@ -29,22 +29,14 @@ interface UserToResponseDetailedT {
   ratings_count: number;
 }
 
-interface UserMinT {
+export interface UserMinT {
   id: string;
   login: string;
 }
 
-interface UserRaterT {
+export interface UserRaterT {
   id: number;
   raterId: string;
   rating: number;
   user: UserT;
 }
-
-export {
-  UserT,
-  UserToResponseT,
-  UserToResponseDetailedT,
-  UserMinT,
-  UserRaterT,
-};

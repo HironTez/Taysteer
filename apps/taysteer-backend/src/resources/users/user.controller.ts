@@ -1,4 +1,3 @@
-import { FormDataDto } from './../../typification/dto';
 import {
   Controller,
   Req,
@@ -16,7 +15,6 @@ import { Response } from 'express';
 import { UsersService } from './user.service';
 import { User } from './user.model';
 import { ExtendedRequest } from '../../typification/interfaces';
-import { FormData } from '../../decorators/file.decorator';
 import { deleteImage } from '../../utils/image.uploader';
 import { UserStringTypes } from './user.service.types';
 import { CookieAuthGuard } from '../../auth/guards/cookie-auth.guard';
@@ -75,16 +73,16 @@ export class UsersController {
     );
     if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();
 
-    // Check if user exists
-    const userExists = await this.usersService.getUserById(req.user.id);
-    if (!userExists) return res.status(HttpStatus.NOT_FOUND).send();
-
     // Update the account
     const updatedUser = await this.usersService.updateUser(
       req.user.id,
       req.parts()
     );
-    return updatedUser
+
+    if (updatedUser == UserStringTypes.CONFLICT)
+      return res.status(HttpStatus.CONFLICT).send(); // Response if user with new login already exist
+
+    return updatedUser && typeof updatedUser != 'string'
       ? res.status(HttpStatus.OK).send(User.toResponse(updatedUser))
       : res.status(HttpStatus.BAD_REQUEST).send();
   }

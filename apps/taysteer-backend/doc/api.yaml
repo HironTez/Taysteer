@@ -210,8 +210,6 @@ paths:
                   type: string
                   format: binary
                   description: The user's image
-              required:
-                - login
       responses:
         200:
           description: The user has been updated.
@@ -223,8 +221,8 @@ paths:
           description: Bad request
         401:
           $ref: '#/components/responses/UnauthorizedError'
-        404:
-          description: Not found
+        409:
+          description: The user already exist
     delete:
       tags:
         - Users
