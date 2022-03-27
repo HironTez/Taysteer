@@ -273,7 +273,7 @@ paths:
       tags:
         - Users
       parameters:
-        - name: count
+        - name: page
           in: query
           required: false
           schema:

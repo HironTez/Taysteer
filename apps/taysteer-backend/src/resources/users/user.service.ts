@@ -165,11 +165,12 @@ export class UsersService {
     return deleteResult.affected; // Return a result
   };
 
-  getUsersByRating: GetUsersByRatingT = async (num = 10) => {
+  getUsersByRating: GetUsersByRatingT = async (page = 1) => {
     // Find users by rating in descending order
     const users = await this.userRepository.find({
       order: { rating: 'DESC' },
-      take: num,
+      skip: page ? (page - 1) * 10 : 0,
+      take: 10,
     });
     return users;
   };

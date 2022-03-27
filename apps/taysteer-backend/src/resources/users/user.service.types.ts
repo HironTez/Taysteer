@@ -11,7 +11,7 @@ export type GetByLoginT = (login: string) => Promise<UserT | undefined>;
 export type AddUserT = (data: AsyncIterableIterator<MultipartFile>) => Promise<UserT | false | string>;
 export type UpdateUserT = (id: string, data: AsyncIterableIterator<MultipartFile>) => Promise<UserT | false | string>;
 export type DeleteUserT = (id: string) => Promise<number | false>;
-export type GetUsersByRatingT = (num: number) => Promise<Array<UserT>>;
+export type GetUsersByRatingT = (page: number) => Promise<Array<UserT>>;
 export type RateUserT = (id: string, raterId: string, rating: number) => Promise<UserT | false>;
 
 export enum UserStringTypes {

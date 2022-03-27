@@ -20,6 +20,6 @@ export class LocalSerializer extends PassportSerializer {
 
   async deserializeUser(userId: string) {
     const user = await this.userRepository.findOne(userId);
-    return user;
+    return user ? user : false;
   }
 }

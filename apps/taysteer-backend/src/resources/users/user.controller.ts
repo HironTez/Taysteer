@@ -98,7 +98,6 @@ export class UsersController {
     if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();
 
     const userDeleted = await this.usersService.deleteUser(req.user.id); // Delete user
-    req.logOut(); // Log out a session
     return userDeleted
       ? res.status(HttpStatus.NO_CONTENT).send()
       : res.status(HttpStatus.NOT_FOUND).send();
@@ -106,8 +105,8 @@ export class UsersController {
 
   @Get('rating')
   @UseGuards(CookieAuthGuard)
-  async getUsersByRating(@Res() res: Response, @Query('number') num = 10) {
-    const users = await this.usersService.getUsersByRating(num);
+  async getUsersByRating(@Res() res: Response, @Query('page') page = 1) {
+    const users = await this.usersService.getUsersByRating(page);
     const usersToResponse = users.map((user) => User.toResponse(user));
     return res.status(HttpStatus.OK).send(usersToResponse);
   }
