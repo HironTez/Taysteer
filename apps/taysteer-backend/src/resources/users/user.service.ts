@@ -130,8 +130,9 @@ export class UsersService {
         if (uploadedResponse) userData.image = uploadedResponse;
       }
     }
-    
-    if (await this.getUserByLogin(userData.login)) return UserStringTypes.CONFLICT; // Check if the user does not exist
+
+    if (await this.getUserByLogin(userData.login))
+      return UserStringTypes.CONFLICT; // Check if the user does not exist
     if (!(await this.validateUserData(userData, true))) return false; // Validate data
 
     // Update the user
@@ -154,12 +155,8 @@ export class UsersService {
       relations: ['raters'],
     });
     if (!user) return false;
-    if (user.raters) {
-      // Delete the all raters
-      for (const rater of user.raters) {
-        this.userRatersRepository.delete(rater);
-      }
-    }
+    
+    this.userRatersRepository.delete({ user: user }); // Delete all raters
     deleteImage(id, UserStringTypes.IMAGES_FOLDER); // Delete the image
     const deleteResult = await this.userRepository.delete(id); // Delete the user
     return deleteResult.affected; // Return a result

@@ -186,6 +186,12 @@ paths:
     put:
       tags:
         - Users
+      parameters:
+        - name: userid
+          in: query
+          required: false
+          schema:
+            type: string
       summary: Update a user
       description: Updates a user by ID
       requestBody:
@@ -226,6 +232,12 @@ paths:
     delete:
       tags:
         - Users
+      parameters:
+        - name: userid
+          in: query
+          required: false
+          schema:
+            type: string
       summary: Delete user
       description: Deletes user by ID. When somebody
         DELETE User, all Tasks where User is assignee

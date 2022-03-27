@@ -64,18 +64,18 @@ export class UsersController {
 
   @Put()
   @UseGuards(CookieAuthGuard)
-  async updateUserById(@Req() req: ExtendedRequest, @Res() res: Response) {
+  async updateUserById(@Req() req: ExtendedRequest, @Res() res: Response, @Query('userid') userId: string) {
     // Check access to an account
     const hasAccess = await this.usersService.checkAccess(
       req.user,
-      req.user.id,
+      userId || req.user.id,
       true
     );
     if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();
 
     // Update the account
     const updatedUser = await this.usersService.updateUser(
-      req.user.id,
+      userId || req.user.id,
       req.parts()
     );
 
@@ -89,15 +89,15 @@ export class UsersController {
 
   @Delete()
   @UseGuards(CookieAuthGuard)
-  async deleteUserById(@Req() req: ExtendedRequest, @Res() res: Response) {
+  async deleteUserById(@Req() req: ExtendedRequest, @Res() res: Response, @Query('userid') userId: string) {
     const hasAccess = await this.usersService.checkAccess(
       req.user,
-      req.user.id,
+      userId || req.user.id,
       true
     );
     if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();
 
-    const userDeleted = await this.usersService.deleteUser(req.user.id); // Delete user
+    const userDeleted = await this.usersService.deleteUser(userId || req.user.id); // Delete user
     return userDeleted
       ? res.status(HttpStatus.NO_CONTENT).send()
       : res.status(HttpStatus.NOT_FOUND).send();
