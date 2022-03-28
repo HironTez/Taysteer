@@ -64,7 +64,7 @@ export class UsersController {
 
   @Put()
   @UseGuards(CookieAuthGuard)
-  async updateUserById(@Req() req: ExtendedRequest, @Res() res: Response, @Query('userid') userId: string) {
+  async updateUserById(@Req() req: ExtendedRequest, @Res() res: Response, @Query('user_id') userId: string) {
     // Check access to an account
     const hasAccess = await this.usersService.checkAccess(
       req.user,
@@ -89,7 +89,7 @@ export class UsersController {
 
   @Delete()
   @UseGuards(CookieAuthGuard)
-  async deleteUserById(@Req() req: ExtendedRequest, @Res() res: Response, @Query('userid') userId: string) {
+  async deleteUserById(@Req() req: ExtendedRequest, @Res() res: Response, @Query('user_id') userId: string) {
     const hasAccess = await this.usersService.checkAccess(
       req.user,
       userId || req.user.id,

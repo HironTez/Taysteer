@@ -1,8 +1,22 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  BaseEntity,
+  OneToMany,
+  ManyToOne,
+} from 'typeorm';
 import { User } from '../users/user.model';
 import { Comment } from './recipe.comment.model';
 import { RecipeRater } from './recipe.rater.model';
-import { CommentT, RecipeIngredientT, RecipeRaterT, RecipeStepT, RecipeT, RecipeToResponseT } from './recipe.types';
+import {
+  CommentT,
+  RecipeIngredientT,
+  RecipeRaterT,
+  RecipeStepT,
+  RecipeToResponseT,
+  RecipeToResponseDetailedT,
+} from './recipe.types';
 
 @Entity('Recipe')
 export class Recipe extends BaseEntity {
@@ -18,20 +32,20 @@ export class Recipe extends BaseEntity {
   @Column('varchar', { length: 500 })
   description: string;
 
-  @Column('jsonb', { array: true })
+  @Column('json')
   ingredients: RecipeIngredientT[];
 
-  @Column('jsonb', { array: true })
+  @Column('json')
   steps: RecipeStepT[];
 
   @Column('int', { width: 10 })
   rating: number;
 
   @Column('int')
-  ratings_count: number;
+  ratingsCount: number;
 
   @Column('int')
-  ratings_sum: number;
+  ratingsSum: number;
 
   @OneToMany(() => RecipeRater, (rater) => rater.recipe)
   raters: RecipeRaterT[];
@@ -42,25 +56,43 @@ export class Recipe extends BaseEntity {
   @OneToMany(() => Comment, (comment) => comment.recipe)
   comments: CommentT[];
 
-  constructor({
-    title = '',
-    description = '',
-    ingredients = [],
-    steps = [],
-  } = {}) {
+  constructor() {
     super();
-    this.title = title;
-    this.description = description;
-    this.ingredients = ingredients;
-    this.steps = steps;
+    this.title = '';
+    this.description = '';
     this.image = '';
     this.rating = 0;
-    this.ratings_count = 0;
-    this.ratings_sum = 0;
+    this.ratingsCount = 0;
+    this.ratingsSum = 0;
   }
 
-  toResponse(recipe: RecipeT): RecipeToResponseT {
+  static toResponse(recipe: Recipe): RecipeToResponseT {
     const { id, title, image, description, rating } = recipe;
     return { id, title, image, description, rating };
+  }
+
+  static toResponseDetailed(recipe: Recipe): RecipeToResponseDetailedT {
+    const {
+      id,
+      title,
+      image,
+      description,
+      rating,
+      ratingsCount,
+      user,
+      ingredients,
+      comments,
+    } = recipe;
+    return {
+      id,
+      title,
+      image,
+      description,
+      rating,
+      ratingsCount,
+      user,
+      ingredients,
+      comments,
+    };
   }
 }

@@ -2,11 +2,11 @@ import { cloudinary } from 'configs/utils/cloudinary';
 import { PromiseController } from './promise.controller';
 import { deleteImageT, uploadImageT } from './util.types';
 
-const uploadImage: uploadImageT = async (public_id, fileReadStream, folder) => {
+const uploadImage: uploadImageT = async (fileReadStream, folder) => {
   const promiseController = new PromiseController(); // Create a new promise controller
   // Create upload stream
   const uploadStream = cloudinary.uploader.upload_stream(
-    { public_id: public_id, folder: folder },
+    { folder: folder },
     (error, result) => {
       if (!error) {
         promiseController.resolve(result.url); // Return a response using the promise

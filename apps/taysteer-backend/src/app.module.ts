@@ -1,3 +1,4 @@
+import { RecipeModule } from './resources/recipes/recipe.module';
 import {
   Module,
   NestModule,
@@ -14,7 +15,7 @@ import { UserModule } from './resources/users/user.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(connectionOptions), UserModule, AuthModule],
+  imports: [TypeOrmModule.forRoot(connectionOptions), AuthModule, UserModule, RecipeModule],
   controllers: [AppController],
   providers: [AppService, HttpErrorFilter],
 })

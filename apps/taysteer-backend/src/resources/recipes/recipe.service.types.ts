@@ -1,8 +1,15 @@
+import { MultipartFile } from 'fastify-multipart';
 import { RecipeDataDto } from './recipe.dto';
-import { RecipeT } from "./recipe.types";
+import { Recipe } from './recipe.model';
 
 export type ValidateRecipeDataT = (recipe: RecipeDataDto) => boolean;
-export type GetAllRecipesT = () => Promise<Array<RecipeT>>;
-export type GetRecipeByIdT = (id: string) => Promise<RecipeT>;
-export type GetRecipesByTitleT = (title: string) => Promise<Array<RecipeT>>;
-export type AddRecipeT = (recipeData: RecipeDataDto, files?: AsyncIterableIterator<NodeJS.ReadableStream>) => Promise<RecipeT | false>;
+export type GetAllRecipesT = () => Promise<Array<Recipe>>;
+export type GetRecipeByIdT = (id: string) => Promise<Recipe>;
+export type GetRecipesByTitleT = (title: string) => Promise<Array<Recipe>>;
+export type AddRecipeT = (form: AsyncIterableIterator<MultipartFile>, userId: string) => Promise<Recipe | false>;
+
+export enum RecipeStringTypes {
+  IMAGE = 'image',
+  STEP_IMAGE = 'stepImage',
+  IMAGE_FOLDER = 'recipe_images'
+}

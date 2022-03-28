@@ -1,15 +1,4 @@
-export interface UserT {
-  id: string;
-  name: string;
-  login: string;
-  password: string;
-  image: string;
-  description: string;
-  rating: number;
-  ratings_count: number;
-  ratings_sum: number;
-  raters: UserRaterT[];
-}
+import { User } from "./user.model";
 
 export interface UserToResponseT {
   id: string;
@@ -26,7 +15,7 @@ export interface UserToResponseDetailedT {
   image: string;
   description: string;
   rating: number;
-  ratings_count: number;
+  ratingsCount: number;
 }
 
 export interface UserMinT {
@@ -38,5 +27,5 @@ export interface UserRaterT {
   id: number;
   raterId: string;
   rating: number;
-  user: UserT;
+  user: User;
 }

@@ -26,9 +26,9 @@ components:
           type: string
         rating:
           type: number
-        ratings_count:
+        ratingsCount:
           type: number
-        ratings_sum:
+        ratingsSum:
           type: number
     UserToResponse:
       type: object
@@ -58,33 +58,114 @@ components:
           type: string
         rating:
           type: number
-        ratings_count:
+        ratingsCount:
           type: number
-    # UserToResponseMin:
-    #   type: object
-    #   properties:
-    #     id:
-    #       type: string;
-    #     login:
-    #       type: string;
+    Recipe:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        image:
+          type: string
+        description:
+          type: string
+        ingredients:
+          type: array
+        rating:
+          type: number
+        ratingsCount:
+          type: number
+        ratingsSum:
+          type: number
+        userId:
+          type: string
+        comments:
+          type: array
+    RecipeToResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        image:
+          type: string
+        description:
+          type: string
+        rating:
+          type: number
+        userId:
+          type: string
+    RecipeToResponseDetailed:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        image:
+          type: string
+        description:
+          type: string
+        rating:
+          type: number
+        ratingsCount:
+          type: number
+        userId:
+          type: string
+        ingredients:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecipeIngredient'
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecipeComment'
+    RecipeIngredient:
+      type: object
+      properties:
+        count:
+          type: number
+        name:
+          type: string
+        optional:
+          type: boolean
+    RecipeStep:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+    RecipeStepResponse:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        image:
+          type: string
+    RecipeComment:
+      type: object
+      properties:
+        id:
+          type: number
+        commentatorId:
+          type: string
+        text:
+          type: string
   responses:
     UnauthorizedError:
       description: Access token is missing or invalid
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-
-security:
-  - bearerAuth: []
 
 paths:
   /login:
     post:
       tags:
         - Authorization
-      security: []
       summary: Login
       description: Logins a user
       requestBody:
@@ -106,19 +187,18 @@ paths:
                 - login
       responses:
         200:
-          description: Successful login.
+          description: Successful login
         403:
           description: Incorrect login or password
   /logout:
     post:
       tags:
         - Authorization
-      security: []
       summary: Logout
       description: Logouts a user
       responses:
         200:
-          description: Successful logout.
+          description: Successful logout
         401:
           $ref: '#/components/responses/UnauthorizedError'
 
@@ -127,7 +207,7 @@ paths:
       tags:
         - Users
       summary: Get all users
-      description: Gets all users (remove password from response)
+      description: Gets all users
       responses:
         200:
           description: Successful operation
@@ -143,7 +223,7 @@ paths:
       tags:
         - Users
       summary: Create user
-      description: Creates a new user (remove password from response)
+      description: Creates a new user
       requestBody:
         content:
           multipart/form-data:
@@ -172,7 +252,7 @@ paths:
 
       responses:
         201:
-          description: The user has been created.
+          description: The user has been created
           content:
             application/json:
               schema:
@@ -187,7 +267,7 @@ paths:
       tags:
         - Users
       parameters:
-        - name: userid
+        - name: user_id
           in: query
           required: false
           schema:
@@ -218,7 +298,7 @@ paths:
                   description: The user's image
       responses:
         200:
-          description: The user has been updated.
+          description: The user has been updated
           content:
             application/json:
               schema:
@@ -233,7 +313,7 @@ paths:
       tags:
         - Users
       parameters:
-        - name: userid
+        - name: user_id
           in: query
           required: false
           schema:
@@ -249,10 +329,10 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         404:
           description: User not found
-  /users/{userId}:
+  /users/{user_id}:
     get:
       parameters:
-        - name: userId
+        - name: user_id
           in: path
           required: true
           schema:
@@ -299,12 +379,12 @@ paths:
                 $ref: '#/components/schemas/UserToResponse'
         401:
           $ref: '#/components/responses/UnauthorizedError'
-  /users/{userId}/rate:
+  /users/{user_id}/rate:
     post:
       tags:
         - Users
       parameters:
-        - name: userId
+        - name: user_id
           in: path
           required: true
           schema:
@@ -314,6 +394,8 @@ paths:
           required: true
           schema:
             type: integer
+            minimum: 1
+            maximum: 5
       responses:
         200:
           description: The user has been rated
@@ -344,3 +426,60 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         404:
           description: Not found
+
+  /recipes:
+    post:
+      tags:
+        - Recipes
+      summary: Create recipe
+      description: Creates a new recipe
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: The recipe title
+                description:
+                  type: string
+                  description: The recipe description
+                image:
+                  type: string
+                  format: binary
+                  description: The recipe image
+                ingredients:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/RecipeIngredient'
+                steps:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/RecipeStep'
+                stepImage1:
+                  type: string
+                  format: binary
+                  description: The step 1 image
+                stepImage2:
+                  type: string
+                  format: binary
+                  description: The step 2 image
+              required:
+                - title
+                - description
+                - image
+                - ingredients
+                - steps
+
+      responses:
+        201:
+          description: The recipe has been created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipeToResponse'
+        400:
+          description: Bad request
+        401:
+          $ref: '#/components/responses/UnauthorizedError'

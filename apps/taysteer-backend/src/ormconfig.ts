@@ -20,5 +20,5 @@ export const connectionOptions = {
   autoReconnect: true,
   reconnectTries: 100,
   reconnectionInterval: 2000,
-  entities: [User, UserRater, Recipe, Comment, RecipeRater]
+  entities: [User, UserRater, Recipe, RecipeRater, Comment]
 } as ConnectionOptions;

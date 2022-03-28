@@ -1,8 +1,18 @@
 import { Recipe } from './../recipes/recipe.model';
-import { UserT, UserMinT, UserToResponseT, UserToResponseDetailedT, UserRaterT } from './user.types';
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany } from 'typeorm';
+import {
+  UserMinT,
+  UserToResponseT,
+  UserToResponseDetailedT,
+  UserRaterT,
+} from './user.types';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  BaseEntity,
+  OneToMany,
+} from 'typeorm';
 import { UserRater } from './user.rater.model';
-import { RecipeT } from '../recipes/recipe.types';
 
 @Entity('User')
 export class User extends BaseEntity {
@@ -28,16 +38,16 @@ export class User extends BaseEntity {
   rating: number;
 
   @Column('int')
-  ratings_count: number;
+  ratingsCount: number;
 
   @Column('int')
-  ratings_sum: number;
+  ratingsSum: number;
 
   @OneToMany(() => UserRater, (rater) => rater.user)
   raters: UserRaterT[];
 
   @OneToMany(() => Recipe, (recipe) => recipe.user)
-  recipes: RecipeT[];
+  recipes: Recipe[];
 
   constructor({
     name = 'User',
@@ -52,21 +62,39 @@ export class User extends BaseEntity {
     this.description = description;
     this.image = '';
     this.rating = 0;
-    this.ratings_count = 0;
-    this.ratings_sum = 0;
+    this.ratingsCount = 0;
+    this.ratingsSum = 0;
   }
 
-  static toResponse(user: UserT): UserToResponseT {
+  static toResponse(user: User): UserToResponseT {
     const { id, name, login, image, rating } = user;
     return { id, name, login, image, rating } as User;
   }
 
-  static toResponseDetailed(user: UserT): UserToResponseDetailedT {
-    const { id, name, login, image, rating, ratings_count, description } = user;
-    return { id, name, login, image, rating, ratings_count, description } as User;
+  static toResponseDetailed(user: User): UserToResponseDetailedT {
+    const {
+      id,
+      name,
+      login,
+      image,
+      rating,
+      ratingsCount,
+      description,
+      recipes,
+    } = user;
+    return {
+      id,
+      name,
+      login,
+      image,
+      rating,
+      ratingsCount,
+      description,
+      recipes,
+    } as User;
   }
 
-  static toResponseMin(user: UserT): UserMinT {
+  static toResponseMin(user: User): UserMinT {
     const { id, login } = user;
     return { id, login } as User;
   }

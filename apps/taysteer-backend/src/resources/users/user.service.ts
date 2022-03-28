@@ -13,7 +13,7 @@ import {
   ValidateUserDataT,
   UserStringTypes,
 } from './user.service.types';
-import { UserRaterT, UserT } from './user.types';
+import { UserRaterT } from './user.types';
 import { User } from './user.model';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -27,9 +27,9 @@ import { deleteImage, uploadImage } from '../../utils/image.uploader';
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<UserT>,
+    private readonly userRepository: Repository<User>,
     @InjectRepository(UserRater)
-    private userRatersRepository: Repository<UserRaterT>
+    private readonly userRatersRepository: Repository<UserRaterT>
   ) {
     this.createAdmin();
   }
@@ -77,13 +77,13 @@ export class UsersService {
 
   getAllUsers: GetAllT = () => this.userRepository.find();
 
-  getUserById: GetByIdT = (id) => this.userRepository.findOne(id);
+  getUserById: GetByIdT = (id) => this.userRepository.findOne(id, {relations: [UserStringTypes.RECIPES]});
 
   getUserByLogin: GetByLoginT = (login) =>
     this.userRepository.findOne({ login: login });
 
   addUser: AddUserT = async (form) => {
-    const user = new User(); // Create new user
+    const user = this.userRepository.create(); // Create new user
 
     // Extract form data
     for await (const part of form) {
@@ -93,11 +93,11 @@ export class UsersService {
       else if (part.file) {
         // Upload image
         const uploadedResponse = await uploadImage(
-          user.id,
           part.file,
           UserStringTypes.IMAGES_FOLDER
         );
         if (uploadedResponse) user.image = uploadedResponse;
+        break;
       }
     }
 
@@ -123,11 +123,11 @@ export class UsersService {
       else if (part.file) {
         // Upload image
         const uploadedResponse = await uploadImage(
-          user.id,
           part.file,
           UserStringTypes.IMAGES_FOLDER
         );
         if (uploadedResponse) userData.image = uploadedResponse;
+        break;
       }
     }
 
@@ -197,8 +197,8 @@ export class UsersService {
 
     // If it's a first rating
     if (!findingResult) {
-      new_ratings_count = user.ratings_count + 1;
-      new_ratings_sum = user.ratings_sum + rating;
+      new_ratings_count = user.ratingsCount + 1;
+      new_ratings_sum = user.ratingsSum + rating;
 
       // Save the rater
       await this.userRatersRepository.save(rater);
@@ -207,8 +207,8 @@ export class UsersService {
     }
     // If it's an updating of the rating
     else {
-      new_ratings_count = user.ratings_count;
-      new_ratings_sum = user.ratings_sum - rater.rating + rating;
+      new_ratings_count = user.ratingsCount;
+      new_ratings_sum = user.ratingsSum - rater.rating + rating;
 
       rater.rating = rating;
       await this.userRatersRepository.save(rater);
@@ -221,8 +221,8 @@ export class UsersService {
     return this.userRepository.save({
       ...user,
       ...{
-        ratings_count: new_ratings_count,
-        ratings_sum: new_ratings_sum,
+        ratingsCount: new_ratings_count,
+        ratingsSum: new_ratings_sum,
         rating: new_rating,
         raters: user.raters,
       },
