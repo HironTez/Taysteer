@@ -2,7 +2,7 @@ import { cloudinary } from 'configs/utils/cloudinary';
 import { PromiseController } from './promise.controller';
 import { deleteImageT, uploadImageT } from './util.types';
 
-const uploadImage: uploadImageT = async (fileReadStream, folder) => {
+const uploadImage: uploadImageT = async (fileReadStream, folder, id) => {
   const promiseController = new PromiseController(); // Create a new promise controller
   // Create upload stream
   const uploadStream = cloudinary.uploader.upload_stream(

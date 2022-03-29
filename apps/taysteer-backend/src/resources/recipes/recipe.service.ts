@@ -76,18 +76,20 @@ export class RecipeService {
         const isStepImage = part.fieldname.includes(
           RecipeStringTypes.STEP_IMAGE
         );
+
         // Calculate image id
         let id = 0;
         if (isStepImage) {
+          // Get image id
           id = Number(
-            part.fieldname.replace(`${RecipeStringTypes.STEP_IMAGE}`, '')
+            part.fieldname.replace(RecipeStringTypes.STEP_IMAGE, '')
           ) - 1;
+          // Check id
           if (id < 0) return false;
-          else if (
-            !recipe.steps[id] ||
-            recipe.steps[id] == recipe.steps[-1]
-          ) return false;
-        } else if (!isMainImage) return false; // Skip if it's not supported image
+          else if (!recipe.steps[id] || recipe.steps[id] == recipe.steps[-1])
+            return false;
+        } else if (!isMainImage) return false; // Exit if it's not supported image
+
         // Upload image
         const uploadedResponse = await uploadImage(
           part.file,
@@ -96,8 +98,7 @@ export class RecipeService {
         // Save link
         if (uploadedResponse) {
           if (isMainImage) recipe.image = uploadedResponse;
-          else if (isStepImage)
-            recipe.steps[id].image = uploadedResponse;
+          else if (isStepImage) recipe.steps[id].image = uploadedResponse;
         }
       } else return false;
     }

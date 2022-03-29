@@ -49,17 +49,12 @@ export class User extends BaseEntity {
   @OneToMany(() => Recipe, (recipe) => recipe.user)
   recipes: Recipe[];
 
-  constructor({
-    name = 'User',
-    login = '',
-    password = '',
-    description = '',
-  } = {}) {
+  constructor({ login = '', password = '' } = {}) {
     super();
-    this.name = name;
+    this.name = 'User';
     this.login = login;
     this.password = password;
-    this.description = description;
+    this.description = '';
     this.image = '';
     this.rating = 0;
     this.ratingsCount = 0;

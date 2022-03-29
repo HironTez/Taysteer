@@ -96,8 +96,6 @@ components:
           type: string
         rating:
           type: number
-        userId:
-          type: string
     RecipeToResponseDetailed:
       type: object
       properties:
@@ -167,7 +165,7 @@ paths:
       tags:
         - Authorization
       summary: Login
-      description: Logins a user
+      description: Logins the user
       requestBody:
         required: true
         content:
@@ -186,20 +184,20 @@ paths:
                 - user
                 - login
       responses:
-        200:
+        '200':
           description: Successful login
-        403:
+        '403':
           description: Incorrect login or password
   /logout:
     post:
       tags:
         - Authorization
       summary: Logout
-      description: Logouts a user
+      description: Logouts the user
       responses:
-        200:
+        '200':
           description: Successful logout
-        401:
+        '401':
           $ref: '#/components/responses/UnauthorizedError'
 
   /users:
@@ -209,7 +207,7 @@ paths:
       summary: Get all users
       description: Gets all users
       responses:
-        200:
+        '200':
           description: Successful operation
           content:
             application/json:
@@ -217,13 +215,13 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/UserToResponse'
-        401:
+        '401':
           $ref: '#/components/responses/UnauthorizedError'
     post:
       tags:
         - Users
       summary: Create user
-      description: Creates a new user
+      description: Creates the new user
       requestBody:
         content:
           multipart/form-data:
@@ -251,17 +249,17 @@ paths:
                 - password
 
       responses:
-        201:
+        '201':
           description: The user has been created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserToResponse'
-        400:
+        '400':
           description: Bad request
-        401:
+        '401':
           $ref: '#/components/responses/UnauthorizedError'
-        409:
+        '409':
           description: The user already exist
     put:
       tags:
@@ -272,8 +270,8 @@ paths:
           required: false
           schema:
             type: string
-      summary: Update a user
-      description: Updates a user by ID
+      summary: Update the user
+      description: Updates the user by ID
       requestBody:
         content:
           multipart/form-data:
@@ -297,17 +295,17 @@ paths:
                   format: binary
                   description: The user's image
       responses:
-        200:
+        '200':
           description: The user has been updated
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserToResponse'
-        400:
+        '400':
           description: Bad request
-        401:
+        '401':
           $ref: '#/components/responses/UnauthorizedError'
-        409:
+        '409':
           description: The user already exist
     delete:
       tags:
@@ -323,11 +321,11 @@ paths:
         DELETE User, all Tasks where User is assignee
         should be updated to put userId=null
       responses:
-        204:
+        '204':
           description: The user has been deleted
-        401:
+        '401':
           $ref: '#/components/responses/UnauthorizedError'
-        404:
+        '404':
           description: User not found
   /users/{user_id}:
     get:
@@ -345,10 +343,10 @@ paths:
       tags:
         - Users
       summary: Get user by ID
-      description: Gets a user by ID / gets my account by "me" instead id
+      description: Gets the user by ID / gets my account by "me" instead id
         e.g. “/users/123” or "/users/me" (remove password from response)
       responses:
-        200:
+        '200':
           description: Successful operation
           content:
             application/json:
@@ -356,9 +354,9 @@ paths:
                 oneOf:
                   - $ref: '#/components/schemas/UserToResponseDetailed'
                   - $ref: '#/components/schemas/UserToResponse'
-        401:
+        '401':
           $ref: '#/components/responses/UnauthorizedError'
-        404:
+        '404':
           description: User not found
   /users/rating:
     get:
@@ -370,14 +368,16 @@ paths:
           required: false
           schema:
             type: integer
+      summary: Get rating of users
+      description: Gets rating list of users
       responses:
-        200:
+        '200':
           description: Got rating
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserToResponse'
-        401:
+        '401':
           $ref: '#/components/responses/UnauthorizedError'
   /users/{user_id}/rate:
     post:
@@ -396,35 +396,39 @@ paths:
             type: integer
             minimum: 1
             maximum: 5
+      summary: Rate the user
+      description: Rates the user by ID
       responses:
-        200:
+        '200':
           description: The user has been rated
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserToResponse'
-        400:
+        '400':
           description: Bad request
-        401:
+        '401':
           $ref: '#/components/responses/UnauthorizedError'
-        404:
+        '404':
           description: Not found
   /users/delete_image:
     post:
       tags:
         - Users
+      summary: Delete user image
+      description: Deletes the user image
       responses:
-        200:
+        '200':
           description: The profile image has been deleted
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserToResponse'
-        400:
+        '400':
           description: Bad request
-        401:
+        '401':
           $ref: '#/components/responses/UnauthorizedError'
-        404:
+        '404':
           description: Not found
 
   /recipes:
@@ -432,7 +436,7 @@ paths:
       tags:
         - Recipes
       summary: Create recipe
-      description: Creates a new recipe
+      description: Creates the new recipe
       requestBody:
         content:
           multipart/form-data:
@@ -473,13 +477,13 @@ paths:
                 - steps
 
       responses:
-        201:
+        '201':
           description: The recipe has been created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RecipeToResponse'
-        400:
+        '400':
           description: Bad request
-        401:
+        '401':
           $ref: '#/components/responses/UnauthorizedError'
