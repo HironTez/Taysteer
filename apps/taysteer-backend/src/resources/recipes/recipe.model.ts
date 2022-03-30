@@ -56,14 +56,27 @@ export class Recipe extends BaseEntity {
   @OneToMany(() => Comment, (comment) => comment.recipe)
   comments: CommentT[];
 
-  constructor() {
+  constructor({
+    title = '',
+    image = '',
+    description = '',
+    ingredients = [],
+    steps = [],
+    user = new User(),
+    update=false
+  } = {}) {
     super();
-    this.title = '';
-    this.description = '';
-    this.image = '';
-    this.rating = 0;
-    this.ratingsCount = 0;
-    this.ratingsSum = 0;
+    this.title = title;
+    this.description = description;
+    this.image = image;
+    this.ingredients = ingredients;
+    this.steps = steps;
+    this.user = user;
+    if (!update) {
+      this.rating = 0;
+      this.ratingsCount = 0;
+      this.ratingsSum = 0;
+    }
   }
 
   static toResponse(recipe: Recipe): RecipeToResponseT {

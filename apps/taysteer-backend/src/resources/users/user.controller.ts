@@ -105,7 +105,7 @@ export class UsersController {
 
   @Get('rating')
   @UseGuards(CookieAuthGuard)
-  async getUsersByRating(@Res() res: Response, @Query('page') page = 1) {
+  async getUsersByRating(@Res() res: Response, @Query('page') page: number) {
     const users = await this.usersService.getUsersByRating(page);
     const usersToResponse = users.map((user) => User.toResponse(user));
     return res.status(HttpStatus.OK).send(usersToResponse);

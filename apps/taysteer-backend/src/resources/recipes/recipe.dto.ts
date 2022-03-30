@@ -1,3 +1,4 @@
+import { User } from './../users/user.model';
 import { RecipeIngredientT, RecipeStepT } from "./recipe.types";
 
 export class RecipeDataDto {
@@ -5,4 +6,6 @@ export class RecipeDataDto {
   description: string;
   ingredients: RecipeIngredientT[];
   steps: RecipeStepT[];
+  image: string;
+  user: User
 }
