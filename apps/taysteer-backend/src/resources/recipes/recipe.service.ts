@@ -17,7 +17,7 @@ import { Like, Repository } from 'typeorm';
 import { RecipeRaterT } from './recipe.types';
 import { RecipeRater } from './recipe.rater.model';
 import { RecipeDataDto } from './recipe.dto';
-import { uploadImage } from '../../utils/image.uploader';
+import { deleteImage, uploadImage } from '../../utils/image.uploader';
 
 @Injectable()
 export class RecipeService {
@@ -70,11 +70,16 @@ export class RecipeService {
 
   getRecipeById: GetRecipeByIdT = (id) => this.recipeRepository.findOne(id);
 
-  getRecipesByTitle: GetRecipesByTitleT = (title) =>
-    this.recipeRepository.find({ title: Like(`%${title}%`) });
+  getRecipesByTitle: GetRecipesByTitleT = (title, page = 1) =>
+    this.recipeRepository.find({
+      where: { title: Like(`%${title}%`) },
+      order: { rating: 'DESC' },
+      skip: page ? (page - 1) * 10 : 0,
+      take: 10,
+    });
 
   addRecipe: AddRecipeT = async (form, userId) => {
-    const recipeData = new RecipeDataDto();
+    const recipeData = new RecipeDataDto(); // Create the object for recipe data
     // Add user to recipe
     const user = await this.usersService.getUserById(userId);
     if (!user) return false;
@@ -188,6 +193,14 @@ export class RecipeService {
 
     // Validate data
     if (!this.validateRecipeData(recipeData)) return false;
+
+    // Delete old images from the server
+    const images = [recipe.image, ...recipe.steps.map((step) => step.image)];
+    images.forEach((image) => {
+      const id = image.match(/(?<!\/\/)(?<=\/)\w+(?=\.)/)[0];
+      const folder = image.match(/(?<=[0-9]\W).+(?=\W\w+\.\w+)/)[0];
+      deleteImage(id, folder);
+    });
 
     const newRecipe = new Recipe({ ...recipeData, ...{ update: true } });
 

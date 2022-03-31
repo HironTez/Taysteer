@@ -1,3 +1,4 @@
+import { UserDataDto } from './user.dto';
 import { FormDataDto } from './../../typification/dto';
 import {
   CreateAdminT,
@@ -77,18 +78,19 @@ export class UsersService {
 
   getAllUsers: GetAllT = () => this.userRepository.find();
 
-  getUserById: GetByIdT = (id) => this.userRepository.findOne(id, {relations: [UserStringTypes.RECIPES]});
+  getUserById: GetByIdT = (id) =>
+    this.userRepository.findOne(id, { relations: [UserStringTypes.RECIPES] });
 
   getUserByLogin: GetByLoginT = (login) =>
     this.userRepository.findOne({ login: login });
 
   addUser: AddUserT = async (form) => {
-    const user = this.userRepository.create(); // Create new user
+    const userData = new UserDataDto(); // Create the object for user data
 
     // Extract form data
     for await (const part of form) {
       // Insert field if it's a field
-      if (part['value']) user[part.fieldname] = part['value'];
+      if (part['value']) userData[part.fieldname] = part['value'];
       // Upload if it's a file
       else if (part.file) {
         // Upload image
@@ -96,13 +98,16 @@ export class UsersService {
           part.file,
           UserStringTypes.IMAGES_FOLDER
         );
-        if (uploadedResponse) user.image = uploadedResponse;
+        if (uploadedResponse) userData.image = uploadedResponse;
         break;
       }
     }
 
-    if (await this.getUserByLogin(user.login)) return UserStringTypes.CONFLICT; // Check if the user does not exist
-    if (!(await this.validateUserData(user, false))) return false; // Validate data
+    if (await this.getUserByLogin(userData.login))
+      return UserStringTypes.CONFLICT; // Check if the user does not exist
+    if (!(await this.validateUserData(userData, false))) return false; // Validate data
+
+    const user = this.userRepository.create(new User(userData)); // Create user object
 
     // Save user with password hash
     return this.userRepository.save({
@@ -114,8 +119,8 @@ export class UsersService {
   updateUser: UpdateUserT = async (id, form) => {
     const user = await this.getUserById(id); // Get user
 
+    const userData = new UserDataDto();
     // Extract form data
-    const userData: FormDataDto = {};
     for await (const part of form) {
       // If it's a field
       if (part['value']) userData[part.fieldname] = part['value'];
@@ -135,14 +140,22 @@ export class UsersService {
       return UserStringTypes.CONFLICT; // Check if the user does not exist
     if (!(await this.validateUserData(userData, true))) return false; // Validate data
 
+    // Delete old image from the server
+    const image_id = user.image.match(/(?<!\/\/)(?<=\/)\w+(?=\.)/)[0];
+    const folder = user.image.match(/(?<=[0-9]\W).+(?=\W\w+\.\w+)/)[0];
+    deleteImage(image_id, folder);
+
+    // Create the user object with new data
+    const newUser = new User({ ...userData, ...{ update: true } });
+
     // Update the user
     return this.userRepository.save({
       ...user,
       ...{
-        ...userData,
+        ...newUser,
         ...{
-          password: userData.password // Set a hash of the password
-            ? await bcrypt.hash(userData.password, bcrypt.genSaltSync(10))
+          password: newUser.password // Set a hash of the password
+            ? await bcrypt.hash(newUser.password, bcrypt.genSaltSync(10))
             : user.password,
         },
       },
@@ -155,7 +168,7 @@ export class UsersService {
       relations: ['raters'],
     });
     if (!user) return false;
-    
+
     this.userRatersRepository.delete({ user: user }); // Delete all raters
     deleteImage(id, UserStringTypes.IMAGES_FOLDER); // Delete the image
     const deleteResult = await this.userRepository.delete(id); // Delete the user

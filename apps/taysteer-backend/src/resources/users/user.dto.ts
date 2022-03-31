@@ -6,10 +6,10 @@ export class RegisterUserDataDto {
 }
 
 export class UserDataDto {
-  readonly id?: string;
-  readonly name?: string;
-  readonly login?: string;
-  readonly password?: string;
-  readonly description?: string;
-  readonly image?: string;
+  id?: string;
+  name?: string;
+  login?: string;
+  password?: string;
+  description?: string;
+  image?: string;
 }

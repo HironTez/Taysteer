@@ -38,6 +38,14 @@ export class RecipeController {
       : res.status(HttpStatus.BAD_REQUEST);
   }
 
+  @Get('find')
+  async findRecipes(@Res() res: Response, @Query('search') search: string, @Query('page') page: number) {
+    const recipes = await this.recipeService.getRecipesByTitle(search, page);
+    return res
+      .status(HttpStatus.OK)
+      .send(recipes.map((recipe) => Recipe.toResponse(recipe)));
+  }
+
   @Get('id')
   async getRecipe(
     @Res() res: Response,
