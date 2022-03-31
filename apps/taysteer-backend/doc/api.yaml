@@ -412,7 +412,7 @@ paths:
         '404':
           description: Not found
   /users/delete_image:
-    post:
+    delete:
       tags:
         - Users
       summary: Delete user image
@@ -633,3 +633,21 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: Not found
+    delete:
+      tags:
+        - Recipes
+      parameters:
+        - name: recipe_id
+          in: path
+          required: true
+          schema:
+            type: string
+      summary: Delete recipe
+      description: Deletes the recipe by ID.
+      responses:
+        '204':
+          description: The recipe has been deleted
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Recipe not found

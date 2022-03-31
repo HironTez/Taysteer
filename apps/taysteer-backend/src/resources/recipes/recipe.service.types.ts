@@ -9,11 +9,14 @@ export type GetRecipeByIdT = (id: string) => Promise<Recipe>;
 export type GetRecipesByTitleT = (title: string, page: number) => Promise<Array<Recipe>>;
 export type AddRecipeT = (form: AsyncIterableIterator<MultipartFile>, userId: string) => Promise<Recipe | false>;
 export type UpdateRecipeT = (form: AsyncIterableIterator<MultipartFile>, recipeId: string) => Promise<Recipe | false>;
+export type DeleteRecipeT = (id: string) => Promise<number>;
 
 export enum RecipeStringTypes {
   IMAGE = 'image',
   STEP_IMAGE = 'stepImage',
   IMAGE_FOLDER = 'recipe_images',
   NOT_FOUND = 'not_found',
-  USER = 'user'
+  USER = 'user',
+  RATERS = 'raters',
+  COMMENTS = 'comments'
 }

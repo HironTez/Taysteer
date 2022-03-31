@@ -137,7 +137,7 @@ export class UsersController {
       : res.status(HttpStatus.NOT_FOUND).send();
   }
 
-  @Post('delete_image')
+  @Delete('delete_image')
   @UseGuards(CookieAuthGuard)
   async deleteProfileImage(@Req() req: ExtendedRequest, @Res() res: Response) {
     const hasAccess = await this.usersService.checkAccess(

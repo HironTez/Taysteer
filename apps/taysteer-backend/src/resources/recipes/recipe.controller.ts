@@ -2,6 +2,7 @@ import { Recipe } from './recipe.model';
 import { RecipeService } from './recipe.service';
 import {
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Param,
@@ -28,8 +29,8 @@ export class RecipeController {
       .send(recipes.map((recipe) => Recipe.toResponse(recipe)));
   }
 
-  @UseGuards(CookieAuthGuard)
   @Post()
+  @UseGuards(CookieAuthGuard)
   async createRecipe(@Req() req: ExtendedRequest, @Res() res: Response) {
     const createdRecipe = await this.recipeService.addRecipe(
       req.parts(),
@@ -67,8 +68,8 @@ export class RecipeController {
       : res.status(HttpStatus.NOT_FOUND).send();
   }
 
-  @UseGuards(CookieAuthGuard)
   @Put('id')
+  @UseGuards(CookieAuthGuard)
   async updateRecipe(
     @Req() req: ExtendedRequest,
     @Res() res: Response,
@@ -82,6 +83,21 @@ export class RecipeController {
     );
     return updatedRecipe
       ? res.status(HttpStatus.OK).send(Recipe.toResponse(updatedRecipe))
+      : res.status(HttpStatus.BAD_REQUEST).send();
+  }
+
+  @Delete('id')
+  @UseGuards(CookieAuthGuard)
+  async deleteRecipe(
+    @Req() req: ExtendedRequest,
+    @Res() res: Response,
+    @Param('id') id: string
+  ) {
+    const hasAccess = await this.recipeService.hasAccess(req.user.id, id);
+    if (!hasAccess) return res.status(HttpStatus.NOT_FOUND).send();
+    const deleted = await this.recipeService.deleteRecipe(id);
+    return deleted
+      ? res.status(HttpStatus.NO_CONTENT).send()
       : res.status(HttpStatus.BAD_REQUEST).send();
   }
 }

@@ -9,6 +9,7 @@ import {
   UpdateRecipeT,
   ValidateRecipeDataT,
   HasAccessT,
+  DeleteRecipeT,
 } from './recipe.service.types';
 import { Recipe } from './recipe.model';
 import { Injectable } from '@nestjs/common';
@@ -209,5 +210,26 @@ export class RecipeService {
       ...recipe,
       ...newRecipe,
     });
+  };
+
+  deleteRecipe: DeleteRecipeT = async (id) => {
+    // Get the recipe
+    const recipe = await this.recipeRepository.findOne(id);
+
+    // Delete images
+    const images = [recipe.image, ...recipe.steps.map((step) => step.image)];
+    images.forEach((image) => {
+      const id = image.match(/(?<!\/\/)(?<=\/)\w+(?=\.)/)[0];
+      const folder = image.match(/(?<=[0-9]\W).+(?=\W\w+\.\w+)/)[0];
+      deleteImage(id, folder);
+    });
+    // Delete raters
+    this.recipeRatersRepository.delete({ recipe: recipe });
+    // Delete comments
+    this.recipeCommentsRepository.delete({ recipe: recipe });
+
+    // Delete the recipe
+    const deleteResult = await this.recipeRepository.delete(recipe);
+    return deleteResult.affected;
   };
 }

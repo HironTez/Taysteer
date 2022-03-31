@@ -37,7 +37,7 @@ export interface RecipeRaterT {
   id: number;
   raterId: string;
   rating: number;
-  user: Recipe;
+  recipe: Recipe;
 }
 
 export interface CommentT {
