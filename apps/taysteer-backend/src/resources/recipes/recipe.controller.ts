@@ -38,6 +38,21 @@ export class RecipeController {
       : res.status(HttpStatus.BAD_REQUEST);
   }
 
+  @Get('id')
+  async getRecipe(
+    @Res() res: Response,
+    @Param('id') id: string,
+    @Query('detailed') detailed = false
+  ) {
+    const recipe = await this.recipeService.getRecipeById(id);
+    const result = detailed
+      ? Recipe.toResponseDetailed(recipe)
+      : Recipe.toResponse(recipe);
+    return recipe
+      ? res.status(HttpStatus.OK).send(result)
+      : res.status(HttpStatus.NOT_FOUND).send();
+  }
+
   @UseGuards(CookieAuthGuard)
   @Put('id')
   async updateRecipe(

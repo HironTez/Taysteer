@@ -510,6 +510,36 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
   /recipes/{recipe_id}:
+    get:
+      parameters:
+        - name: recipe_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: detailed
+          in: query
+          required: false
+          schema:
+            type: boolean
+      tags:
+        - Recipes
+      summary: Get recipe by ID
+      description: Gets the recipe by ID
+        e.g. “/recipes/123”
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/RecipeToResponseDetailed'
+                  - $ref: '#/components/schemas/RecipeToResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Recipe not found
     put:
       tags:
         - Recipes
