@@ -23,7 +23,9 @@ export class RecipeController {
   @Get()
   async getRecipes(@Res() res: Response, @Query('page') page: number) {
     const recipes = await this.recipeService.getRecipes(page);
-    return res.status(HttpStatus.OK).send(recipes);
+    return res
+      .status(HttpStatus.OK)
+      .send(recipes.map((recipe) => Recipe.toResponse(recipe)));
   }
 
   @UseGuards(CookieAuthGuard)
@@ -39,7 +41,11 @@ export class RecipeController {
   }
 
   @Get('find')
-  async findRecipes(@Res() res: Response, @Query('search') search: string, @Query('page') page: number) {
+  async findRecipes(
+    @Res() res: Response,
+    @Query('search') search: string,
+    @Query('page') page: number
+  ) {
     const recipes = await this.recipeService.getRecipesByTitle(search, page);
     return res
       .status(HttpStatus.OK)
