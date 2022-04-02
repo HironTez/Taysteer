@@ -40,7 +40,11 @@ export class RecipeService {
   ) {}
 
   validateRecipeData: ValidateRecipeDataT = (recipe: RecipeDataDto) => {
-    if (recipe.title.length > 50 || recipe.description.length > 500)
+    if (
+      recipe.title.length > 50 ||
+      recipe.description.length > 500 ||
+      !recipe.image
+    )
       return false;
     for (const ingredient of recipe.ingredients) {
       if (
@@ -51,7 +55,11 @@ export class RecipeService {
         return false;
     }
     for (const step of recipe.steps) {
-      if (step.title.length > 100 || step.description.length > 500)
+      if (
+        step.title.length > 100 ||
+        step.description.length > 500 ||
+        !step.image
+      )
         return false;
     }
     return true;
@@ -229,11 +237,7 @@ export class RecipeService {
 
     // Delete old images from the server
     const images = [recipe.image, ...recipe.steps.map((step) => step.image)];
-    images.forEach((image) => {
-      const id = image.match(/(?<!\/\/)(?<=\/)\w+(?=\.)/)[0];
-      const folder = image.match(/(?<=[0-9]\W).+(?=\W\w+\.\w+)/)[0];
-      deleteImage(id, folder);
-    });
+    images.forEach((image) => deleteImage(image));
 
     const newRecipe = new Recipe({ ...recipeData, ...{ update: true } });
 
@@ -250,11 +254,7 @@ export class RecipeService {
 
     // Delete images
     const images = [recipe.image, ...recipe.steps.map((step) => step.image)];
-    images.forEach((image) => {
-      const id = image.match(/(?<!\/\/)(?<=\/)\w+(?=\.)/)[0];
-      const folder = image.match(/(?<=[0-9]\W).+(?=\W\w+\.\w+)/)[0];
-      deleteImage(id, folder);
-    });
+    images.forEach((image) => deleteImage(image));
 
     // Delete the recipe
     const deleteResult = await this.recipeRepository.delete(id);
@@ -276,9 +276,10 @@ export class RecipeService {
     const findingResult = await this.recipeRatingsRepository.findOne(
       {
         rater: user,
+        recipe: recipe
       },
       {
-        relations: [RecipeStringTypes.RATER],
+        relations: [RecipeStringTypes.RATER, RecipeStringTypes.RECIPE],
       }
     );
     // Create a new rater if not found
@@ -287,21 +288,24 @@ export class RecipeService {
     ratingObject.rater = user;
     ratingObject.rating = rating;
 
-    let new_ratings_count = recipe.ratingsCount,
-      new_ratings_sum = recipe.ratingsSum - ratingObject.rating + rating;
+    // Save the rater
+    await this.recipeRatingsRepository.save(ratingObject);
 
-    // If it's a first rating
+    let new_ratings_count = recipe.ratingsCount,
+      new_ratings_sum = recipe.ratingsSum - recipe.rating + rating,
+      new_rating = rating;
+
+    // If it's the first rating
+    // Calculate the rating
     if (!findingResult) {
       new_ratings_count = recipe.ratingsCount + 1;
       new_ratings_sum = recipe.ratingsSum + rating;
       recipe.raters.push(ratingObject);
     }
-
-    // Save the rater
-    await this.recipeRatingsRepository.save(ratingObject);
-
-    // Calculate the rating
-    const new_rating = Math.round(new_ratings_sum / new_ratings_count);
+    // If it's the update of the rating
+    else {
+      new_rating = Math.round(new_ratings_sum / new_ratings_count);
+    }
 
     // Update the user
     return this.recipeRepository.save({
@@ -321,7 +325,7 @@ export class RecipeService {
         RecipeStringTypes.USER,
         RecipeStringTypes.RECIPE,
         RecipeStringTypes.CHILDCOMMENTS,
-        RecipeStringTypes.MAINCOMMENT,
+        `${RecipeStringTypes.CHILDCOMMENTS}.${RecipeStringTypes.USER}`,
       ],
     });
 

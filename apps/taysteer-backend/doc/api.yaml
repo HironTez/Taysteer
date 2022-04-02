@@ -95,6 +95,13 @@ components:
           type: string
         optional:
           type: boolean
+    RecipeStep:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
     RecipeStepToResponse:
       type: object
       properties:
@@ -172,8 +179,8 @@ paths:
       responses:
         '200':
           description: Successful login
-        '403':
-          description: Incorrect login or password
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
   /logout:
     post:
       tags:
@@ -685,6 +692,28 @@ paths:
         401:
           $ref: '#/components/responses/UnauthorizedError'
   /recipes/comments/{comment_id}:
+    get:
+      tags:
+        - Recipes
+      summary: Get comment
+      description: Gets the comment by id
+      parameters:
+        - name: comment_id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: Got the comment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecipeCommentToResponse"
+        404:
+          description: Not found
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
     post:
       tags:
         - Recipes

@@ -15,7 +15,6 @@ import { Response } from 'express';
 import { UsersService } from './user.service';
 import { User } from './user.model';
 import { ExtendedRequest } from '../../typification/interfaces';
-import { deleteImage } from '../../utils/image.uploader';
 import { UserStringTypes } from './user.service.types';
 import { CookieAuthGuard } from '../../auth/guards/cookie-auth.guard';
 
@@ -143,15 +142,9 @@ export class UsersController {
     const userExists = await this.usersService.getUserById(req.user.id);
     if (!userExists) return res.status(HttpStatus.NOT_FOUND).send();
 
-    const deleted = await deleteImage(
-      req.user.id,
-      UserStringTypes.IMAGES_FOLDER
-    );
-    const userToResponse = User.toResponse(
-      await this.usersService.getUserById(req.user.id)
-    );
-    return deleted
-      ? res.status(HttpStatus.OK).send(userToResponse)
+    const userWithDeletedImage = await this.usersService.deleteUserImage(req.user.id);
+    return userWithDeletedImage
+      ? res.status(HttpStatus.OK).send(User.toResponse(userWithDeletedImage))
       : res.status(HttpStatus.BAD_REQUEST).send();
   }
 }

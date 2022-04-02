@@ -19,7 +19,9 @@ const uploadImage: uploadImageT = async (fileReadStream, folder, id) => {
   return uploadedResponse;
 };
 
-const deleteImage: deleteImageT = async (public_id, folder) => {
+const deleteImage: deleteImageT = async (link) => {
+  const public_id = link.match(/(?<!\/\/)(?<=\/)\w+(?=\.)/)[0];
+  const folder = link.match(/(?<=[0-9]\W).+(?=\W\w+\.\w+)/)[0];
   // Delete an old image
   const response = await cloudinary.uploader.destroy(`${folder}/${public_id}`);
 

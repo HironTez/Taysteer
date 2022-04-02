@@ -11,6 +11,7 @@ import {
   CheckAccessT,
   ValidateUserDataT,
   UserStringTypes,
+  DeleteUserImageT,
 } from './user.service.types';
 import { User } from './user.model';
 import { Injectable } from '@nestjs/common';
@@ -138,12 +139,15 @@ export class UsersService {
     if (!(await this.validateUserData(userData, true))) return false; // Validate data
 
     // Delete old image from the server
-    const image_id = user.image.match(/(?<!\/\/)(?<=\/)\w+(?=\.)/)[0];
-    const folder = user.image.match(/(?<=[0-9]\W).+(?=\W\w+\.\w+)/)[0];
-    deleteImage(image_id, folder);
+    if (userData.image && user.image) {
+      deleteImage(user.image);
+    }
 
-    // Create the user object with new data
-    const newUser = new User({ ...userData, ...{ update: true } });
+    // Create the user object with the new data
+    const newUser = new User({
+      ...userData,
+      ...{ login: userData.login || user.login, update: true },
+    });
 
     // Update the user
     return this.userRepository.save({
@@ -160,7 +164,8 @@ export class UsersService {
   };
 
   deleteUser: DeleteUserT = async (id) => {
-    deleteImage(id, UserStringTypes.IMAGES_FOLDER); // Delete the image
+    const user = await this.getUserById(id);
+    deleteImage(user.image); // Delete the image
     const deleteResult = await this.userRepository.delete(id); // Delete the user
     return deleteResult.affected; // Return a result
   };
@@ -190,9 +195,10 @@ export class UsersService {
     const findingResult = await this.userRatersRepository.findOne(
       {
         rater: rater,
+        user: user,
       },
       {
-        relations: [UserStringTypes.RATER],
+        relations: [UserStringTypes.RATER, UserStringTypes.USER],
       }
     );
     // Create a new rater if not found
@@ -201,8 +207,12 @@ export class UsersService {
     ratingObject.rater = rater;
     ratingObject.rating = rating;
 
+    // Save the rater
+    await this.userRatersRepository.save(ratingObject);
+
     let new_ratings_count = user.ratingsCount,
-      new_ratings_sum = user.ratingsSum - rater.rating + rating;
+      new_ratings_sum = user.ratingsSum - user.rating + rating,
+      new_rating = rating;
 
     // If it's a first rating
     if (!findingResult) {
@@ -210,12 +220,10 @@ export class UsersService {
       new_ratings_sum = user.ratingsSum + rating;
       user.raters.push(ratingObject);
     }
-
-    // Save the rater
-    await this.userRatersRepository.save(ratingObject);
-
-    // Calculate the rating
-    const new_rating = Math.round(new_ratings_sum / new_ratings_count);
+    // If it's the update of the rating
+    else {
+      new_rating = Math.round(new_ratings_sum / new_ratings_count);
+    }
 
     // Update the user
     return this.userRepository.save({
@@ -227,5 +235,13 @@ export class UsersService {
         raters: user.raters,
       },
     });
+  };
+
+  deleteUserImage: DeleteUserImageT = async (userId) => {
+    const user = await this.getUserById(userId);
+    const deleted = await deleteImage(user.image);
+    if (deleted) {
+      return this.userRepository.save({ ...user, ...{ image: '' } });
+    } else return false;
   };
 }

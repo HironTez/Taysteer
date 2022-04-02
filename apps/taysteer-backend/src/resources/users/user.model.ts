@@ -49,6 +49,7 @@ export class User extends BaseEntity {
   recipes: Recipe[];
 
   constructor({
+    name = '',
     login = '',
     password = '',
     description = '',
@@ -56,7 +57,7 @@ export class User extends BaseEntity {
     update = false,
   } = {}) {
     super();
-    this.name = 'User';
+    this.name = name;
     this.login = login;
     this.password = password;
     this.description = description;

@@ -13,6 +13,7 @@ export type UpdateUserT = (id: string, data: AsyncIterableIterator<MultipartFile
 export type DeleteUserT = (id: string) => Promise<number>;
 export type GetUsersByRatingT = (page: number) => Promise<Array<User>>;
 export type RateUserT = (id: string, raterId: string, rating: number) => Promise<User | false>;
+export type DeleteUserImageT = (userId: string) => Promise<User | false>;
 
 export enum UserStringTypes {
   IMAGE = 'image',
@@ -20,5 +21,6 @@ export enum UserStringTypes {
   IMAGES_FOLDER = 'user_avatar',
   RECIPES = 'recipes',
   RATER = 'rater',
-  RATERS = 'raters'
+  RATERS = 'raters',
+  USER = 'user'
 }

@@ -127,6 +127,17 @@ export class RecipeController {
       : res.status(HttpStatus.BAD_REQUEST).send();
   }
 
+  @Get('comments/:commentId')
+  async getComment(
+    @Res() res: Response,
+    @Param('commentId') commentId: number
+  ) {
+    const comment = await this.recipeService.getCommentById(commentId);
+    return comment
+      ? res.status(HttpStatus.OK).send(Comment.toResponse(comment))
+      : res.status(HttpStatus.NOT_FOUND).send();
+  }
+
   @Post(':recipeId/comments')
   @UseGuards(CookieAuthGuard)
   async commentRecipe(
