@@ -6,7 +6,6 @@ import { User } from './user.model';
 export type CreateAdminT = () => void;
 export type CheckAccessT = (user: UserMinT, requestedId: string, shouldBeOwner: boolean) => Promise<boolean>;
 export type ValidateUserDataT = (userData: UserDataDto | User, updating: boolean) => Promise<boolean>;
-export type GetAllT = () => Promise<Array<User>>;
 export type GetByIdT = (id: string) => Promise<User | undefined>;
 export type GetByLoginT = (login: string) => Promise<User | undefined>;
 export type AddUserT = (data: AsyncIterableIterator<MultipartFile>) => Promise<User | false | string>;

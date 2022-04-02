@@ -1,8 +1,6 @@
 import { UserDataDto } from './user.dto';
-import { FormDataDto } from './../../typification/dto';
 import {
   CreateAdminT,
-  GetAllT,
   GetByIdT,
   GetByLoginT,
   AddUserT,
@@ -74,8 +72,6 @@ export class UsersService {
       return false;
     return true;
   };
-
-  getAllUsers: GetAllT = () => this.userRepository.find();
 
   getUserById: GetByIdT = (id) =>
     this.userRepository.findOne(id, {

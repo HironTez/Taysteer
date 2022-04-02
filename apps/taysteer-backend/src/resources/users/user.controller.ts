@@ -23,13 +23,6 @@ import { CookieAuthGuard } from '../../auth/guards/cookie-auth.guard';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get()
-  @UseGuards(CookieAuthGuard)
-  async getAllUsers(@Res() res: Response) {
-    const users = await this.usersService.getAllUsers();
-    return res.status(HttpStatus.OK).send(users.map(User.toResponse));
-  }
-
   @Get(':id')
   @UseGuards(CookieAuthGuard)
   async getUserById(
