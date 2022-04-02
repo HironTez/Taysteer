@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { User } from '../users/user.model';
 import { Comment } from './recipe.comment.model';
-import { RecipeRater } from './recipe.rater.model';
+import { RecipeRating } from './recipe.rating.model';
 import {
   RecipeIngredientT,
   RecipeStepT,
@@ -45,13 +45,13 @@ export class Recipe extends BaseEntity {
   @Column('int')
   ratingsSum: number;
 
-  @OneToMany(() => RecipeRater, (rater) => rater.recipe, { cascade: true })
-  raters: Array<RecipeRater>;
+  @OneToMany(() => RecipeRating, (rater) => rater.recipe)
+  raters: Array<RecipeRating>;
 
   @ManyToOne(() => User, (user) => user.recipes)
   user: User;
 
-  @OneToMany(() => Comment, (comment) => comment.recipe, { cascade: true })
+  @OneToMany(() => Comment, (comment) => comment.recipe)
   comments: Array<Comment>;
 
   constructor({

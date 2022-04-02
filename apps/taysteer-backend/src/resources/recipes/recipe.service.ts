@@ -17,12 +17,13 @@ import {
   DeleteCommentT,
   UpdateCommentT,
   AddCommentCommentT,
+  RateRecipeT,
 } from './recipe.service.types';
 import { Recipe } from './recipe.model';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
-import { RecipeRater } from './recipe.rater.model';
+import { RecipeRating } from './recipe.rating.model';
 import { RecipeDataDto } from './recipe.dtos';
 import { deleteImage, uploadImage } from '../../utils/image.uploader';
 
@@ -31,8 +32,8 @@ export class RecipeService {
   constructor(
     @InjectRepository(Recipe)
     private readonly recipeRepository: Repository<Recipe>,
-    @InjectRepository(RecipeRater)
-    private readonly recipeRatersRepository: Repository<RecipeRater>,
+    @InjectRepository(RecipeRating)
+    private readonly recipeRatingsRepository: Repository<RecipeRating>,
     @InjectRepository(Comment)
     private readonly recipeCommentsRepository: Repository<Comment>,
     private readonly usersService: UsersService
@@ -98,6 +99,7 @@ export class RecipeService {
         `${RecipeStringTypes.COMMENTS}.${RecipeStringTypes.USER}`,
         `${RecipeStringTypes.COMMENTS}.${RecipeStringTypes.CHILDCOMMENTS}`,
         `${RecipeStringTypes.COMMENTS}.${RecipeStringTypes.CHILDCOMMENTS}.${RecipeStringTypes.USER}`,
+        RecipeStringTypes.RATERS,
       ],
     });
 
@@ -259,6 +261,60 @@ export class RecipeService {
     return deleteResult.affected;
   };
 
+  rateRecipe: RateRecipeT = async (recipeId, raterId, rating) => {
+    // Validate data
+    if (!rating) return false;
+    else if (rating > 5) rating = 5;
+
+    // Get the user with relations
+    const recipe = await this.getRecipeById(recipeId);
+    if (!recipe) return false;
+
+    const user = await this.usersService.getUserById(raterId);
+
+    // Try to find the rating
+    const findingResult = await this.recipeRatingsRepository.findOne(
+      {
+        rater: user,
+      },
+      {
+        relations: [RecipeStringTypes.RATER],
+      }
+    );
+    // Create a new rater if not found
+    const ratingObject =
+      findingResult || this.recipeRatingsRepository.create(new RecipeRating());
+    ratingObject.rater = user;
+    ratingObject.rating = rating;
+
+    let new_ratings_count = recipe.ratingsCount,
+      new_ratings_sum = recipe.ratingsSum - ratingObject.rating + rating;
+
+    // If it's a first rating
+    if (!findingResult) {
+      new_ratings_count = recipe.ratingsCount + 1;
+      new_ratings_sum = recipe.ratingsSum + rating;
+      recipe.raters.push(ratingObject);
+    }
+
+    // Save the rater
+    await this.recipeRatingsRepository.save(ratingObject);
+
+    // Calculate the rating
+    const new_rating = Math.round(new_ratings_sum / new_ratings_count);
+
+    // Update the user
+    return this.recipeRepository.save({
+      ...recipe,
+      ...{
+        ratingsCount: new_ratings_count,
+        ratingsSum: new_ratings_sum,
+        rating: new_rating,
+        raters: recipe.raters,
+      },
+    });
+  };
+
   getCommentById: GetCommentByIdT = (id) =>
     this.recipeCommentsRepository.findOne(id, {
       relations: [
@@ -293,7 +349,11 @@ export class RecipeService {
     return this.recipeCommentsRepository.save(comment);
   };
 
-  addCommentComment: AddCommentCommentT = async (commentText, userId, mainCommentId) => {
+  addCommentComment: AddCommentCommentT = async (
+    commentText,
+    userId,
+    mainCommentId
+  ) => {
     if (!this.validateComment(commentText)) return false; // Validate comment
 
     // Get recipe and user
@@ -311,12 +371,9 @@ export class RecipeService {
 
     // Save the comment
     return this.recipeCommentsRepository.save(comment);
-  }
+  };
 
-  updateComment: UpdateCommentT = async (
-    commentText,
-    commentId
-  ) => {
+  updateComment: UpdateCommentT = async (commentText, commentId) => {
     const comment = await this.getCommentById(commentId); // Get the comment
     if (!this.validateComment(commentText)) return false; // Validate
     // Save

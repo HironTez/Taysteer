@@ -13,6 +13,7 @@ export type GetRecipesByTitleT = (title: string, page: number) => Promise<Array<
 export type AddRecipeT = (form: AsyncIterableIterator<MultipartFile>, userId: string) => Promise<Recipe | false>;
 export type UpdateRecipeT = (form: AsyncIterableIterator<MultipartFile>, recipeId: string) => Promise<Recipe | false>;
 export type DeleteRecipeT = (id: string) => Promise<number>;
+export type RateRecipeT = (recipeId: string, raterId: string, rating: number) => Promise<Recipe | false>;
 export type GetCommentByIdT = (commentId: number) => Promise<Comment>;
 export type AddRecipeCommentT = (commentText: string, userId: string, recipeId: string) => Promise<Comment | false>;
 export type AddCommentCommentT = (commentText: string, userId: string, mainCommentId: number) => Promise<Comment | false>;
@@ -25,6 +26,7 @@ export enum RecipeStringTypes {
   IMAGE_FOLDER = 'recipe_images',
   NOT_FOUND = 'not_found',
   USER = 'user',
+  RATER = 'rater',
   RATERS = 'raters',
   RECIPE = 'recipe',
   COMMENTS = 'comments',

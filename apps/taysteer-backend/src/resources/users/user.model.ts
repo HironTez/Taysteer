@@ -3,7 +3,6 @@ import {
   UserMinT,
   UserToResponseT,
   UserToResponseDetailedT,
-  UserRaterT,
 } from './user.types';
 import {
   Entity,
@@ -12,7 +11,7 @@ import {
   BaseEntity,
   OneToMany,
 } from 'typeorm';
-import { UserRater } from './user.rater.model';
+import { UserRating } from './user.rating.model';
 
 @Entity('User')
 export class User extends BaseEntity {
@@ -43,8 +42,8 @@ export class User extends BaseEntity {
   @Column('int')
   ratingsSum: number;
 
-  @OneToMany(() => UserRater, (rater) => rater.user, { cascade: true })
-  raters: UserRaterT[];
+  @OneToMany(() => UserRating, (rater) => rater.user)
+  raters: UserRating[];
 
   @OneToMany(() => Recipe, (recipe) => recipe.user)
   recipes: Recipe[];

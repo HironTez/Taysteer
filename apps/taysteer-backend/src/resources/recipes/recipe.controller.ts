@@ -57,10 +57,7 @@ export class RecipeController {
   }
 
   @Get(':recipeId')
-  async getRecipe(
-    @Res() res: Response,
-    @Param('recipeId') recipeId: string
-  ) {
+  async getRecipe(@Res() res: Response, @Param('recipeId') recipeId: string) {
     const recipe = await this.recipeService.getRecipeById(recipeId);
     return recipe
       ? res.status(HttpStatus.OK).send(Recipe.toResponseDetailed(recipe))
@@ -74,7 +71,10 @@ export class RecipeController {
     @Res() res: Response,
     @Param('recipeId') recipeId: string
   ) {
-    const hasRecipeAccess = await this.recipeService.hasRecipeAccess(req.user.id, recipeId);
+    const hasRecipeAccess = await this.recipeService.hasRecipeAccess(
+      req.user.id,
+      recipeId
+    );
     if (!hasRecipeAccess) return res.status(HttpStatus.NOT_FOUND).send();
     const updatedRecipe = await this.recipeService.updateRecipe(
       req.parts(),
@@ -92,11 +92,38 @@ export class RecipeController {
     @Res() res: Response,
     @Param('recipeId') recipeId: string
   ) {
-    const hasRecipeAccess = await this.recipeService.hasRecipeAccess(req.user.id, recipeId);
+    const hasRecipeAccess = await this.recipeService.hasRecipeAccess(
+      req.user.id,
+      recipeId
+    );
     if (!hasRecipeAccess) return res.status(HttpStatus.NOT_FOUND).send();
     const deleted = await this.recipeService.deleteRecipe(recipeId);
     return deleted
       ? res.status(HttpStatus.NO_CONTENT).send()
+      : res.status(HttpStatus.BAD_REQUEST).send();
+  }
+
+  @Post(':recipeId/rate')
+  @UseGuards(CookieAuthGuard)
+  async rateUser(
+    @Req() req: ExtendedRequest,
+    @Res() res: Response,
+    @Param('recipeId') recipeId: string,
+    @Query('rating') rating = 0
+  ) {
+    const hasRecipeAccess = !(await this.recipeService.hasRecipeAccess(
+      req.user.id,
+      recipeId
+    ));
+    if (!hasRecipeAccess) return res.status(HttpStatus.NOT_FOUND).send();
+
+    const ratedRecipe = await this.recipeService.rateRecipe(
+      recipeId,
+      req.user.id,
+      Number(rating)
+    );
+    return ratedRecipe
+      ? res.status(HttpStatus.OK).send(Recipe.toResponse(ratedRecipe))
       : res.status(HttpStatus.BAD_REQUEST).send();
   }
 
@@ -126,9 +153,15 @@ export class RecipeController {
     @Param('commentId') commentId: number,
     @Body() body: RecipeCommentDto
   ) {
-    const hasRecipeAccess = await this.recipeService.hasCommentAccess(req.user.id, commentId);
+    const hasRecipeAccess = await this.recipeService.hasCommentAccess(
+      req.user.id,
+      commentId
+    );
     if (!hasRecipeAccess) return res.status(HttpStatus.NOT_FOUND).send();
-    const updatedComment = await this.recipeService.updateComment(body.text, commentId);
+    const updatedComment = await this.recipeService.updateComment(
+      body.text,
+      commentId
+    );
     return updatedComment
       ? res.status(HttpStatus.OK).send(Comment.toResponse(updatedComment))
       : res.status(HttpStatus.BAD_REQUEST).send();
@@ -139,9 +172,12 @@ export class RecipeController {
   async deleteRecipeComment(
     @Req() req: ExtendedRequest,
     @Res() res: Response,
-    @Param('commentId') commentId: number,
+    @Param('commentId') commentId: number
   ) {
-    const hasRecipeAccess = await this.recipeService.hasCommentAccess(req.user.id, commentId);
+    const hasRecipeAccess = await this.recipeService.hasCommentAccess(
+      req.user.id,
+      commentId
+    );
     if (!hasRecipeAccess) return res.status(HttpStatus.NOT_FOUND).send();
     const deletedComment = await this.recipeService.deleteComment(commentId);
     return deletedComment

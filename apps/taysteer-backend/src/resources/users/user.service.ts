@@ -14,14 +14,13 @@ import {
   ValidateUserDataT,
   UserStringTypes,
 } from './user.service.types';
-import { UserRaterT } from './user.types';
 import { User } from './user.model';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import bcrypt from 'bcryptjs';
 import { ADMIN_LOGIN, ADMIN_PASSWORD } from 'configs/common/config';
-import { UserRater } from './user.rater.model';
+import { UserRating } from './user.rating.model';
 import { deleteImage, uploadImage } from '../../utils/image.uploader';
 
 @Injectable()
@@ -29,8 +28,8 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(UserRater)
-    private readonly userRatersRepository: Repository<UserRaterT>
+    @InjectRepository(UserRating)
+    private readonly userRatersRepository: Repository<UserRating>
   ) {
     this.createAdmin();
   }
@@ -79,7 +78,9 @@ export class UsersService {
   getAllUsers: GetAllT = () => this.userRepository.find();
 
   getUserById: GetByIdT = (id) =>
-    this.userRepository.findOne(id, { relations: [UserStringTypes.RECIPES] });
+    this.userRepository.findOne(id, {
+      relations: [UserStringTypes.RECIPES, UserStringTypes.RATERS],
+    });
 
   getUserByLogin: GetByLoginT = (login) =>
     this.userRepository.findOne({ login: login });
@@ -184,41 +185,38 @@ export class UsersService {
     else if (rating > 5) rating = 5;
 
     // Get the user with relations
-    const user = await this.userRepository.findOne(id, {
-      relations: ['raters'],
-    });
+    const user = await this.getUserById(id);
     if (!user) return false;
 
-    // Try to find the rater
-    const findingResult = await this.userRatersRepository.findOne({
-      raterId: raterId,
-    });
-    // Create a new rater if not found
-    const rater = findingResult
-      ? findingResult
-      : new UserRater({ raterId: raterId, rating: rating });
+    const rater = await this.getUserById(raterId);
 
-    let new_ratings_count = 0,
-      new_ratings_sum = 0;
+    // Try to find the rating
+    const findingResult = await this.userRatersRepository.findOne(
+      {
+        rater: rater,
+      },
+      {
+        relations: [UserStringTypes.RATER],
+      }
+    );
+    // Create a new rater if not found
+    const ratingObject =
+      findingResult || this.userRatersRepository.create(new UserRating());
+    ratingObject.rater = rater;
+    ratingObject.rating = rating;
+
+    let new_ratings_count = user.ratingsCount,
+      new_ratings_sum = user.ratingsSum - rater.rating + rating;
 
     // If it's a first rating
     if (!findingResult) {
       new_ratings_count = user.ratingsCount + 1;
       new_ratings_sum = user.ratingsSum + rating;
-
-      // Save the rater
-      await this.userRatersRepository.save(rater);
-      if (user.raters) user.raters.push(rater);
-      else user.raters = [rater];
+      user.raters.push(ratingObject);
     }
-    // If it's an updating of the rating
-    else {
-      new_ratings_count = user.ratingsCount;
-      new_ratings_sum = user.ratingsSum - rater.rating + rating;
 
-      rater.rating = rating;
-      await this.userRatersRepository.save(rater);
-    }
+    // Save the rater
+    await this.userRatersRepository.save(ratingObject);
 
     // Calculate the rating
     const new_rating = Math.round(new_ratings_sum / new_ratings_count);

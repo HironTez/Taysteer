@@ -674,6 +674,38 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: Recipe not found
+  /recipes/{recipe_id}/rate:
+    post:
+      tags:
+        - Recipes
+      parameters:
+        - name: recipe_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: rating
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 5
+      summary: Rate the recipe
+      description: Rates the recipe by ID
+      responses:
+        '200':
+          description: The recipe has been rated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipeToResponse'
+        '400':
+          description: Bad request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Not found
   /recipes/{recipe_id}/comments:
     post:
       tags:

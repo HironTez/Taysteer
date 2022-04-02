@@ -22,10 +22,3 @@ export interface UserMinT {
   id: string;
   login: string;
 }
-
-export interface UserRaterT {
-  id: number;
-  raterId: string;
-  rating: number;
-  user: User;
-}

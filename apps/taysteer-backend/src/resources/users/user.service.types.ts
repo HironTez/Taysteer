@@ -20,5 +20,6 @@ export enum UserStringTypes {
   CONFLICT = 'conflict',
   IMAGES_FOLDER = 'user_avatar',
   RECIPES = 'recipes',
+  RATER = 'rater',
   RATERS = 'raters'
 }

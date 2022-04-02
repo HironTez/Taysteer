@@ -25,7 +25,7 @@ export class Comment extends BaseEntity {
   @ManyToOne(() => User, { onDelete: 'SET NULL' })
   user: User;
 
-  @OneToMany(() => Comment, (comment) => comment.mainComment, { cascade: true })
+  @OneToMany(() => Comment, (comment) => comment.mainComment)
   childComments: Array<Comment>;
 
   @ManyToOne(() => Comment, (comment) => comment.childComments, {
