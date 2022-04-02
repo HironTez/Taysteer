@@ -1,3 +1,4 @@
+import { User } from './../users/user.model';
 import { Recipe } from './recipe.model';
 import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToOne } from 'typeorm';
 
@@ -6,21 +7,19 @@ export class RecipeRater extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('varchar', { length: 50 })
-  raterId: string;
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
+  rater: User;
 
   @Column('int', { width: 5 })
   rating: number;
 
-  @ManyToOne(() => Recipe, (recipe) => recipe.raters)
+  @ManyToOne(() => Recipe, (recipe) => recipe.raters, { onDelete: 'CASCADE' })
   recipe: Recipe;
 
   constructor({
-    raterId = '',
     rating = 0
   } = {}) {
     super();
-    this.raterId = raterId;
     this.rating = rating;
   }
 }

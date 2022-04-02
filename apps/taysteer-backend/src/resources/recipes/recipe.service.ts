@@ -8,16 +8,22 @@ import {
   RecipeStringTypes,
   UpdateRecipeT,
   ValidateRecipeDataT,
-  HasAccessT,
+  HasRecipeAccessT,
   DeleteRecipeT,
+  AddRecipeCommentT,
+  ValidateCommentT,
+  HasCommentAccessT,
+  GetCommentByIdT,
+  DeleteCommentT,
+  UpdateCommentT,
+  AddCommentCommentT,
 } from './recipe.service.types';
 import { Recipe } from './recipe.model';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
-import { RecipeRaterT } from './recipe.types';
 import { RecipeRater } from './recipe.rater.model';
-import { RecipeDataDto } from './recipe.dto';
+import { RecipeDataDto } from './recipe.dtos';
 import { deleteImage, uploadImage } from '../../utils/image.uploader';
 
 @Injectable()
@@ -26,9 +32,9 @@ export class RecipeService {
     @InjectRepository(Recipe)
     private readonly recipeRepository: Repository<Recipe>,
     @InjectRepository(RecipeRater)
-    private readonly recipeRatersRepository: Repository<RecipeRaterT>,
+    private readonly recipeRatersRepository: Repository<RecipeRater>,
     @InjectRepository(Comment)
-    private readonly recipeCommentsRepository: Repository<RecipeRaterT>,
+    private readonly recipeCommentsRepository: Repository<Comment>,
     private readonly usersService: UsersService
   ) {}
 
@@ -50,8 +56,23 @@ export class RecipeService {
     return true;
   };
 
-  hasAccess: HasAccessT = async (userId, recipeId) => {
+  validateComment: ValidateCommentT = (commentText) =>
+    commentText.length <= 500;
+
+  hasRecipeAccess: HasRecipeAccessT = async (userId, recipeId) => {
     const userIsOwner = await this.recipeRepository.findOne(recipeId, {
+      relations: [RecipeStringTypes.USER],
+      where: {
+        user: {
+          id: userId,
+        },
+      },
+    });
+    return Boolean(userIsOwner);
+  };
+
+  hasCommentAccess: HasCommentAccessT = async (userId, commentId) => {
+    const userIsOwner = await this.recipeCommentsRepository.findOne(commentId, {
       relations: [RecipeStringTypes.USER],
       where: {
         user: {
@@ -69,7 +90,16 @@ export class RecipeService {
       take: 10,
     });
 
-  getRecipeById: GetRecipeByIdT = (id) => this.recipeRepository.findOne(id);
+  getRecipeById: GetRecipeByIdT = (id) =>
+    this.recipeRepository.findOne(id, {
+      relations: [
+        RecipeStringTypes.USER,
+        RecipeStringTypes.COMMENTS,
+        `${RecipeStringTypes.COMMENTS}.${RecipeStringTypes.USER}`,
+        `${RecipeStringTypes.COMMENTS}.${RecipeStringTypes.CHILDCOMMENTS}`,
+        `${RecipeStringTypes.COMMENTS}.${RecipeStringTypes.CHILDCOMMENTS}.${RecipeStringTypes.USER}`,
+      ],
+    });
 
   getRecipesByTitle: GetRecipesByTitleT = (title, page = 1) =>
     this.recipeRepository.find({
@@ -214,7 +244,7 @@ export class RecipeService {
 
   deleteRecipe: DeleteRecipeT = async (id) => {
     // Get the recipe
-    const recipe = await this.recipeRepository.findOne(id);
+    const recipe = await this.getRecipeById(id);
 
     // Delete images
     const images = [recipe.image, ...recipe.steps.map((step) => step.image)];
@@ -223,13 +253,84 @@ export class RecipeService {
       const folder = image.match(/(?<=[0-9]\W).+(?=\W\w+\.\w+)/)[0];
       deleteImage(id, folder);
     });
-    // Delete raters
-    this.recipeRatersRepository.delete({ recipe: recipe });
-    // Delete comments
-    this.recipeCommentsRepository.delete({ recipe: recipe });
 
     // Delete the recipe
-    const deleteResult = await this.recipeRepository.delete(recipe);
+    const deleteResult = await this.recipeRepository.delete(id);
     return deleteResult.affected;
+  };
+
+  getCommentById: GetCommentByIdT = (id) =>
+    this.recipeCommentsRepository.findOne(id, {
+      relations: [
+        RecipeStringTypes.USER,
+        RecipeStringTypes.RECIPE,
+        RecipeStringTypes.CHILDCOMMENTS,
+        RecipeStringTypes.MAINCOMMENT,
+      ],
+    });
+
+  addRecipeComment: AddRecipeCommentT = async (
+    commentText,
+    userId,
+    recipeId
+  ) => {
+    if (!this.validateComment(commentText)) return false; // Validate comment
+
+    // Get recipe and user
+    const recipe = await this.getRecipeById(recipeId);
+    if (!recipe) return false;
+    const user = await this.usersService.getUserById(userId);
+
+    // Create the comment
+    const comment = this.recipeCommentsRepository.create(
+      new Comment({ text: commentText })
+    );
+    // Set relatives
+    comment.user = user;
+    comment.recipe = recipe;
+
+    // Save the comment
+    return this.recipeCommentsRepository.save(comment);
+  };
+
+  addCommentComment: AddCommentCommentT = async (commentText, userId, mainCommentId) => {
+    if (!this.validateComment(commentText)) return false; // Validate comment
+
+    // Get recipe and user
+    const mainComment = await this.getCommentById(mainCommentId);
+    if (!mainComment) return false;
+    const user = await this.usersService.getUserById(userId);
+
+    // Create the comment
+    const comment = this.recipeCommentsRepository.create(
+      new Comment({ text: commentText })
+    );
+    // Set relatives
+    comment.user = user;
+    comment.mainComment = mainComment;
+
+    // Save the comment
+    return this.recipeCommentsRepository.save(comment);
+  }
+
+  updateComment: UpdateCommentT = async (
+    commentText,
+    commentId
+  ) => {
+    const comment = await this.getCommentById(commentId); // Get the comment
+    if (!this.validateComment(commentText)) return false; // Validate
+    // Save
+    return this.recipeCommentsRepository.save({
+      ...comment,
+      ...{
+        text: commentText,
+        updated: true,
+      },
+    });
+  };
+
+  deleteComment: DeleteCommentT = async (commentId) => {
+    const deleteResult = await this.recipeCommentsRepository.delete(commentId); // Delete the comment
+    return deleteResult.affected; // Return a result
   };
 }

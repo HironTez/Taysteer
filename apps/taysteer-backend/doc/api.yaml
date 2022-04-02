@@ -120,7 +120,7 @@ components:
         comments:
           type: array
           items:
-            $ref: '#/components/schemas/RecipeComment'
+            $ref: '#/components/schemas/RecipeCommentToResponse'
     RecipeIngredient:
       type: object
       properties:
@@ -146,15 +146,43 @@ components:
           type: string
         image:
           type: string
-    RecipeComment:
+    RecipeCommentToResponse:
       type: object
       properties:
         id:
           type: number
-        commentatorId:
-          type: string
         text:
           type: string
+        user:
+          type: object
+          $ref: '#/components/schemas/UserToResponse'
+        date:
+          type: string
+        updated:
+          type: boolean
+        childComments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChildComment'
+        mainComment:
+          type: object
+    ChildComment:
+      type: object
+      properties:
+        id:
+          type: number
+        text:
+          type: string
+        user:
+          type: object
+          $ref: '#/components/schemas/UserToResponse'
+        date:
+          type: string
+        updated:
+          type: boolean
+        mainComment:
+          type: object
+
   responses:
     UnauthorizedError:
       description: Access token is missing or invalid
@@ -545,11 +573,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: detailed
-          in: query
-          required: false
-          schema:
-            type: boolean
       tags:
         - Recipes
       summary: Get recipe by ID
@@ -651,3 +674,129 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: Recipe not found
+  /recipes/{recipe_id}/comments:
+    post:
+      tags:
+        - Recipes
+      summary: Comment recipe
+      description: Creates the comment of the recipe
+      parameters:
+        - name: recipe_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                text:
+                  type: string
+                  description: The comment text
+              required:
+                - text
+      responses:
+        201:
+          description: The comment has been created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecipeCommentToResponse"
+        400:
+          description: Bad request
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+  /recipes/comments/{comment_id}:
+    post:
+      tags:
+        - Recipes
+      summary: Answer comment
+      description: Creates the answer of the recipe comment
+      parameters:
+        - name: comment_id
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                text:
+                  type: string
+                  description: The comment text
+              required:
+                - text
+      responses:
+        201:
+          description: The comment has been created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecipeCommentToResponse"
+        400:
+          description: Bad request
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+          
+    put:
+      tags:
+        - Recipes
+      summary: Update comment
+      description: Updates the comment of the recipe
+      parameters:
+        - name: comment_id
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              title: example
+              properties:
+                text:
+                  type: string
+                  description: The comment text
+              required:
+                - text
+      responses:
+        201:
+          description: The comment has been updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecipeCommentToResponse"
+        400:
+          description: Bad request
+        401:
+          $ref: '#/components/responses/UnauthorizedError'
+    delete:
+      tags:
+        - Recipes
+      summary: Delete comment
+      description: Deletes the comment of the recipe
+      parameters:
+        - name: comment_id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        204:
+          description: The comment has been deleted
+        400:
+          description: Bad request
+        401:
+          $ref: '#/components/responses/UnauthorizedError'

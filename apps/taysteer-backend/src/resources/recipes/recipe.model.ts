@@ -10,9 +10,7 @@ import { User } from '../users/user.model';
 import { Comment } from './recipe.comment.model';
 import { RecipeRater } from './recipe.rater.model';
 import {
-  CommentT,
   RecipeIngredientT,
-  RecipeRaterT,
   RecipeStepT,
   RecipeToResponseT,
   RecipeToResponseDetailedT,
@@ -33,10 +31,10 @@ export class Recipe extends BaseEntity {
   description: string;
 
   @Column('json')
-  ingredients: RecipeIngredientT[];
+  ingredients: Array<RecipeIngredientT>;
 
   @Column('json')
-  steps: RecipeStepT[];
+  steps: Array<RecipeStepT>;
 
   @Column('int', { width: 10 })
   rating: number;
@@ -47,14 +45,14 @@ export class Recipe extends BaseEntity {
   @Column('int')
   ratingsSum: number;
 
-  @OneToMany(() => RecipeRater, (rater) => rater.recipe)
-  raters: RecipeRaterT[];
+  @OneToMany(() => RecipeRater, (rater) => rater.recipe, { cascade: true })
+  raters: Array<RecipeRater>;
 
   @ManyToOne(() => User, (user) => user.recipes)
   user: User;
 
-  @OneToMany(() => Comment, (comment) => comment.recipe)
-  comments: CommentT[];
+  @OneToMany(() => Comment, (comment) => comment.recipe, { cascade: true })
+  comments: Array<Comment>;
 
   constructor({
     title = '',
@@ -63,7 +61,7 @@ export class Recipe extends BaseEntity {
     ingredients = [],
     steps = [],
     user = new User(),
-    update=false
+    update = false,
   } = {}) {
     super();
     this.title = title;
@@ -94,6 +92,7 @@ export class Recipe extends BaseEntity {
       ratingsCount,
       user,
       ingredients,
+      steps,
       comments,
     } = recipe;
     return {
@@ -103,9 +102,10 @@ export class Recipe extends BaseEntity {
       description,
       rating,
       ratingsCount,
-      user,
+      user: User.toResponse(user),
       ingredients,
-      comments,
+      steps,
+      comments: comments.map((comment) => Comment.toResponse(comment)),
     };
   }
 }

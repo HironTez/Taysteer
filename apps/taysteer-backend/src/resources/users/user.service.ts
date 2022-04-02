@@ -163,10 +163,6 @@ export class UsersService {
   };
 
   deleteUser: DeleteUserT = async (id) => {
-    // Get the user
-    const user = await this.userRepository.findOne(id);
-
-    this.userRatersRepository.delete({ user: user }); // Delete all raters
     deleteImage(id, UserStringTypes.IMAGES_FOLDER); // Delete the image
     const deleteResult = await this.userRepository.delete(id); // Delete the user
     return deleteResult.affected; // Return a result

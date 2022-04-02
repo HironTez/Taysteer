@@ -1,6 +1,9 @@
+import { Comment } from './recipe.comment.model';
+import { RecipeCommentDto } from './recipe.dtos';
 import { Recipe } from './recipe.model';
 import { RecipeService } from './recipe.service';
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -53,51 +56,114 @@ export class RecipeController {
       .send(recipes.map((recipe) => Recipe.toResponse(recipe)));
   }
 
-  @Get('id')
+  @Get(':recipeId')
   async getRecipe(
     @Res() res: Response,
-    @Param('id') id: string,
-    @Query('detailed') detailed = false
+    @Param('recipeId') recipeId: string
   ) {
-    const recipe = await this.recipeService.getRecipeById(id);
-    const result = detailed
-      ? Recipe.toResponseDetailed(recipe)
-      : Recipe.toResponse(recipe);
+    const recipe = await this.recipeService.getRecipeById(recipeId);
     return recipe
-      ? res.status(HttpStatus.OK).send(result)
+      ? res.status(HttpStatus.OK).send(Recipe.toResponseDetailed(recipe))
       : res.status(HttpStatus.NOT_FOUND).send();
   }
 
-  @Put('id')
+  @Put(':recipeId')
   @UseGuards(CookieAuthGuard)
   async updateRecipe(
     @Req() req: ExtendedRequest,
     @Res() res: Response,
-    @Param('id') id: string
+    @Param('recipeId') recipeId: string
   ) {
-    const hasAccess = await this.recipeService.hasAccess(req.user.id, id);
-    if (!hasAccess) return res.status(HttpStatus.NOT_FOUND).send();
+    const hasRecipeAccess = await this.recipeService.hasRecipeAccess(req.user.id, recipeId);
+    if (!hasRecipeAccess) return res.status(HttpStatus.NOT_FOUND).send();
     const updatedRecipe = await this.recipeService.updateRecipe(
       req.parts(),
-      id
+      recipeId
     );
     return updatedRecipe
       ? res.status(HttpStatus.OK).send(Recipe.toResponse(updatedRecipe))
       : res.status(HttpStatus.BAD_REQUEST).send();
   }
 
-  @Delete('id')
+  @Delete(':recipeId')
   @UseGuards(CookieAuthGuard)
   async deleteRecipe(
     @Req() req: ExtendedRequest,
     @Res() res: Response,
-    @Param('id') id: string
+    @Param('recipeId') recipeId: string
   ) {
-    const hasAccess = await this.recipeService.hasAccess(req.user.id, id);
-    if (!hasAccess) return res.status(HttpStatus.NOT_FOUND).send();
-    const deleted = await this.recipeService.deleteRecipe(id);
+    const hasRecipeAccess = await this.recipeService.hasRecipeAccess(req.user.id, recipeId);
+    if (!hasRecipeAccess) return res.status(HttpStatus.NOT_FOUND).send();
+    const deleted = await this.recipeService.deleteRecipe(recipeId);
     return deleted
       ? res.status(HttpStatus.NO_CONTENT).send()
+      : res.status(HttpStatus.BAD_REQUEST).send();
+  }
+
+  @Post(':recipeId/comments')
+  @UseGuards(CookieAuthGuard)
+  async commentRecipe(
+    @Req() req: ExtendedRequest,
+    @Res() res: Response,
+    @Param('recipeId') recipeId: string,
+    @Body() body: RecipeCommentDto
+  ) {
+    const createdComment = await this.recipeService.addRecipeComment(
+      body.text,
+      req.user.id,
+      recipeId
+    );
+    return createdComment
+      ? res.status(HttpStatus.CREATED).send(Comment.toResponse(createdComment))
+      : res.status(HttpStatus.BAD_REQUEST).send();
+  }
+
+  @Put('comments/:commentId')
+  @UseGuards(CookieAuthGuard)
+  async updateRecipeComment(
+    @Req() req: ExtendedRequest,
+    @Res() res: Response,
+    @Param('commentId') commentId: number,
+    @Body() body: RecipeCommentDto
+  ) {
+    const hasRecipeAccess = await this.recipeService.hasCommentAccess(req.user.id, commentId);
+    if (!hasRecipeAccess) return res.status(HttpStatus.NOT_FOUND).send();
+    const updatedComment = await this.recipeService.updateComment(body.text, commentId);
+    return updatedComment
+      ? res.status(HttpStatus.OK).send(Comment.toResponse(updatedComment))
+      : res.status(HttpStatus.BAD_REQUEST).send();
+  }
+
+  @Delete('comments/:commentId')
+  @UseGuards(CookieAuthGuard)
+  async deleteRecipeComment(
+    @Req() req: ExtendedRequest,
+    @Res() res: Response,
+    @Param('commentId') commentId: number,
+  ) {
+    const hasRecipeAccess = await this.recipeService.hasCommentAccess(req.user.id, commentId);
+    if (!hasRecipeAccess) return res.status(HttpStatus.NOT_FOUND).send();
+    const deletedComment = await this.recipeService.deleteComment(commentId);
+    return deletedComment
+      ? res.status(HttpStatus.NO_CONTENT).send()
+      : res.status(HttpStatus.BAD_REQUEST).send();
+  }
+
+  @Post('comments/:commentId')
+  @UseGuards(CookieAuthGuard)
+  async answerRecipeComment(
+    @Req() req: ExtendedRequest,
+    @Res() res: Response,
+    @Param('commentId') commentId: number,
+    @Body() body: RecipeCommentDto
+  ) {
+    const createdComment = await this.recipeService.addCommentComment(
+      body.text,
+      req.user.id,
+      commentId
+    );
+    return createdComment
+      ? res.status(HttpStatus.CREATED).send(Comment.toResponse(createdComment))
       : res.status(HttpStatus.BAD_REQUEST).send();
   }
 }

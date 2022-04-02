@@ -43,7 +43,7 @@ export class User extends BaseEntity {
   @Column('int')
   ratingsSum: number;
 
-  @OneToMany(() => UserRater, (rater) => rater.user)
+  @OneToMany(() => UserRater, (rater) => rater.user, { cascade: true })
   raters: UserRaterT[];
 
   @OneToMany(() => Recipe, (recipe) => recipe.user)

@@ -1,4 +1,4 @@
-import { User } from './../users/user.model';
+import { User } from '../users/user.model';
 import { RecipeIngredientT, RecipeStepT } from "./recipe.types";
 
 export class RecipeDataDto {
@@ -8,4 +8,8 @@ export class RecipeDataDto {
   steps: RecipeStepT[];
   image: string;
   user: User
+}
+
+export class RecipeCommentDto {
+  text: string;
 }

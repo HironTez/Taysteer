@@ -1,5 +1,4 @@
-import { User } from "../users/user.model";
-import { Recipe } from "./recipe.model";
+import { UserToResponseT } from "../users/user.types";
 
 export interface RecipeToResponseT {
   id: string;
@@ -16,9 +15,10 @@ export interface RecipeToResponseDetailedT {
   description: string;
   rating: number;
   ratingsCount: number;
-  user: User;
+  user: UserToResponseT;
   ingredients: Array<RecipeIngredientT>;
-  comments: Array<CommentT>;
+  steps: Array<RecipeStepT>
+  comments: Array<CommentToResponseT>;
 }
 
 export interface RecipeIngredientT {
@@ -33,15 +33,11 @@ export interface RecipeStepT {
   image: string;
 }
 
-export interface RecipeRaterT {
+export interface CommentToResponseT {
   id: number;
-  raterId: string;
-  rating: number;
-  recipe: Recipe;
-}
-
-export interface CommentT {
-  id: number;
-  commentatorId: string;
   text: string;
+  user: UserToResponseT;
+  date: Date;
+  updated: boolean;
+  childComments: Array<CommentToResponseT> | null;
 }
