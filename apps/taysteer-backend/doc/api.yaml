@@ -9,27 +9,6 @@ servers:
 
 components:
   schemas:
-    User:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        login:
-          type: string
-        password:
-          type: string
-        image:
-          type: string
-        description:
-          type: string
-        rating:
-          type: number
-        ratingsCount:
-          type: number
-        ratingsSum:
-          type: number
     UserToResponse:
       type: object
       properties:
@@ -60,29 +39,10 @@ components:
           type: number
         ratingsCount:
           type: number
-    Recipe:
-      type: object
-      properties:
-        id:
-          type: string
-        title:
-          type: string
-        image:
-          type: string
-        description:
-          type: string
-        ingredients:
+        recipes:
           type: array
-        rating:
-          type: number
-        ratingsCount:
-          type: number
-        ratingsSum:
-          type: number
-        userId:
-          type: string
-        comments:
-          type: array
+          items:
+            $ref: '#/components/schemas/RecipeToResponse'
     RecipeToResponse:
       type: object
       properties:
@@ -111,12 +71,17 @@ components:
           type: number
         ratingsCount:
           type: number
-        userId:
-          type: string
+        user:
+          type: object
+          $ref: '#/components/schemas/UserToResponse'
         ingredients:
           type: array
           items:
             $ref: '#/components/schemas/RecipeIngredient'
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecipeStepToResponse'
         comments:
           type: array
           items:
@@ -130,14 +95,7 @@ components:
           type: string
         optional:
           type: boolean
-    RecipeStep:
-      type: object
-      properties:
-        title:
-          type: string
-        description:
-          type: string
-    RecipeStepResponse:
+    RecipeStepToResponse:
       type: object
       properties:
         title:
@@ -185,7 +143,7 @@ components:
 
   responses:
     UnauthorizedError:
-      description: Access token is missing or invalid
+      description: Unauthorized
 
 paths:
   /login:
