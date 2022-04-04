@@ -82,10 +82,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/RecipeStepToResponse'
-        comments:
-          type: array
-          items:
-            $ref: '#/components/schemas/RecipeCommentToResponse'
     RecipeIngredient:
       type: object
       properties:
@@ -686,11 +682,36 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RecipeCommentToResponse"
+                $ref: '#/components/schemas/RecipeCommentToResponse'
         400:
           description: Bad request
         401:
           $ref: '#/components/responses/UnauthorizedError'
+    get:
+      tags:
+        - Recipes
+      parameters:
+        - name: recipe_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+      summary: Get comments
+      description: Gets comments of the recipe
+      responses:
+        '200':
+          description: Got comments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RecipeCommentToResponse'
   /recipes/comments/{comment_id}:
     get:
       tags:
@@ -703,13 +724,19 @@ paths:
           required: true
           schema:
             type: number
+        - name: page
+          in: query
+          required: false
+          description: Page of childComments
+          schema:
+            type: integer
       responses:
         200:
           description: Got the comment
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RecipeCommentToResponse"
+                $ref: '#/components/schemas/RecipeCommentToResponse'
         404:
           description: Not found
         401:
@@ -744,12 +771,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RecipeCommentToResponse"
+                $ref: '#/components/schemas/RecipeCommentToResponse'
         400:
           description: Bad request
         401:
           $ref: '#/components/responses/UnauthorizedError'
-          
+
     put:
       tags:
         - Recipes
@@ -780,7 +807,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RecipeCommentToResponse"
+                $ref: '#/components/schemas/RecipeCommentToResponse'
         400:
           description: Bad request
         401:

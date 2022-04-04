@@ -130,11 +130,26 @@ export class RecipeController {
   @Get('comments/:commentId')
   async getComment(
     @Res() res: Response,
-    @Param('commentId') commentId: number
+    @Param('commentId') commentId: number,
+    @Query('page') page: number
   ) {
-    const comment = await this.recipeService.getCommentById(commentId);
+    const comment = await this.recipeService.getCommentWithAnswersById(commentId, page);
     return comment
       ? res.status(HttpStatus.OK).send(Comment.toResponse(comment))
+      : res.status(HttpStatus.NOT_FOUND).send();
+  }
+
+  @Get(':recipeId/comments')
+  async getRecipeComments(
+    @Res() res: Response,
+    @Param('recipeId') recipeId: string,
+    @Query('page') page: number
+  ) {
+    const comments = await this.recipeService.getComments(recipeId, page);
+    return comments
+      ? res
+          .status(HttpStatus.OK)
+          .send(comments.map((comment) => Comment.toResponse(comment)))
       : res.status(HttpStatus.NOT_FOUND).send();
   }
 

@@ -18,6 +18,8 @@ import {
   UpdateCommentT,
   AddCommentCommentT,
   RateRecipeT,
+  GetCommentsT,
+  GetCommentWithAnswersByIdT,
 } from './recipe.service.types';
 import { Recipe } from './recipe.model';
 import { Injectable } from '@nestjs/common';
@@ -101,14 +103,7 @@ export class RecipeService {
 
   getRecipeById: GetRecipeByIdT = (id) =>
     this.recipeRepository.findOne(id, {
-      relations: [
-        RecipeStringTypes.USER,
-        RecipeStringTypes.COMMENTS,
-        `${RecipeStringTypes.COMMENTS}.${RecipeStringTypes.USER}`,
-        `${RecipeStringTypes.COMMENTS}.${RecipeStringTypes.CHILDCOMMENTS}`,
-        `${RecipeStringTypes.COMMENTS}.${RecipeStringTypes.CHILDCOMMENTS}.${RecipeStringTypes.USER}`,
-        RecipeStringTypes.RATERS,
-      ],
+      relations: [RecipeStringTypes.USER, RecipeStringTypes.RATERS],
     });
 
   getRecipesByTitle: GetRecipesByTitleT = (title, page = 1) =>
@@ -276,7 +271,7 @@ export class RecipeService {
     const findingResult = await this.recipeRatingsRepository.findOne(
       {
         rater: user,
-        recipe: recipe
+        recipe: recipe,
       },
       {
         relations: [RecipeStringTypes.RATER, RecipeStringTypes.RECIPE],
@@ -319,15 +314,38 @@ export class RecipeService {
     });
   };
 
+  getComments: GetCommentsT = async (recipeId, page = 1) => {
+    const recipe = await this.getRecipeById(recipeId);
+    return this.recipeCommentsRepository.find({
+      relations: [
+        RecipeStringTypes.RECIPE,
+        RecipeStringTypes.USER,
+      ],
+      where: { recipe: recipe },
+      order: { date: 'DESC' },
+      skip: page ? (page - 1) * 10 : 0,
+      take: 10,
+    });
+  };
+
   getCommentById: GetCommentByIdT = (id) =>
     this.recipeCommentsRepository.findOne(id, {
-      relations: [
-        RecipeStringTypes.USER,
-        RecipeStringTypes.RECIPE,
-        RecipeStringTypes.CHILDCOMMENTS,
-        `${RecipeStringTypes.CHILDCOMMENTS}.${RecipeStringTypes.USER}`,
-      ],
+      relations: [RecipeStringTypes.USER, RecipeStringTypes.RECIPE],
     });
+
+  getCommentWithAnswersById: GetCommentWithAnswersByIdT = async (id, page) => {
+    const mainComment = await this.getCommentById(id); // Get main comment
+    // Get the page of child comments
+    const childComments = await this.recipeCommentsRepository.find({
+      where: { mainComment: mainComment },
+      relations: [RecipeStringTypes.MAINCOMMENT, RecipeStringTypes.USER],
+      order: { date: 'DESC' },
+      skip: page ? (page - 1) * 10 : 0,
+      take: 10,
+    });
+    mainComment.childComments = childComments;
+    return mainComment;
+  };
 
   addRecipeComment: AddRecipeCommentT = async (
     commentText,

@@ -17,8 +17,7 @@ export interface RecipeToResponseDetailedT {
   ratingsCount: number;
   user: UserToResponseT;
   ingredients: Array<RecipeIngredientT>;
-  steps: Array<RecipeStepT>
-  comments: Array<CommentToResponseT>;
+  steps: Array<RecipeStepT>,
 }
 
 export interface RecipeIngredientT {

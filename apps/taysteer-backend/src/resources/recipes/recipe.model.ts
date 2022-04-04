@@ -93,7 +93,6 @@ export class Recipe extends BaseEntity {
       user,
       ingredients,
       steps,
-      comments,
     } = recipe;
     return {
       id,
@@ -105,7 +104,6 @@ export class Recipe extends BaseEntity {
       user: User.toResponse(user),
       ingredients,
       steps,
-      comments: comments.map((comment) => Comment.toResponse(comment)),
     };
   }
 }
