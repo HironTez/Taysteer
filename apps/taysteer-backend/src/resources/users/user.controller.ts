@@ -24,22 +24,28 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get(':id')
-  @UseGuards(CookieAuthGuard)
   async getUserById(
+    @Res() res: Response,
+    @Param('id') id: string
+  ) {
+    const user = await this.usersService.getUserById(id);
+    return user
+      ? res.status(HttpStatus.OK).send(User.toResponseDetailed(user))
+      : res.status(HttpStatus.NOT_FOUND).send();
+  }
+
+  @Get('me')
+  @UseGuards(CookieAuthGuard)
+  async getMe(
     @Req() req: ExtendedRequest,
     @Res() res: Response,
-    @Param('id') id: string,
     @Query('detailed') detailed = false
   ) {
-    const user = await this.usersService.getUserById(
-      id == 'me' ? req.user.id : id
-    );
+    const user = await this.usersService.getUserById(req.user.id);
     const response = detailed
       ? await User.toResponseDetailed(user)
       : User.toResponse(user);
-    return user
-      ? res.status(HttpStatus.OK).send(response)
-      : res.status(HttpStatus.NOT_FOUND).send();
+    return res.status(HttpStatus.OK).send(response)
   }
 
   @Post()
@@ -57,7 +63,11 @@ export class UsersController {
 
   @Put()
   @UseGuards(CookieAuthGuard)
-  async updateUserById(@Req() req: ExtendedRequest, @Res() res: Response, @Query('user_id') userId: string) {
+  async updateUserById(
+    @Req() req: ExtendedRequest,
+    @Res() res: Response,
+    @Query('user_id') userId: string
+  ) {
     // Check access to an account
     const hasAccess = await this.usersService.checkAccess(
       req.user,
@@ -82,7 +92,11 @@ export class UsersController {
 
   @Delete()
   @UseGuards(CookieAuthGuard)
-  async deleteUserById(@Req() req: ExtendedRequest, @Res() res: Response, @Query('user_id') userId: string) {
+  async deleteUserById(
+    @Req() req: ExtendedRequest,
+    @Res() res: Response,
+    @Query('user_id') userId: string
+  ) {
     const hasAccess = await this.usersService.checkAccess(
       req.user,
       userId || req.user.id,
@@ -90,14 +104,15 @@ export class UsersController {
     );
     if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();
 
-    const userDeleted = await this.usersService.deleteUser(userId || req.user.id); // Delete user
+    const userDeleted = await this.usersService.deleteUser(
+      userId || req.user.id
+    ); // Delete user
     return userDeleted
       ? res.status(HttpStatus.NO_CONTENT).send()
       : res.status(HttpStatus.NOT_FOUND).send();
   }
 
   @Get('rating')
-  @UseGuards(CookieAuthGuard)
   async getUsersByRating(@Res() res: Response, @Query('page') page: number) {
     const users = await this.usersService.getUsersByRating(page);
     const usersToResponse = users.map((user) => User.toResponse(user));
@@ -143,7 +158,9 @@ export class UsersController {
     const userExists = await this.usersService.getUserById(req.user.id);
     if (!userExists) return res.status(HttpStatus.NOT_FOUND).send();
 
-    const userWithDeletedImage = await this.usersService.deleteUserImage(req.user.id);
+    const userWithDeletedImage = await this.usersService.deleteUserImage(
+      req.user.id
+    );
     return userWithDeletedImage
       ? res.status(HttpStatus.OK).send(User.toResponse(userWithDeletedImage))
       : res.status(HttpStatus.BAD_REQUEST).send();
@@ -157,7 +174,7 @@ export class UsersController {
     @Query('page') page: number
   ) {
     const recipes = await this.usersService.getUserRecipes(id, page);
-    const toResponse = recipes.map(recipe => Recipe.toResponse(recipe));
+    const toResponse = recipes.map((recipe) => Recipe.toResponse(recipe));
     return res.status(HttpStatus.OK).send(toResponse);
   }
 }

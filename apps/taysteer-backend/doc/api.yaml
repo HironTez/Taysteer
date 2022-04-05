@@ -318,14 +318,9 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: User not found
-  /users/{user_id}:
+  /users/me:
     get:
       parameters:
-        - name: user_id
-          in: path
-          required: true
-          schema:
-            type: string
         - name: detailed
           in: query
           required: false
@@ -333,9 +328,8 @@ paths:
             type: boolean
       tags:
         - Users
-      summary: Get user by ID
-      description: Gets the user by ID / gets my account by "me" instead id
-        e.g. “/users/123” or "/users/me"nse)
+      summary: Get my account
+      description: Gets your account
       responses:
         '200':
           description: Successful operation
@@ -347,6 +341,26 @@ paths:
                   - $ref: '#/components/schemas/UserToResponse'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+  /users/{user_id}:
+    get:
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+      tags:
+        - Users
+      summary: Get user by ID
+      description: Gets the user by ID
+      responses:
+        '200':
+          description: Got the user
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/UserToResponseDetailed'
         '404':
           description: User not found
   /users/{user_id}/recipes:
@@ -389,13 +403,11 @@ paths:
       description: Gets rating list of users
       responses:
         '200':
-          description: Got rating
+          description: Got users
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserToResponse'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
   /users/{user_id}/rate:
     post:
       tags:
