@@ -1,3 +1,4 @@
+import { UserStringTypes } from './user.service.types';
 import { Recipe } from './../recipes/recipe.model';
 import {
   UserMinT,
@@ -10,6 +11,7 @@ import {
   Column,
   BaseEntity,
   OneToMany,
+  getRepository,
 } from 'typeorm';
 import { UserRating } from './user.rating.model';
 
@@ -74,7 +76,7 @@ export class User extends BaseEntity {
     return { id, name, login, image, rating } as User;
   }
 
-  static toResponseDetailed(user: User): UserToResponseDetailedT {
+  static async toResponseDetailed(user: User): Promise<UserToResponseDetailedT> {
     const {
       id,
       name,
@@ -83,7 +85,6 @@ export class User extends BaseEntity {
       rating,
       ratingsCount,
       description,
-      recipes,
     } = user;
     return {
       id,
@@ -93,8 +94,8 @@ export class User extends BaseEntity {
       rating,
       ratingsCount,
       description,
-      recipes,
-    } as User;
+      countOfRecipes: await getRepository(Recipe).count({relations: [UserStringTypes.USER], where: {user: user}})
+    };
   }
 
   static toResponseMin(user: User): UserMinT {

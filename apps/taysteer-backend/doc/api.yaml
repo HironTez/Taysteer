@@ -43,6 +43,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/RecipeToResponse'
+        countOfRecipes:
+          type: number
     RecipeToResponse:
       type: object
       properties:
@@ -82,6 +84,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/RecipeStepToResponse'
+        countOfComments:
+          type: number
     RecipeIngredient:
       type: object
       properties:
@@ -121,12 +125,26 @@ components:
           type: string
         updated:
           type: boolean
+        countOfChildComments:
+          type: number
+    RecipeCommentToResponseDetailed:
+      type: object
+      properties:
+        id:
+          type: number
+        text:
+          type: string
+        user:
+          type: object
+          $ref: '#/components/schemas/UserToResponse'
+        date:
+          type: string
+        updated:
+          type: boolean
         childComments:
           type: array
           items:
             $ref: '#/components/schemas/ChildComment'
-        mainComment:
-          type: object
     ChildComment:
       type: object
       properties:
@@ -531,7 +549,6 @@ paths:
               schema:
                 oneOf:
                   - $ref: '#/components/schemas/RecipeToResponseDetailed'
-                  - $ref: '#/components/schemas/RecipeToResponse'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '404':
@@ -736,7 +753,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RecipeCommentToResponse'
+                $ref: '#/components/schemas/RecipeCommentToResponseDetailed'
         404:
           description: Not found
         401:

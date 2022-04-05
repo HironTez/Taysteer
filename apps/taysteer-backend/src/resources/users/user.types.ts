@@ -1,5 +1,3 @@
-import { User } from "./user.model";
-
 export interface UserToResponseT {
   id: string;
   name: string;
@@ -16,6 +14,7 @@ export interface UserToResponseDetailedT {
   description: string;
   rating: number;
   ratingsCount: number;
+  countOfRecipes: number;
 }
 
 export interface UserMinT {

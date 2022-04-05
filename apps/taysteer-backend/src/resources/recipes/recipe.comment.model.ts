@@ -1,3 +1,4 @@
+import { RecipeStringTypes } from './recipe.service.types';
 import { Recipe } from './recipe.model';
 import {
   Entity,
@@ -9,7 +10,7 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import { User } from '../users/user.model';
-import { CommentToResponseT } from './recipe.types';
+import { CommentToResponseT, CommentToResponseDetailedT } from './recipe.types';
 
 @Entity('Comment')
 export class Comment extends BaseEntity {
@@ -45,9 +46,23 @@ export class Comment extends BaseEntity {
     this.updated = updated;
   }
 
-  static toResponse(comment: Comment): CommentToResponseT {
-    const { id, text, user, date, updated, childComments } =
-      comment;
+  static async toResponse(comment: Comment): Promise<CommentToResponseT> {
+    const { id, text, user, date, updated } = comment;
+    return {
+      id,
+      text,
+      user: User.toResponse(user),
+      date,
+      updated,
+      countOfChildComments: await this.getRepository().count({
+        relations: [RecipeStringTypes.MAINCOMMENT],
+        where: { mainComment: comment },
+      }),
+    };
+  }
+
+  static async toResponseDetailed(comment: Comment): Promise<CommentToResponseDetailedT> {
+    const { id, text, user, date, updated, childComments } = comment;
     return {
       id,
       text,
@@ -55,7 +70,9 @@ export class Comment extends BaseEntity {
       date,
       updated,
       childComments: childComments
-        ? childComments.map((comment) => Comment.toResponse(comment))
+        ? await Promise.all(childComments.map(
+            async (comment) => await Comment.toResponse(comment)
+          ))
         : null,
     };
   }

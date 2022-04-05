@@ -18,6 +18,7 @@ export interface RecipeToResponseDetailedT {
   user: UserToResponseT;
   ingredients: Array<RecipeIngredientT>;
   steps: Array<RecipeStepT>,
+  countOfComments: number;
 }
 
 export interface RecipeIngredientT {
@@ -33,6 +34,15 @@ export interface RecipeStepT {
 }
 
 export interface CommentToResponseT {
+  id: number;
+  text: string;
+  user: UserToResponseT;
+  date: Date;
+  updated: boolean;
+  countOfChildComments: number;
+}
+
+export interface CommentToResponseDetailedT {
   id: number;
   text: string;
   user: UserToResponseT;

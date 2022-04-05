@@ -1,3 +1,4 @@
+import { RecipeStringTypes } from './recipe.service.types';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -5,6 +6,7 @@ import {
   BaseEntity,
   OneToMany,
   ManyToOne,
+  getRepository
 } from 'typeorm';
 import { User } from '../users/user.model';
 import { Comment } from './recipe.comment.model';
@@ -82,7 +84,7 @@ export class Recipe extends BaseEntity {
     return { id, title, image, description, rating };
   }
 
-  static toResponseDetailed(recipe: Recipe): RecipeToResponseDetailedT {
+  static async toResponseDetailed(recipe: Recipe): Promise<RecipeToResponseDetailedT> {
     const {
       id,
       title,
@@ -104,6 +106,7 @@ export class Recipe extends BaseEntity {
       user: User.toResponse(user),
       ingredients,
       steps,
+      countOfComments: await getRepository(Comment).count({relations: [RecipeStringTypes.RECIPE], where: {recipe: recipe}}),
     };
   }
 }

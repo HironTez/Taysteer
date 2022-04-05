@@ -339,7 +339,7 @@ export class RecipeService {
     const childComments = await this.recipeCommentsRepository.find({
       where: { mainComment: mainComment },
       relations: [RecipeStringTypes.MAINCOMMENT, RecipeStringTypes.USER],
-      order: { date: 'DESC' },
+      order: { date: 'ASC' },
       skip: page ? (page - 1) * 10 : 0,
       take: 10,
     });

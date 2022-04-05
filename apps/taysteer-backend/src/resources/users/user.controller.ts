@@ -34,7 +34,7 @@ export class UsersController {
       id == 'me' ? req.user.id : id
     );
     const response = detailed
-      ? User.toResponseDetailed(user)
+      ? await User.toResponseDetailed(user)
       : User.toResponse(user);
     return user
       ? res.status(HttpStatus.OK).send(response)

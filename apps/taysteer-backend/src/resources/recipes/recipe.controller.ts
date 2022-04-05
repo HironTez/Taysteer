@@ -60,7 +60,7 @@ export class RecipeController {
   async getRecipe(@Res() res: Response, @Param('recipeId') recipeId: string) {
     const recipe = await this.recipeService.getRecipeById(recipeId);
     return recipe
-      ? res.status(HttpStatus.OK).send(Recipe.toResponseDetailed(recipe))
+      ? res.status(HttpStatus.OK).send(await Recipe.toResponseDetailed(recipe))
       : res.status(HttpStatus.NOT_FOUND).send();
   }
 
@@ -133,9 +133,14 @@ export class RecipeController {
     @Param('commentId') commentId: number,
     @Query('page') page: number
   ) {
-    const comment = await this.recipeService.getCommentWithAnswersById(commentId, page);
+    const comment = await this.recipeService.getCommentWithAnswersById(
+      commentId,
+      page
+    );
     return comment
-      ? res.status(HttpStatus.OK).send(Comment.toResponse(comment))
+      ? res
+          .status(HttpStatus.OK)
+          .send(await Comment.toResponseDetailed(comment))
       : res.status(HttpStatus.NOT_FOUND).send();
   }
 
@@ -149,7 +154,11 @@ export class RecipeController {
     return comments
       ? res
           .status(HttpStatus.OK)
-          .send(comments.map((comment) => Comment.toResponse(comment)))
+          .send(
+            await Promise.all(
+              comments.map(async (comment) => await Comment.toResponse(comment))
+            )
+          )
       : res.status(HttpStatus.NOT_FOUND).send();
   }
 
@@ -167,7 +176,7 @@ export class RecipeController {
       recipeId
     );
     return createdComment
-      ? res.status(HttpStatus.CREATED).send(Comment.toResponse(createdComment))
+      ? res.status(HttpStatus.CREATED).send(await Comment.toResponse(createdComment))
       : res.status(HttpStatus.BAD_REQUEST).send();
   }
 
@@ -189,7 +198,7 @@ export class RecipeController {
       commentId
     );
     return updatedComment
-      ? res.status(HttpStatus.OK).send(Comment.toResponse(updatedComment))
+      ? res.status(HttpStatus.OK).send(await Comment.toResponse(updatedComment))
       : res.status(HttpStatus.BAD_REQUEST).send();
   }
 
@@ -225,7 +234,7 @@ export class RecipeController {
       commentId
     );
     return createdComment
-      ? res.status(HttpStatus.CREATED).send(Comment.toResponse(createdComment))
+      ? res.status(HttpStatus.CREATED).send(await Comment.toResponse(createdComment))
       : res.status(HttpStatus.BAD_REQUEST).send();
   }
 }
