@@ -1,3 +1,4 @@
+import { Recipe } from './../recipes/recipe.model';
 import {
   Controller,
   Req,
@@ -146,5 +147,17 @@ export class UsersController {
     return userWithDeletedImage
       ? res.status(HttpStatus.OK).send(User.toResponse(userWithDeletedImage))
       : res.status(HttpStatus.BAD_REQUEST).send();
+  }
+
+  @Get(':id/recipes')
+  async getUserRecipes(
+    @Req() req: ExtendedRequest,
+    @Res() res: Response,
+    @Param('id') id: string,
+    @Query('page') page: number
+  ) {
+    const recipes = await this.usersService.getUserRecipes(id, page);
+    const toResponse = recipes.map(recipe => Recipe.toResponse(recipe));
+    return res.status(HttpStatus.OK).send(toResponse);
   }
 }

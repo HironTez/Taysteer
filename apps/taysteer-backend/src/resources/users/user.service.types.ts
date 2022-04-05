@@ -1,3 +1,4 @@
+import { Recipe } from './../recipes/recipe.model';
 import { UserDataDto } from './user.dto';
 import { UserMinT } from './user.types';
 import { MultipartFile } from 'fastify-multipart';
@@ -14,6 +15,7 @@ export type DeleteUserT = (id: string) => Promise<number>;
 export type GetUsersByRatingT = (page: number) => Promise<Array<User>>;
 export type RateUserT = (id: string, raterId: string, rating: number) => Promise<User | false>;
 export type DeleteUserImageT = (userId: string) => Promise<User | false>;
+export type GetUserRecipesT = (userId: string, page: number) => Promise<Array<Recipe>>;
 
 export enum UserStringTypes {
   IMAGE = 'image',

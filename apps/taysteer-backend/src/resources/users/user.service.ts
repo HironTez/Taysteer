@@ -1,3 +1,4 @@
+import { Recipe } from './../recipes/recipe.model';
 import { UserDataDto } from './user.dto';
 import {
   CreateAdminT,
@@ -12,6 +13,7 @@ import {
   ValidateUserDataT,
   UserStringTypes,
   DeleteUserImageT,
+  GetUserRecipesT,
 } from './user.service.types';
 import { User } from './user.model';
 import { Injectable } from '@nestjs/common';
@@ -28,7 +30,9 @@ export class UsersService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @InjectRepository(UserRating)
-    private readonly userRatersRepository: Repository<UserRating>
+    private readonly userRatersRepository: Repository<UserRating>,
+    @InjectRepository(Recipe)
+    private readonly recipeRepository: Repository<Recipe>
   ) {
     this.createAdmin();
   }
@@ -76,7 +80,7 @@ export class UsersService {
 
   getUserById: GetByIdT = (id) =>
     this.userRepository.findOne(id, {
-      relations: [UserStringTypes.RECIPES, UserStringTypes.RATERS],
+      relations: [UserStringTypes.RATERS],
     });
 
   getUserByLogin: GetByLoginT = (login) =>
@@ -243,5 +247,16 @@ export class UsersService {
     if (deleted) {
       return this.userRepository.save({ ...user, ...{ image: '' } });
     } else return false;
+  };
+
+  getUserRecipes: GetUserRecipesT = async (userId, page = 1) => {
+    const user = await this.getUserById(userId);
+    return await this.recipeRepository.find({
+      relations: [UserStringTypes.USER],
+      where: { user: user },
+      order: { rating: 'DESC' },
+      skip: page ? (page - 1) * 10 : 0,
+      take: 10,
+    });
   };
 }

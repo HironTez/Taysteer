@@ -335,7 +335,7 @@ paths:
         - Users
       summary: Get user by ID
       description: Gets the user by ID / gets my account by "me" instead id
-        e.g. “/users/123” or "/users/me" (remove password from response)
+        e.g. “/users/123” or "/users/me"nse)
       responses:
         '200':
           description: Successful operation
@@ -349,6 +349,32 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: User not found
+  /users/{user_id}/recipes:
+    get:
+      tags:
+        - Users
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+      summary: Get user recipes
+      description: Gets recipes of the user
+      responses:
+        '200':
+          description: Got recipes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RecipeToResponse'
   /users/rating:
     get:
       tags:
@@ -718,7 +744,7 @@ paths:
           required: false
           schema:
             type: integer
-      summary: Get comments
+      summary: Get recipe comments
       description: Gets comments of the recipe
       responses:
         '200':
