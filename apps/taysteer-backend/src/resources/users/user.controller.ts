@@ -24,13 +24,10 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get(':id')
-  async getUserById(
-    @Res() res: Response,
-    @Param('id') id: string
-  ) {
+  async getUserById(@Res() res: Response, @Param('id') id: string) {
     const user = await this.usersService.getUserById(id);
     return user
-      ? res.status(HttpStatus.OK).send(User.toResponseDetailed(user))
+      ? res.status(HttpStatus.OK).send(await User.toResponseDetailed(user))
       : res.status(HttpStatus.NOT_FOUND).send();
   }
 
@@ -45,7 +42,7 @@ export class UsersController {
     const response = detailed
       ? await User.toResponseDetailed(user)
       : User.toResponse(user);
-    return res.status(HttpStatus.OK).send(response)
+    return res.status(HttpStatus.OK).send(response);
   }
 
   @Post()
@@ -103,13 +100,13 @@ export class UsersController {
       true
     );
     if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();
-
+    // Delete user
     const userDeleted = await this.usersService.deleteUser(
       userId || req.user.id
-    ); // Delete user
+    );
     return userDeleted
       ? res.status(HttpStatus.NO_CONTENT).send()
-      : res.status(HttpStatus.NOT_FOUND).send();
+      : res.status(HttpStatus.BAD_REQUEST).send();
   }
 
   @Get('rating')

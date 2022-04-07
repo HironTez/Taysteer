@@ -316,8 +316,8 @@ paths:
           description: The user has been deleted
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: User not found
+        '403':
+          description: Forbidden
   /users/me:
     get:
       parameters:

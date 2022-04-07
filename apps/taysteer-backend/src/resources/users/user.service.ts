@@ -57,9 +57,10 @@ export class UsersService {
     requestedId,
     shouldBeOwner = true
   ) => {
+    const userExists = await this.getUserById(requestedId);
     const isOwner = user.id == requestedId;
     const isAdmin = user.id == (await this.getUserByLogin(ADMIN_LOGIN)).id;
-    return isOwner == shouldBeOwner || isAdmin;
+    return userExists && (isOwner == shouldBeOwner || isAdmin);
   };
 
   validateUserData: ValidateUserDataT = async (userData, updating = false) => {
