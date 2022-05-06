@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Yanone+Kaffeesatz:wght@300;400&display=swap')
+
+.recipe-min
+  font-family: 'Yanone Kaffeesatz', sans-serif
+  $height: max(min(calc(35px + (200 - 35) * ((100vw - 320px) / (1440 - 320))), 100px), 60px)
+  $width: calc($height * 5)
+  $padding: 10px
+  $margin: min(calc(5px + (15 - 5) * ((100vw - 320px) / (1440 - 320))), 10px)
+  width: $width
+  height: $height
+  overflow: hidden
+  cursor: pointer
+  backdrop-filter: blur( 20.0px )
+  -webkit-backdrop-filter: blur( 20.0px )
+  border-radius: 10px
+  margin: $margin
+  padding: $padding
+  transition: 0.2s
+
+  *
+    position: absolute
+
+  img.image
+    object-fit: cover
+    margin-right: calc(2px + (5 - 2) * ((100vw - 320px) / (1440 - 320)))
+    border-radius: 50%
+    height: $height
+    width: $height
+
+  div.title
+    left: calc($height + ($padding * 2))
+    width: min(max(calc(100px + (500 - 100) * ((100vw - 320px) / (1440 - 320))), 160px), 320px)
+    overflow: hidden
+    text-overflow: ellipsis
+    color: #0E1111
+    font-size: 25px
+    font-weight: 400
+    white-space: nowrap
+
+  div.rating
+    right: calc( 0px + $padding )
+
+    span.rating-star
+      position: relative
+
+  div.description
+    top: min(max(calc(45px + (10 - 45) * ((100vw - 320px) / (1440 - 320))), 35%), 50%)
+    left: calc($height + ($padding * 2))
+    width: calc($height / 100 * 300)
+    color: #0E1111
+    font-size: 16px
+    overflow: hidden
+    text-overflow: ellipsis
+    display: -webkit-box
+    -webkit-box-orient: vertical
+    -webkit-line-clamp: 3 // number of lines to show
+    font-weight: 300
+
+  div.readMore
+    right: calc( 0px + $padding )
+    bottom: calc( 0px + $padding )
+
+.recipe-min:hover
+  // box-shadow: 0px 0px 10px rgba(14, 17, 17, 0.12)
+  // transform: scale(1.01)
+  background-color: rgb(242, 241, 241)
+
+@mixin rating($rating)
+  color: gray
+  @for $i from 1 through 5
+    @if $i <= $rating
+      span.rating-star:nth-child(#{$i})
+        color: orange
+      span.rating-star:nth-child(#{$i})::before
+        content: '★'
+    @else
+      span.rating-star:nth-child(#{$i})::before
+        content: "☆"
+
+div.rating.rating-1
+  @include rating(1)
+div.rating.rating-2
+  @include rating(2)
+div.rating.rating-3
+  @include rating(3)
+div.rating.rating-4
+  @include rating(4)
+div.rating.rating-5
+  @include rating(5)

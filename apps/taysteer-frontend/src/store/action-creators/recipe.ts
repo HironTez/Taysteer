@@ -1,11 +1,12 @@
 import { Dispatch } from 'react';
+import { HOST_BACKEND } from '../../configs/common/config';
 import { RecipeAction, RecipeActionTypes } from '../../types/recipe';
 
 export const fetchRecipes = () => {
   return async (dispatch: Dispatch<RecipeAction>) => {
     try {
       dispatch({ type: RecipeActionTypes.FETCH_RECIPES });
-      const response = await fetch('http://localhost:4000/recipes');
+      const response = await fetch(`http://${HOST_BACKEND}/recipes`);
       const responseJson = await response.json();
       dispatch({
         type: RecipeActionTypes.FETCH_RECIPES_SUCCESS,

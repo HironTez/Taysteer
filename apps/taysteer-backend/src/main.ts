@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { SESSION_SECRET_KEY, PORT_BACKEND, SESSION_SECRET_SALT } from '../../../configs/common/config';
+import { SESSION_SECRET_KEY, PORT_BACKEND, SESSION_SECRET_SALT } from './configs/common/config';
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -35,7 +35,8 @@ async function bootstrap() {
   );
   SwaggerModule.setup('doc', app, swaggerDocument);
 
-  await app.listen(PORT_BACKEND);
-  console.log(`Service is running http://localhost:${PORT_BACKEND}`);
+  app.listen(PORT_BACKEND, '0.0.0.0', () => {
+    console.log(`Service is running http://localhost:${PORT_BACKEND}`);
+  });
 }
 bootstrap();
