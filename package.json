@@ -20,6 +20,7 @@
     "@nestjs/platform-fastify": "^8.3.1",
     "@nestjs/swagger": "^5.2.0",
     "@nestjs/typeorm": "^8.0.3",
+    "@types/jquery": "^3.5.14",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
     "cloudinary": "^1.28.1",
@@ -31,6 +32,7 @@
     "fastify-secure-session": "^3.0.0",
     "fastify-swagger": "^5.0.0",
     "fs": "0.0.1-security",
+    "jquery": "^3.6.0",
     "os": "^0.1.2",
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",
@@ -39,6 +41,7 @@
     "pg": "^8.7.3",
     "react": "17.0.2",
     "react-dom": "17.0.2",
+    "react-infinite-scroll-component": "^6.1.0",
     "react-redux": "^7.2.8",
     "redux": "^4.1.2",
     "redux-thunk": "^2.4.1",
@@ -47,6 +50,7 @@
     "rxjs": "^7.0.0",
     "tslib": "^2.0.0",
     "typeorm": "^0.2.45",
+    "universalsmoothscroll": "^5.1.0-s",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {

@@ -5,7 +5,7 @@
   $height: max(min(calc(35px + (200 - 35) * ((100vw - 320px) / (1440 - 320))), 100px), 60px)
   $width: calc($height * 5)
   $padding: 10px
-  $margin: min(calc(5px + (15 - 5) * ((100vw - 320px) / (1440 - 320))), 10px)
+  $margin: min(calc(5px + (15 - 5) * ((100vw - 320px) / (1440 - 320))), 5px)
   width: $width
   height: $height
   overflow: hidden
@@ -49,20 +49,25 @@
     width: calc($height / 100 * 300)
     color: #0E1111
     font-size: 16px
+    font-weight: 300
     overflow: hidden
     text-overflow: ellipsis
     display: -webkit-box
     -webkit-box-orient: vertical
-    -webkit-line-clamp: 3 // number of lines to show
-    font-weight: 300
+    -webkit-line-clamp: 4 // Number of lines to show
+
+    @media (max-width: 700px)
+      -webkit-line-clamp: 3
+    @media (max-width: 580px)
+      -webkit-line-clamp: 2
+    @media (max-width: 500px)
+      -webkit-line-clamp: 1
 
   div.readMore
     right: calc( 0px + $padding )
     bottom: calc( 0px + $padding )
 
 .recipe-min:hover
-  // box-shadow: 0px 0px 10px rgba(14, 17, 17, 0.12)
-  // transform: scale(1.01)
   background-color: rgb(242, 241, 241)
 
 @mixin rating($rating)
@@ -87,3 +92,13 @@ div.rating.rating-4
   @include rating(4)
 div.rating.rating-5
   @include rating(5)
+
+#recipes-container
+  overflow-x: scroll
+
+#recipes-container.horizontal-scroll
+  .infinite-scroll-component
+    width: max-content
+    display: grid
+    grid-auto-flow: column
+    grid-template-rows: auto auto auto

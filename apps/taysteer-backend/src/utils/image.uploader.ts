@@ -1,8 +1,8 @@
-import { cloudinary } from 'apps/taysteer-backend/src/configs/utils/cloudinary';
+import { cloudinary } from '../configs/utils/cloudinary';
 import { PromiseController } from './promise.controller';
 import { deleteImageT, uploadImageT } from './util.types';
 
-const uploadImage: uploadImageT = async (fileReadStream, folder, id) => {
+const uploadImage: uploadImageT = async (fileReadStream, folder) => {
   const promiseController = new PromiseController(); // Create a new promise controller
   // Create upload stream
   const uploadStream = cloudinary.uploader.upload_stream(

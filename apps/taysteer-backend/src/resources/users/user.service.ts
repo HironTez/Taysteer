@@ -20,7 +20,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import bcrypt from 'bcryptjs';
-import { ADMIN_LOGIN, ADMIN_PASSWORD } from 'apps/taysteer-backend/src/configs/common/config';
+import { ADMIN_LOGIN, ADMIN_PASSWORD } from '../../configs/common/config';
 import { UserRating } from './user.rating.model';
 import { deleteImage, uploadImage } from '../../utils/image.uploader';
 
