@@ -5,32 +5,6 @@ import './RecipeList.styles.sass';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import $ from 'jquery';
 
-const horizontalScrollScript = () => {
-  const scrollableDiv = document.querySelector(
-    '#recipes-container.horizontal-scroll'
-  ) as HTMLElement;
-
-  const easeFunction = (remainingScrollDistance: number) => {
-    return remainingScrollDistance / 15 + 1;
-  };
-
-  uss.hrefSetup();
-
-  scrollableDiv?.addEventListener(
-    'wheel',
-    (event) => {
-      if (event.deltaY !== 0) {
-        event.preventDefault();
-        event.stopPropagation();
-        uss.scrollXBy(event.deltaY, scrollableDiv, null, false);
-      }
-    },
-    { passive: false }
-  );
-
-  uss.setXStepLengthCalculator(easeFunction, scrollableDiv);
-};
-
 export const RecipeList: React.FC = () => {
   const { recipes, loading, error, end, page } = useTypedSelector(
     (state) => state.recipe
@@ -42,9 +16,9 @@ export const RecipeList: React.FC = () => {
   }, [page]);
 
   window.onload = horizontalScrollScript;
-  
+
   return (
-    <div id="recipes-container" className="horizontal-scroll">
+    <div id="recipes-container" className="horizontal-scroll active">
       <InfiniteScroll
         dataLength={recipes.length}
         next={() => {
@@ -73,4 +47,44 @@ export const RecipeList: React.FC = () => {
       </InfiniteScroll>
     </div>
   );
+};
+
+const horizontalScrollScript = () => {
+  const scrollableDivs = $('.horizontal-scroll');
+
+  const easeFunction = (remainingScrollDistance: number) => {
+    return remainingScrollDistance / 15 + 1;
+  };
+
+  uss.hrefSetup();
+
+  scrollableDivs?.on('mousewheel', (event) => {
+    const originalEvent = event.originalEvent as WheelEvent;
+    if (
+      originalEvent.deltaY !== 0 &&
+      event.currentTarget.classList.contains('active')
+    ) {
+      event.stopPropagation();
+      uss.scrollXBy(originalEvent.deltaY, event.currentTarget, null, false);
+    }
+  });
+
+  scrollableDivs.each((_index, element) => {
+    uss.setXStepLengthCalculator(easeFunction, element);
+  });
+
+  const processScrollDirection = () => {
+    scrollableDivs.each((_index, element) => {
+      if ($(window).width()! < 1000) {
+        if (element.classList.contains('active'))
+          element.classList.remove('active');
+      } else {
+        if (!element.classList.contains('active'))
+          element.classList.add('active');
+      }
+    });
+  };
+  processScrollDirection();
+
+  $(window).on('resize', processScrollDirection);
 };

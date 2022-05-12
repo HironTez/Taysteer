@@ -3,19 +3,19 @@
 .recipe-min
   font-family: 'Yanone Kaffeesatz', sans-serif
   $height: max(min(calc(35px + (200 - 35) * ((100vw - 320px) / (1440 - 320))), 100px), 60px)
-  $width: calc($height * 5)
+  $width: calc($height * 4)
   $padding: 10px
-  $margin: min(calc(5px + (15 - 5) * ((100vw - 320px) / (1440 - 320))), 5px)
+  $margin: min(calc(10px + (30 - 10) * ((100vw - 320px) / (1440 - 320))), 5px)
   width: $width
   height: $height
   overflow: hidden
-  cursor: pointer
   backdrop-filter: blur( 20.0px )
   -webkit-backdrop-filter: blur( 20.0px )
   border-radius: 10px
   margin: $margin
   padding: $padding
   transition: 0.2s
+  display: inline-block
 
   *
     position: absolute
@@ -29,7 +29,7 @@
 
   div.title
     left: calc($height + ($padding * 2))
-    width: min(max(calc(100px + (500 - 100) * ((100vw - 320px) / (1440 - 320))), 160px), 320px)
+    width: min(max(calc(30px + (500 - 30) * ((100vw - 320px) / (1440 - 320))), 100px), 220px)
     overflow: hidden
     text-overflow: ellipsis
     color: #0E1111
@@ -46,7 +46,7 @@
   div.description
     top: min(max(calc(45px + (10 - 45) * ((100vw - 320px) / (1440 - 320))), 35%), 50%)
     left: calc($height + ($padding * 2))
-    width: calc($height / 100 * 300)
+    width: min(max(calc(40px + (500 - 40) * ((100vw - 320px) / (1440 - 320))), 100px), 220px)
     color: #0E1111
     font-size: 16px
     font-weight: 300
@@ -57,18 +57,35 @@
     -webkit-line-clamp: 4 // Number of lines to show
 
     @media (max-width: 700px)
-      -webkit-line-clamp: 3
+      -webkit-line-clamp: 5
     @media (max-width: 580px)
-      -webkit-line-clamp: 2
+      -webkit-line-clamp: 4
     @media (max-width: 500px)
+      -webkit-line-clamp: 3
+    @media (max-width: 400px)
+      -webkit-line-clamp: 2
+    @media (max-width: 340px)
       -webkit-line-clamp: 1
 
   div.readMore
     right: calc( 0px + $padding )
     bottom: calc( 0px + $padding )
 
+  @media (max-width: 600px)
+    $height: calc(100vw / 4 - $margin * 3)
+    $width: calc($height * 4)
+    height: $height
+    width: $width
+
+    div.title
+      width: min(max(calc(120px + (1100 - 120) * ((100vw - 320px) / (1440 - 320))), 100px), 530px)
+
+    div.description
+      width: min(max(calc(120px + (1100 - 120) * ((100vw - 320px) / (1440 - 320))), 100px), 530px)
+
 .recipe-min:hover
   background-color: rgb(242, 241, 241)
+  cursor: pointer
 
 @mixin rating($rating)
   color: gray
@@ -94,11 +111,31 @@ div.rating.rating-5
   @include rating(5)
 
 #recipes-container
+  &::-webkit-scrollbar
+    width: 10px
+    height: 10px
+    background: transparent
+
+  &::-webkit-scrollbar-thumb
+    background: #a8a8a8c9
+    border-radius: 25px
+
+  &::-webkit-scrollbar-thumb:hover
+    background: #a8a8a8
+
+  &::-webkit-scrollbar-track
+    background: #f1f1f1
+    border-radius: 25px
+    margin: 10px
+
+#recipes-container.horizontal-scroll.active
   overflow-x: scroll
 
-#recipes-container.horizontal-scroll
   .infinite-scroll-component
     width: max-content
     display: grid
     grid-auto-flow: column
     grid-template-rows: auto auto auto
+
+#recipes-container.horizontal-scroll:not(.active)
+  overflow-y: scroll
