@@ -4,6 +4,7 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import './Recipe.list.sass';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import $ from 'jquery';
+import { useLocation } from 'react-router-dom'
 
 export const RecipeList: React.FC = () => {
   const { recipes, loading, error, end, page } = useTypedSelector(
@@ -12,15 +13,19 @@ export const RecipeList: React.FC = () => {
   const { fetchRecipes, setRecipesPage } = useActions();
 
   useEffect(() => {
-    fetchRecipes(page);
+    if (recipes.length < page * 10) fetchRecipes(page); // Fetch recipes if it's a new page
   }, [page]);
 
-  window.onload = horizontalScrollScript;
+  const location = useLocation();
+
+  useEffect(() => {
+    horizontalScroll() // Run the horizontal scroll script when the location changes
+  }, [location])
 
   return (
     <section className="recipes">
       <div id="recipes-container" className="horizontal-scroll">
-        <InfiniteScroll
+        <InfiniteScroll // Set up infinite scroll
           dataLength={recipes.length}
           next={() => {
             setRecipesPage(page + 1);
@@ -30,8 +35,8 @@ export const RecipeList: React.FC = () => {
           endMessage={error ? <h1>Error!</h1> : <h1>The end</h1>}
           scrollableTarget="recipes-container"
         >
-          {recipes.map((recipe) => (
-            <div key={recipe.id} className="recipe-min">
+          {recipes.map((recipe) => ( // key={recipe.id} // Format recipes
+            <div key={Math.random()} className="recipe-min">
               <img className="image" src={recipe.image} alt="avatar" />
               <div className="title">{recipe.title}</div>
               <div className={`rating rating-${recipe.rating}`}>
@@ -51,7 +56,8 @@ export const RecipeList: React.FC = () => {
   );
 };
 
-const horizontalScrollScript = () => {
+// Horizontal scroll
+const horizontalScroll = () => {
   const scrollableDivs = $('.horizontal-scroll');
 
   const easeFunction = (remainingScrollDistance: number) => {
@@ -75,6 +81,7 @@ const horizontalScrollScript = () => {
     uss.setXStepLengthCalculator(easeFunction, element);
   });
 
+  // Change the scroll direction relative to the screen width
   const processScrollDirection = () => {
     scrollableDivs.each((_index, element) => {
       if ($(window).width()! < 1000) {
@@ -88,5 +95,5 @@ const horizontalScrollScript = () => {
   };
   processScrollDirection();
 
-  $(window).on('resize', processScrollDirection);
+  window.onresize = processScrollDirection;
 };

@@ -66,19 +66,17 @@
     text-overflow: ellipsis
     display: -webkit-box
     -webkit-box-orient: vertical
-    -webkit-line-clamp: 4 // Number of lines to show
+    -webkit-line-clamp: 6 // Number of lines to show
     grid-area: description
 
-    @media (max-width: 700px)
+    @media (max-width: 1000px)
       -webkit-line-clamp: 5
-    @media (max-width: 580px)
+    @media (max-width: 860px)
       -webkit-line-clamp: 4
-    @media (max-width: 500px)
+    @media (max-width: 720px)
       -webkit-line-clamp: 3
-    @media (max-width: 400px)
+    @media (max-width: 590px)
       -webkit-line-clamp: 2
-    @media (max-width: 340px)
-      -webkit-line-clamp: 1
 
   div.readMore
     justify-self: center
