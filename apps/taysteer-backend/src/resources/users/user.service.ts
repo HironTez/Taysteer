@@ -217,7 +217,7 @@ export class UsersService {
 
     let new_ratings_count = user.ratingsCount,
       new_ratings_sum = user.ratingsSum - user.rating + rating,
-      new_rating = rating;
+      new_rating = Math.round(rating);
 
     // If it's a first rating
     if (!findingResult) {
