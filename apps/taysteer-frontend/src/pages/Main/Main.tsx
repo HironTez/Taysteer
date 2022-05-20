@@ -1,5 +1,10 @@
-import { RecipeList } from '../../components/RecipeList/RecipeList';
+import { RecipeList } from '../../components/recipe.list/Recipe.list';
+import './Main.sass';
 
 export const MainPage: React.FC = () => {
-  return <RecipeList />;
+  return (
+    <div>
+      <RecipeList />
+    </div>
+  );
 };

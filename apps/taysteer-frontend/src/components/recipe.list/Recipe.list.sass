@@ -2,7 +2,7 @@
 
 .recipe-min
   font-family: 'Yanone Kaffeesatz', sans-serif
-  $height: max(min(calc(35px + (200 - 35) * ((100vw - 320px) / (1440 - 320))), 100px), 60px)
+  $height: max(min(calc(35px + (200 - 35) * ((100vw - 320px) / (1440 - 320))), 150px), 60px)
   $width: calc($height * 4)
   $padding: 10px
   $margin: min(calc(10px + (30 - 10) * ((100vw - 320px) / (1440 - 320))), 5px)
@@ -17,6 +17,11 @@
   transition: 0.2s
   display: inline-block
 
+  display: grid
+  grid-template-columns: 25% auto 80px
+  grid-template-rows: 20% auto
+  grid-template-areas: "image title rating" "image description readmore"
+
   *
     position: absolute
 
@@ -26,27 +31,34 @@
     border-radius: 50%
     height: $height
     width: $height
+    grid-area: image
 
   div.title
-    left: calc($height + ($padding * 2))
-    width: min(max(calc(30px + (500 - 30) * ((100vw - 320px) / (1440 - 320))), 100px), 220px)
+    left: $padding
+    width: calc(100% - $padding)
     overflow: hidden
     text-overflow: ellipsis
     color: #0E1111
     font-size: 25px
     font-weight: 400
     white-space: nowrap
+    align-self: center
+    grid-area: title
 
   div.rating
-    right: calc( 0px + $padding )
+    font-size: 20px
+    justify-self: center
+    align-self: center
+    grid-area: rating
 
     span.rating-star
       position: relative
 
   div.description
-    top: min(max(calc(45px + (10 - 45) * ((100vw - 320px) / (1440 - 320))), 35%), 50%)
-    left: calc($height + ($padding * 2))
-    width: min(max(calc(40px + (500 - 40) * ((100vw - 320px) / (1440 - 320))), 100px), 220px)
+    left: $padding
+    top: $padding
+    width: calc(100% - $padding)
+    max-height: calc(100% - $padding)
     color: #0E1111
     font-size: 16px
     font-weight: 300
@@ -55,6 +67,7 @@
     display: -webkit-box
     -webkit-box-orient: vertical
     -webkit-line-clamp: 4 // Number of lines to show
+    grid-area: description
 
     @media (max-width: 700px)
       -webkit-line-clamp: 5
@@ -68,20 +81,9 @@
       -webkit-line-clamp: 1
 
   div.readMore
-    right: calc( 0px + $padding )
-    bottom: calc( 0px + $padding )
-
-  @media (max-width: 600px)
-    $height: calc(100vw / 4 - $margin * 3)
-    $width: calc($height * 4)
-    height: $height
-    width: $width
-
-    div.title
-      width: min(max(calc(120px + (1100 - 120) * ((100vw - 320px) / (1440 - 320))), 100px), 530px)
-
-    div.description
-      width: min(max(calc(120px + (1100 - 120) * ((100vw - 320px) / (1440 - 320))), 100px), 530px)
+    justify-self: center
+    align-self: end
+    grid-area: readmore
 
 .recipe-min:hover
   background-color: rgb(242, 241, 241)
@@ -109,9 +111,6 @@ div.rating.rating-4
   @include rating(4)
 div.rating.rating-5
   @include rating(5)
-
-section.recipes
-  width: 50%
 
 #recipes-container
   &::-webkit-scrollbar
@@ -142,3 +141,9 @@ section.recipes
 
 #recipes-container.horizontal-scroll:not(.active)
   overflow-y: scroll
+  max-height: 100vh
+  width: min-content
+  position: relative
+  left: 50%
+  top: 50%
+  transform: translate(-50%)

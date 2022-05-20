@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useActions } from '../../hooks/useAction';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
-import './RecipeList.sass';
+import './Recipe.list.sass';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import $ from 'jquery';
 
@@ -19,7 +19,7 @@ export const RecipeList: React.FC = () => {
 
   return (
     <section className="recipes">
-      <div id="recipes-container" className="horizontal-scroll active">
+      <div id="recipes-container" className="horizontal-scroll">
         <InfiniteScroll
           dataLength={recipes.length}
           next={() => {
