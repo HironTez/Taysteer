@@ -19,7 +19,7 @@
           "apps/taysteer-frontend/src/favicon.ico",
           "apps/taysteer-frontend/src/assets"
         ],
-        "styles": ["apps/taysteer-frontend/src/styles.scss"],
+        "styles": ["apps/taysteer-frontend/src/styles.sass"],
         "scripts": [],
         "webpackConfig": "@nrwl/react/plugins/webpack"
       },

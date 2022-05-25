@@ -37,7 +37,7 @@ export const RecipeList: React.FC = () => {
         >
           {recipes.map((recipe) => ( // key={recipe.id} // Format recipes
             <div key={Math.random()} className="recipe-min">
-              <img className="image" src={recipe.image} alt="avatar" />
+              <img className="image" src={recipe.image} alt="recipe food preview image" />
               <div className="title">{recipe.title}</div>
               <div className={`rating rating-${recipe.rating}`}>
                 <span className="rating-star 1"></span>
