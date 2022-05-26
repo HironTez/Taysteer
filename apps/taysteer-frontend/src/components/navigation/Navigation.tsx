@@ -11,11 +11,6 @@ export const Navigation: React.FC = () => {
               Homepage
             </NavLink>
           </li>
-          {/* <li className="nav-item">
-              <NavLink className="nav-link" to="/recipes">
-                Recipes
-              </NavLink>
-            </li> */}
           <li className="nav-item">
             <NavLink className="nav-link" to="/rating">
               Top chefs

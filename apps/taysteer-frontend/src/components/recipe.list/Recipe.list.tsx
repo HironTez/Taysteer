@@ -36,7 +36,7 @@ export const RecipeList: React.FC = () => {
           scrollableTarget="recipes-container"
         >
           {recipes.map((recipe) => ( // key={recipe.id} // Format recipes
-            <div key={Math.random()} className="recipe-min">
+            <a href={`/recipes/${recipe.id}`} key={Math.random()} className="recipe-min">
               <img className="image" src={recipe.image} alt="recipe food preview image" />
               <div className="title">{recipe.title}</div>
               <div className={`rating rating-${recipe.rating}`}>
@@ -48,7 +48,7 @@ export const RecipeList: React.FC = () => {
               </div>
               <div className="description">{recipe.description}</div>
               <div className="readMore">Read more</div>
-            </div>
+            </a>
           ))}
         </InfiniteScroll>
       </div>
