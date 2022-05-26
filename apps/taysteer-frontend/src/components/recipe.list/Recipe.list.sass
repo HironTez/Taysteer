@@ -1,5 +1,5 @@
 .recipe-min
-  $height: max(min(calc(35px + (200 - 35) * ((100vw - 320px) / (1440 - 320))), 150px), 60px)
+  $height: max(min(calc(50px + (200 - 50) * ((100vw - 200px) / (1440 - 320))), 150px), 60px)
   $width: calc($height * 4)
   $padding: 10px
   $margin: min(calc(10px + (30 - 10) * ((100vw - 320px) / (1440 - 320))), 5px)
@@ -134,9 +134,8 @@ div.rating.rating-5
 
 #recipes-container.horizontal-scroll:not(.active)
   overflow-y: scroll
-  max-height: 100vh
+  max-height: 85vh
   width: min-content
   position: relative
   left: 50%
-  top: 50%
   transform: translate(-50%)

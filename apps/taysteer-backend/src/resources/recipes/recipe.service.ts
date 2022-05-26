@@ -288,7 +288,7 @@ export class RecipeService {
 
     let new_ratings_count = recipe.ratingsCount,
       new_ratings_sum = recipe.ratingsSum - recipe.rating + rating,
-      new_rating = rating;
+      new_rating = Math.round(rating);
 
     // If it's the first rating
     // Calculate the rating

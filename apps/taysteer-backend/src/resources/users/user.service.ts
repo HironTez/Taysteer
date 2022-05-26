@@ -210,14 +210,14 @@ export class UsersService {
     const ratingObject =
       findingResult || this.userRatersRepository.create(new UserRating());
     ratingObject.rater = rater;
-    ratingObject.rating = rating;
+    ratingObject.rating = Math.round(rating);
 
     // Save the rater
     await this.userRatersRepository.save(ratingObject);
 
     let new_ratings_count = user.ratingsCount,
       new_ratings_sum = user.ratingsSum - user.rating + rating,
-      new_rating = rating;
+      new_rating = Math.round(rating);
 
     // If it's a first rating
     if (!findingResult) {

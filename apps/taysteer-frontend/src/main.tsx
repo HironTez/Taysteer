@@ -10,10 +10,14 @@ ReactDOM.render(
   <StrictMode>
     <Provider store={store}>
       <Router>
-        <Navigation />
-        <Routes>
-          <Route path="/" element={<MainPage />} />
-        </Routes>
+        <section className="header">
+          <Navigation />
+        </section>
+        <section className="page-content">
+          <Routes>
+            <Route path="/" element={<MainPage />} />
+          </Routes>
+        </section>
       </Router>
     </Provider>
   </StrictMode>,

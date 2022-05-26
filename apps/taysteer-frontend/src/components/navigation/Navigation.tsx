@@ -17,8 +17,8 @@ export const Navigation: React.FC = () => {
             </NavLink>
           </li>
           <li className="nav-item">
-            <NavLink className="nav-link" to="/profile">
-              Profile
+            <NavLink className="nav-link" to="/create">
+              New recipe
             </NavLink>
           </li>
         </ul>

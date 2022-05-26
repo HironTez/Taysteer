@@ -36,10 +36,10 @@ export class UsersController {
   async getMe(
     @Req() req: ExtendedRequest,
     @Res() res: Response,
-    @Query('detailed') detailed = false
+    @Query('detailed') detailed = 'false'
   ) {
     const user = await this.usersService.getUserById(req.user.id);
-    const response = detailed
+    const response = detailed === 'true'
       ? await User.toResponseDetailed(user)
       : User.toResponse(user);
     return res.status(HttpStatus.OK).send(response);
