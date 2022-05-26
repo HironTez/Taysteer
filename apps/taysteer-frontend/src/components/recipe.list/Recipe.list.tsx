@@ -3,8 +3,8 @@ import { useActions } from '../../hooks/useAction';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import './Recipe.list.sass';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import $ from 'jquery';
 import { useLocation } from 'react-router-dom'
+import { horizontalScroll } from '../../scripts/horizontal.scroll';
 
 export const RecipeList: React.FC = () => {
   const { recipes, loading, error, end, page } = useTypedSelector(
@@ -54,46 +54,4 @@ export const RecipeList: React.FC = () => {
       </div>
     </section>
   );
-};
-
-// Horizontal scroll
-const horizontalScroll = () => {
-  const scrollableDivs = $('.horizontal-scroll');
-
-  const easeFunction = (remainingScrollDistance: number) => {
-    return remainingScrollDistance / 15 + 1;
-  };
-
-  uss.hrefSetup();
-
-  scrollableDivs?.on('mousewheel', (event) => {
-    const originalEvent = event.originalEvent as WheelEvent;
-    if (
-      originalEvent.deltaY !== 0 &&
-      event.currentTarget.classList.contains('active')
-    ) {
-      event.stopPropagation();
-      uss.scrollXBy(originalEvent.deltaY, event.currentTarget, null, false);
-    }
-  });
-
-  scrollableDivs.each((_index, element) => {
-    uss.setXStepLengthCalculator(easeFunction, element);
-  });
-
-  // Change the scroll direction relative to the screen width
-  const processScrollDirection = () => {
-    scrollableDivs.each((_index, element) => {
-      if ($(window).width()! < 1000) {
-        if (element.classList.contains('active'))
-          element.classList.remove('active');
-      } else {
-        if (!element.classList.contains('active'))
-          element.classList.add('active');
-      }
-    });
-  };
-  processScrollDirection();
-
-  window.onresize = processScrollDirection;
 };

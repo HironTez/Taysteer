@@ -5,6 +5,7 @@ import { MainPage } from './pages/Main/Main';
 import { store } from './store';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Navigation } from './components/navigation/Navigation';
+import './scripts/script';
 
 ReactDOM.render(
   <StrictMode>
