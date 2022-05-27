@@ -123,6 +123,11 @@ div.rating.rating-5
     border-radius: 25px
     margin: 10px
 
+  .infinite-scroll-component
+    > div:not(.recipe-min)
+      grid-row-end: span 3
+      margin: 10px
+
 #recipes-container.horizontal-scroll.active
   overflow-x: scroll
 
@@ -140,3 +145,8 @@ div.rating.rating-5
   position: relative
   left: 50%
   transform: translate(-50%)
+
+  .infinite-scroll-component
+    > div:not(.recipe-min)
+      margin-left: auto
+      margin-right: auto

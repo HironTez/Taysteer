@@ -5,6 +5,9 @@ import './Recipe.list.sass';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useLocation } from 'react-router-dom'
 import { horizontalScroll } from '../../scripts/horizontal.scroll';
+import { Loading } from '../loading.spinner/Loading.spinner';
+import { End } from '../end.animation/End.animation';
+import { Error } from '../error.animation/Error.animation';
 
 export const RecipeList: React.FC = () => {
   const { recipes, loading, error, end, page } = useTypedSelector(
@@ -31,8 +34,8 @@ export const RecipeList: React.FC = () => {
             setRecipesPage(page + 1);
           }}
           hasMore={loading || (!end && !error)}
-          loader={<h1>Loading...</h1>}
-          endMessage={error ? <h1>Error!</h1> : <h1>The end</h1>}
+          loader={<Loading/>}
+          endMessage={error ? <Error/> : <End/>}
           scrollableTarget="recipes-container"
         >
           {recipes.map((recipe) => ( // key={recipe.id} // Format recipes

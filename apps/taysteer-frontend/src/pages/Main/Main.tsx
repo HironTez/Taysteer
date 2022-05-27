@@ -1,6 +1,6 @@
 import { RecipeList } from '../../components/recipe.list/Recipe.list';
 import './Main.sass';
-import backgroundImage from "../../images/main.background.png";
+import backgroundImage from "../../assets/images/main.background.png";
 
 export const MainPage: React.FC = () => {
   return (
