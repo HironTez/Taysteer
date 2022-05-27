@@ -1,0 +1,37 @@
+div.account
+  padding-right: 40px
+  height: min-content
+  text-align: center
+
+  > a
+    height: min-content
+    font-size: 20px
+    padding-right: 25px
+    padding-left: 25px
+    padding-top: 6px
+    padding-bottom: 5px
+    margin-left: 10px
+    margin-top: 5px
+    margin-bottom: 5px
+    background-color: transparent
+    border-style: solid
+    border-radius: 15px
+    transition: 0.3s
+
+    &:hover
+      cursor: pointer
+
+    &.sign-up
+      border-color: var(--additional-color)
+      color: var(--additional-color)
+
+      &:hover
+        background-color: var(--additional-color)
+        color: var(--main-color)
+
+    &.sign-in
+      border-color: transparent
+
+      &:hover
+        background-color: gray
+        color: snow

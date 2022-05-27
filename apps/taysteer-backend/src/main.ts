@@ -17,7 +17,11 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
     {
-      cors: true,
+      cors: {
+        origin: 'http://localhost:4200', // *
+        credentials: true,
+        
+      },
       logger: ['error', 'warn'],
     }
   );

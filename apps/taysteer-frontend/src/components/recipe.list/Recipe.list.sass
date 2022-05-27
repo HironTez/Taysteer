@@ -85,7 +85,7 @@
   @for $i from 1 through 5
     @if $i <= $rating
       span.rating-star:nth-child(#{$i})
-        color: #FFC107
+        color: var(--additional-color)
       span.rating-star:nth-child(#{$i})::before
         content: '★'
     @else

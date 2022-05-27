@@ -6,6 +6,7 @@ import { store } from './store';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Navigation } from './components/navigation/Navigation';
 import './scripts/script';
+import { Account } from './components/account/Account';
 
 ReactDOM.render(
   <StrictMode>
@@ -13,6 +14,7 @@ ReactDOM.render(
       <Router>
         <section className="header">
           <Navigation />
+          <Account/>
         </section>
         <section className="page-content">
           <Routes>
