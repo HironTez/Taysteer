@@ -2,7 +2,7 @@ import { AccountActionTypes } from './../../types/account';
 import { AccountAction, AccountState } from "../../types/account";
 
 const initialState: AccountState = {
-  account: {},
+  account: null,
   loading: false,
   error: null,
 };

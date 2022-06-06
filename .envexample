@@ -1,8 +1,6 @@
 PORT_BACKEND=4000
 PORT_FRONTEND=3000
 
-NX_HOST_BACKEND=localhost:4000
-
 SESSION_SECRET_KEY=qwertyuiopasdfghjklzxcvbnm123456
 SESSION_SECRET_SALT=qwertyuiopasdfgh
 

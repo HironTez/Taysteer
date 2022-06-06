@@ -1,5 +1,13 @@
+interface UserT {
+  id: string;
+  name: string;
+  login: string;
+  image: string;
+  rating: number;
+}
+
 export interface AccountState {
-  account: {};
+  account: UserT | null;
   loading: boolean;
   error: null | string;
 }

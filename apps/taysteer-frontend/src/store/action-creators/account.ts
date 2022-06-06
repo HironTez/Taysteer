@@ -13,6 +13,7 @@ export const fetchAccount = () => {
           type: AccountActionTypes.FETCH_ACCOUNT_ERROR,
           payload: 'Unauthorized',
         });
+        return
       }
       const responseJson = await response.json();
       dispatch({

@@ -1,5 +1,13 @@
+interface RecipeT {
+  id: string;
+  title: string;
+  image: string;
+  description: string;
+  rating: number;
+}
+
 export interface RecipeState {
-  recipes: any[];
+  recipes: RecipeT[];
   loading: boolean;
   error: null | string;
   end: boolean;
