@@ -19,7 +19,7 @@ import { ExtendedRequest } from '../../typification/interfaces';
 import { UserStringTypes } from './user.service.types';
 import { CookieAuthGuard } from '../../auth/guards/cookie-auth.guard';
 
-@Controller('users')
+@Controller('api/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

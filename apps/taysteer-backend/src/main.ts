@@ -1,6 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { SESSION_SECRET_KEY, PORT_BACKEND, SESSION_SECRET_SALT } from './configs/common/config';
+import {
+  SESSION_SECRET_KEY,
+  PORT_BACKEND,
+  SESSION_SECRET_SALT,
+  PORT_FRONTEND,
+} from './configs/common/config';
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -11,6 +16,7 @@ import { SwaggerModule } from '@nestjs/swagger';
 import secureSession from 'fastify-secure-session';
 import fastifyPassport from 'fastify-passport';
 import fastifyMultiPart from 'fastify-multipart';
+import fastifyProxy from '@fastify/http-proxy';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -18,9 +24,8 @@ async function bootstrap() {
     new FastifyAdapter(),
     {
       cors: {
-        origin: 'http://localhost:4200', // *
+        origin: `http://localhost:${PORT_BACKEND}`, // *
         credentials: true,
-        
       },
       logger: ['error', 'warn'],
     }
@@ -33,6 +38,10 @@ async function bootstrap() {
   app.register(fastifyPassport.initialize());
   app.register(fastifyPassport.secureSession());
   app.register(fastifyMultiPart);
+  app.register(fastifyProxy, {
+    upstream: `http://localhost:${PORT_FRONTEND}`,
+    prefix: '/'
+  })
 
   const swaggerDocument = YAML.load(
     path.join(__dirname, '../../../apps/taysteer-backend/doc/api.yaml')
@@ -40,7 +49,7 @@ async function bootstrap() {
   SwaggerModule.setup('doc', app, swaggerDocument);
 
   app.listen(PORT_BACKEND, '0.0.0.0', () => {
-    console.log(`Service is running http://localhost:${PORT_BACKEND}`);
+    console.log(`Service is running at http://localhost:${PORT_BACKEND}`);
   });
 }
 bootstrap();

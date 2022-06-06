@@ -20,7 +20,7 @@ import { CookieAuthGuard } from '../../auth/guards/cookie-auth.guard';
 import { ExtendedRequest } from '../../typification/interfaces';
 import { Response } from 'express';
 
-@Controller('recipes')
+@Controller('api/recipes')
 export class RecipeController {
   constructor(private readonly recipeService: RecipeService) {}
 

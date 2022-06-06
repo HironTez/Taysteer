@@ -12,6 +12,7 @@
   },
   "private": true,
   "dependencies": {
+    "@fastify/http-proxy": "^7.1.0",
     "@nestjs/common": "^8.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/passport": "^8.2.1",

@@ -13,7 +13,7 @@ import {
 import { Response } from 'express';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
-@Controller()
+@Controller('api')
 @UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
   @UseGuards(LocalAuthGuard)

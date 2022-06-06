@@ -5,8 +5,6 @@ import {
   MiddlewareConsumer,
   RequestMethod,
 } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ReqLogMiddleware } from './middleware/req.log.middleware';
 import { HttpErrorFilter } from './middleware/http-exception.filter';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -16,8 +14,7 @@ import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [TypeOrmModule.forRoot(connectionOptions), AuthModule, UserModule, RecipeModule],
-  controllers: [AppController],
-  providers: [AppService, HttpErrorFilter],
+  providers: [HttpErrorFilter],
 })
 
 export class AppModule implements NestModule {
