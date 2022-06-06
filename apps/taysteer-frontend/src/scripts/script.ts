@@ -6,4 +6,5 @@ const fixViewport = () => {
   document.documentElement.style.setProperty('--vh', `${vh}px`);
 };
 
+window.addEventListener('load', fixViewport);
 window.addEventListener('resize', fixViewport);
