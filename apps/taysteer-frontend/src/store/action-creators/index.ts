@@ -1,7 +1,9 @@
-import * as RecipeActionCreator from './recipes';
+import * as RecipesActionCreator from './recipes';
 import * as AccountActionCreator from './account';
+import * as RecipeActionCreator from './recipe';
 
 export default {
-  ...RecipeActionCreator,
+  ...RecipesActionCreator,
   ...AccountActionCreator,
+  ...RecipeActionCreator,
 };

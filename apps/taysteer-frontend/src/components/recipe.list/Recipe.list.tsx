@@ -11,7 +11,7 @@ import { Error } from '../error.animation/Error.animation';
 
 export const RecipeList: React.FC = () => {
   const { recipes, loading, error, end, page } = useTypedSelector(
-    (state) => state.recipe
+    (state) => state.recipes
   );
   const { fetchRecipes, setRecipesPage } = useActions();
 

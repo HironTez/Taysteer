@@ -1,10 +1,4 @@
-interface UserT {
-  id: string;
-  name: string;
-  login: string;
-  image: string;
-  rating: number;
-}
+import { UserT } from "./entities";
 
 export interface AccountState {
   account: UserT | null;

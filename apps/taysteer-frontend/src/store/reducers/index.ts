@@ -1,10 +1,12 @@
-import { recipeReducer } from './recipeReducer';
-import { combineReducers } from "redux";
-import { accountReducer } from './accountReducer';
+import { recipesReducer } from './recipes.reducer';
+import { combineReducers } from 'redux';
+import { accountReducer } from './account.reducer';
+import { recipeReducer } from './recipe.reducer';
 
 export const rootReducer = combineReducers({
+  recipes: recipesReducer,
+  account: accountReducer,
   recipe: recipeReducer,
-  account: accountReducer
-})
+});
 
-export type RooState = ReturnType<typeof rootReducer>
+export type RooState = ReturnType<typeof rootReducer>;

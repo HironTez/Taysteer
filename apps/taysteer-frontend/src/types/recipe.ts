@@ -1,44 +1,30 @@
-interface RecipeT {
-  id: string;
-  title: string;
-  image: string;
-  description: string;
-  rating: number;
-}
+import { RecipeDetailedT } from "./entities";
 
 export interface RecipeState {
-  recipes: RecipeT[];
+  recipe: RecipeDetailedT | null;
   loading: boolean;
   error: null | string;
-  end: boolean;
-  page: number;
 }
 
 export enum RecipeActionTypes {
-  FETCH_RECIPES = 'FETCH_RECIPES',
-  FETCH_RECIPES_ERROR = 'FETCH_RECIPES_ERROR',
-  FETCH_RECIPES_SUCCESS = 'FETCH_RECIPES_SUCCESS',
-  SET_RECIPES_PAGE = 'SET_RECIPES_PAGE',
+  FETCH_RECIPE = 'FETCH_RECIPE',
+  FETCH_RECIPE_ERROR = 'FETCH_RECIPE_ERROR',
+  FETCH_RECIPE_SUCCESS = 'FETCH_RECIPE_SUCCESS',
 }
 
 interface FetchRecipeAction {
-  type: RecipeActionTypes.FETCH_RECIPES;
+  type: RecipeActionTypes.FETCH_RECIPE;
 }
 interface FetchRecipeSuccessAction {
-  type: RecipeActionTypes.FETCH_RECIPES_SUCCESS;
+  type: RecipeActionTypes.FETCH_RECIPE_SUCCESS;
   payload: any;
 }
 interface FetchRecipeErrorAction {
-  type: RecipeActionTypes.FETCH_RECIPES_ERROR;
+  type: RecipeActionTypes.FETCH_RECIPE_ERROR;
   payload: string;
-}
-interface SetRecipesPage {
-  type: RecipeActionTypes.SET_RECIPES_PAGE;
-  payload: number;
 }
 
 export type RecipeAction =
   | FetchRecipeAction
   | FetchRecipeSuccessAction
-  | FetchRecipeErrorAction
-  | SetRecipesPage;
+  | FetchRecipeErrorAction;
