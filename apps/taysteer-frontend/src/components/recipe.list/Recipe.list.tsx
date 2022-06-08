@@ -26,7 +26,7 @@ export const RecipeList: React.FC = () => {
   }, [location])
 
   return (
-    <section className="recipes">
+    <div className="recipes">
       <div id="recipes-container" className="horizontal-scroll">
         <InfiniteScroll // Set up infinite scroll
           dataLength={recipes.length}
@@ -55,6 +55,6 @@ export const RecipeList: React.FC = () => {
           ))}
         </InfiniteScroll>
       </div>
-    </section>
+    </div>
   );
 };

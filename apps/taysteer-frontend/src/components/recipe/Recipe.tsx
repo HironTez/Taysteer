@@ -18,10 +18,22 @@ export const Recipe: React.FC = () => {
   });
 
   if (recipe && !loading && !error) {
-    return <div></div>;
+    return (
+      <div className="recipe-container">
+        <img src={recipe.image} alt="photo of the dish" />
+      </div>
+    );
   } else if (loading) {
-    return <div><Loading/></div>;
+    return (
+      <div className="recipe-container">
+        <Loading />
+      </div>
+    );
   } else {
-    return <div><Error/></div>;
+    return (
+      <div className="recipe-container">
+        <Error />
+      </div>
+    );
   }
 };
