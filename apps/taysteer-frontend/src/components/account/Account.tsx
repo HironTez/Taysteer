@@ -3,6 +3,7 @@ import { useActions } from '../../hooks/useAction';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import './Account.sass';
 import profileImage from '../../assets/images/profile.default.jpg';
+import { Link } from 'react-router-dom';
 
 export const Account: React.FC = () => {
   const { account, loading, error } = useTypedSelector(
@@ -19,24 +20,23 @@ export const Account: React.FC = () => {
   if (account) {
     return (
       <div className="account">
-        <a className="profile" href="/profile">
+        <Link className="profile" to="/profile">
           <img
             className="avatar"
             src={account.image || profileImage}
             alt="avatar"
-          />
-        </a>
+          /></Link>
       </div>
     );
   } else {
     return (
       <div className="account">
-        <a className="authorization sign-up" href="/register">
+        <Link className="authorization sign-up" to="/register">
           Sign up
-        </a>
-        <a className="authorization sign-in" href="/login">
+        </Link>
+        <Link className="authorization sign-in" to="/login">
           Log in
-        </a>
+        </Link>
       </div>
     );
   }

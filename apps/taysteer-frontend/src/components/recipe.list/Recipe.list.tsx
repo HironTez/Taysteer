@@ -3,7 +3,7 @@ import { useActions } from '../../hooks/useAction';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import './Recipe.list.sass';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { horizontalScroll } from '../../scripts/horizontal.scroll';
 import { Loading } from '../loading.spinner/Loading.spinner';
 import { End } from '../end.animation/End.animation';
@@ -39,7 +39,7 @@ export const RecipeList: React.FC = () => {
           scrollableTarget="recipes-container"
         >
           {recipes.map((recipe) => ( // key={recipe.id} // Format recipes
-            <a href={`/recipes/${recipe.id}`} key={Math.random()} className="recipe-min">
+            <Link to={`/recipes/${recipe.id}`} key={Math.random()} className="recipe-min">
               <img className="image" src={recipe.image} alt="recipe food preview image" />
               <div className="title">{recipe.title}</div>
               <div className={`rating rating-${recipe.rating}`}>
@@ -51,7 +51,7 @@ export const RecipeList: React.FC = () => {
               </div>
               <div className="description">{recipe.description}</div>
               <div className="readMore">Read more</div>
-            </a>
+            </Link>
           ))}
         </InfiniteScroll>
       </div>
