@@ -18,10 +18,10 @@ export const Recipe: React.FC = () => {
   });
 
   if (recipe && !loading && !error) {
-    return <div className='recipe-container'></div>;
+    return <div></div>;
   } else if (loading) {
-    return <div className='recipe-container'><Loading/></div>;
+    return <div><Loading/></div>;
   } else {
-    return <div className='recipe-container'><Error/></div>;
+    return <div><Error/></div>;
   }
 };
