@@ -14,7 +14,7 @@ export const RecipePage: React.FC = () => {
   const { fetchRecipe } = useActions();
 
   useEffect(() => {
-    if (!recipe && !loading && !error) fetchRecipe(String(id));
+    if (!recipe && !loading && !error) fetchRecipe(String(id) + '1');
   });
 
   if (recipe && !loading && !error) {
