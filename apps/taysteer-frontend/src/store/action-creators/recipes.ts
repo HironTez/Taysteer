@@ -8,6 +8,13 @@ export const fetchRecipes = (page = 1) => {
       const response = await fetch(
         `/api/recipes?page=${page}`
       );
+      if (response.status !== 200) {
+        dispatch({
+          type: RecipesActionTypes.FETCH_RECIPES_ERROR,
+          payload: 'Error on recipes loading',
+        });
+        return;
+      }
       const responseJson = await response.json();
       dispatch({
         type: RecipesActionTypes.FETCH_RECIPES_SUCCESS,

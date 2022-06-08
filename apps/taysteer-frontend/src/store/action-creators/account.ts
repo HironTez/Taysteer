@@ -5,15 +5,19 @@ export const fetchAccount = () => {
   return async (dispatch: Dispatch<AccountAction>) => {
     try {
       dispatch({ type: AccountActionTypes.FETCH_ACCOUNT });
-      const response = await fetch(
-        `/api/users/me?detailed=false`
-      );
+      const response = await fetch(`/api/users/me?detailed=false`);
       if (response.status === 401) {
         dispatch({
           type: AccountActionTypes.FETCH_ACCOUNT_ERROR,
           payload: 'Unauthorized',
         });
-        return
+        return;
+      } else if (response.status !== 200) {
+        dispatch({
+          type: AccountActionTypes.FETCH_ACCOUNT_ERROR,
+          payload: 'Error on account loading',
+        });
+        return;
       }
       const responseJson = await response.json();
       dispatch({

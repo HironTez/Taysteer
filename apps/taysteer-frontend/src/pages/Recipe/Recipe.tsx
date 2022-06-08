@@ -14,14 +14,14 @@ export const RecipePage: React.FC = () => {
   const { fetchRecipe } = useActions();
 
   useEffect(() => {
-    if (!recipe && !loading && !error) fetchRecipe(String(id));
+    if (!recipe && !loading && !error) fetchRecipe(String(id) + '1');
   });
 
-  if (recipe) {
-    return <div></div>;
+  if (recipe && !loading && !error) {
+    return <div className='recipe-container'></div>;
   } else if (loading) {
-    return <div><Loading/></div>;
+    return <div className='recipe-container'><Loading/></div>;
   } else {
-    return <div><Error/></div>;
+    return <div className='recipe-container'><Error/></div>;
   }
 };
