@@ -18,7 +18,7 @@
   grid-template-areas: "image title rating" "image description readmore"
 
   &:hover
-    background-color: #77777720
+    background-color: #e2e2e2
     cursor: pointer
 
   *
@@ -129,7 +129,8 @@ div.rating.rating-5
       margin: 10px
 
 #recipes-container.horizontal-scroll.active
-  overflow-x: scroll
+  overflow-x: auto
+  max-width: 70vw
 
   .infinite-scroll-component
     width: max-content
@@ -138,7 +139,7 @@ div.rating.rating-5
     grid-template-rows: auto auto auto
 
 #recipes-container.horizontal-scroll:not(.active)
-  overflow-y: scroll
+  overflow-y: auto
   max-height: 85vh
   max-height: calc(var(--vh, 1vh) * 85)
   width: min-content
