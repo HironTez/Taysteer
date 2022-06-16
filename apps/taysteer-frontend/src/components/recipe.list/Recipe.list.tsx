@@ -8,6 +8,7 @@ import { horizontalScroll } from '../../scripts/horizontal.scroll';
 import { Loading } from '../loading.spinner/Loading.spinner';
 import { End } from '../end.animation/End.animation';
 import { Error } from '../error.animation/Error.animation';
+import { Rating } from '../rating/Rating';
 
 export const RecipeList: React.FC = () => {
   const { recipes, loading, error, end, page } = useTypedSelector(
@@ -38,17 +39,11 @@ export const RecipeList: React.FC = () => {
           endMessage={error ? <Error/> : <End/>}
           scrollableTarget="recipes-container"
         >
-          {recipes.map((recipe) => ( // key={recipe.id} // Format recipes
-            <Link to={`/recipes/${recipe.id}`} key={Math.random()} className="recipe-min">
+          {recipes.map((recipe) => ( // Format recipes
+            <Link to={`/recipes/${recipe.id}`} key={recipe.id} className="recipe-min">
               <img className="image" src={recipe.image} alt="recipe food preview image" />
               <div className="title">{recipe.title}</div>
-              <div className={`rating rating-${recipe.rating}`}>
-                <span className="rating-star 1"></span>
-                <span className="rating-star 2"></span>
-                <span className="rating-star 3"></span>
-                <span className="rating-star 4"></span>
-                <span className="rating-star 5"></span>
-              </div>
+              <Rating rating={recipe.rating}/>
               <div className="description">{recipe.description}</div>
               <div className="readMore">Read more</div>
             </Link>

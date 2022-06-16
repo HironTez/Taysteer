@@ -16,7 +16,6 @@ export const Account: React.FC = () => {
     if (!account && !loading && !error) fetchAccount();
   });
 
-  console.log(account);
   if (account) {
     return (
       <div className="account">

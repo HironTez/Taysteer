@@ -11,10 +11,27 @@ body
   overflow: hidden
   min-height: 100vh
   min-height: -webkit-fill-available
+  margin: 0
 
 *
   font-family: 'Yanone Kaffeesatz', sans-serif
   color: var(--main-color)
+
+::-webkit-scrollbar
+  width: 10px
+  height: 10px
+  background: transparent
+
+::-webkit-scrollbar-thumb
+  background: #a8a8a8c9
+  border-radius: 25px
+
+::-webkit-scrollbar-thumb:hover
+  background: #a8a8a8
+
+::-webkit-scrollbar-track
+  background: #f1f1f1
+  border-radius: 25px
 
 a:-webkit-any-link
   text-decoration: none
@@ -26,16 +43,15 @@ div#root
   left: 0
   width: 100vw
 
-  > section
+  > *
     display: flex
     // justify-content: center
 
-  > section.header
+  > header
     justify-content: space-between
     align-items: center
 
-  > section.page-content
-    max-height: 85%
+  > main
     justify-content: center
 
     > *

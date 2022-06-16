@@ -13,16 +13,16 @@ ReactDOM.render(
   <StrictMode>
     <Provider store={store}>
       <Router>
-        <section className="header">
+        <header>
           <Navigation />
           <Account />
-        </section>
-        <section className="page-content">
+        </header>
+        <main>
           <Routes>
             <Route path="/" element={<MainPage />} />
             <Route path="/recipes/:id" element={<RecipePage />} />
           </Routes>
-        </section>
+        </main>
       </Router>
     </Provider>
   </StrictMode>,

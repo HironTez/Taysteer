@@ -1,14 +1,128 @@
 .recipe-container
-  display: flex
   width: 100vw
   height: max-content
   margin-top: 5vh
+  line-height: 1.2
 
-  img
+  display: grid
+  grid-template-areas: "image title" "image description" "ingredients ingredients" "steps steps" "comments comments"
+  grid-template-columns: min(40%, 520px) 1fr
+  grid-template-rows: auto 1fr auto auto auto
+
+  *
+    height: min-content
+
+  img.main-image
     $width: 60vw
     object-fit: cover
     width: $width
     height: $width
     border-radius: 50%
     position: relative
-    right: 20%
+    right: 20vw
+    max-width: 800px
+    max-height: 800px
+    grid-area: image
+
+  div.title
+    font-size: 40px
+    font-weight: 400
+    margin-top: 20px
+    margin-bottom: 20px
+    height: min-content
+    flex-grow: 1
+    flex-basis: 50%
+    grid-area: title
+    max-width: 60vw
+    margin-left: 20px
+    margin-right: 20px
+
+    div.text
+      margin-right: 20px
+
+    *
+      display: inline-block
+
+  div.description
+    font-weight: 200
+    font-size: 30px
+    margin-left: 20px
+    margin-top: 20px
+    margin-bottom: 20px
+    grid-area: description
+    max-width: 60vw
+    margin-left: 20px
+    margin-right: 20px
+
+  div.ingredients
+    font-weight: 200
+    font-size: 30px
+    margin-left: 10%
+    margin-top: 50px
+    margin-bottom: 20px
+    grid-area: ingredients
+
+    div.title
+      font-weight: 400
+      font-size: 35px
+      margin-bottom: 10px
+      margin-left: 0
+
+    ul.list
+      margin-top: 10px
+
+  div.steps
+    grid-area: steps
+
+    div.title
+      text-align: center
+      margin-left: auto
+      margin-right: auto
+
+    ol.list
+      margin-top: 10px
+      margin-bottom: 10px
+      margin-left: 40px
+      margin-right: 60px
+      padding-left: 60px
+      padding-right: 40px
+
+    ol
+      list-style: none
+      counter-reset: custom-counter
+
+      li
+        counter-increment: custom-counter
+
+        &::before
+          position: absolute
+          content: counter(custom-counter)
+          font-weight: bold
+          font-size: 40px
+          transform: translate(-80%, -30%)
+          width: 70px
+          height: 70px
+          text-align: center
+          line-height: 70px
+          border-radius: 50%
+          box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.25)
+
+      li.step
+        margin-top: 40px
+        font-weight: 200
+        font-size: 30px
+
+        div.title
+          font-weight: 400
+          font-size: 35px
+          text-align: left
+          margin-left: 40px
+
+        img.step-image
+          border-radius: 10px
+
+        & > *
+          width: 100%
+
+  div.comments
+    grid-area: comments
