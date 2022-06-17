@@ -17,7 +17,7 @@ export const RecipeList: React.FC = () => {
   const { fetchRecipes, setRecipesPage } = useActions();
 
   useEffect(() => {
-    if (recipes.length < page * 10) fetchRecipes(page); // Fetch recipes if it's a new page
+    if (!end) fetchRecipes(page); // Fetch recipes if it's a new page
   }, [page]);
 
   const location = useLocation();
