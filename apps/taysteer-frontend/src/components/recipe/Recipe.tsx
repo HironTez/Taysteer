@@ -52,12 +52,12 @@ export const Recipe: React.FC = () => {
               return (
                 <li className="step" key={`step-${index}`}>
                   <div className="title">{step.title}</div>
+                  <div className="description">{step.description}</div>
                   <img
                     src={step.image}
                     alt="A step of the recipe"
                     className="step-image"
                   />
-                  <div className="description">{step.description}</div>
                 </li>
               );
             })}
