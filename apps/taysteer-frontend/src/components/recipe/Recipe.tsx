@@ -17,7 +17,6 @@ export const Recipe: React.FC = () => {
   });
 
   if (recipe && !loading && !error) {
-    console.log(recipe);
     return (
       <div className="recipe-container">
         <img

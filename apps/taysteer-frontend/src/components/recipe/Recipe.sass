@@ -80,16 +80,14 @@
       margin-right: auto
 
     ol.list
-      margin-top: 10px
-      margin-bottom: 10px
-      margin-left: 40px
-      margin-right: 60px
-      padding-left: 60px
-      padding-right: 40px
-
-    ol
       list-style: none
       counter-reset: custom-counter
+      margin-top: 10px
+      margin-bottom: 10px
+      margin-left: 50px
+      margin-right: 50px
+      padding-left: 50px
+      padding-right: 50px
 
       li.step
         counter-increment: custom-counter
@@ -133,6 +131,93 @@
 
         & > *
           width: 100%
+
+        @media (max-width: 1000px)
+          display: -webkit-box
+          display: -moz-box
+          display: -ms-flexbox
+          display: -webkit-flex
+          display: flex
+          -webkit-box-orient: vertical
+          -moz-box-orient: vertical
+          -webkit-flex-direction: column
+          -ms-flex-direction: column
+          flex-direction: column
+          -webkit-box-align: start
+          -moz-box-align: start
+          -ms-flex-align: start
+          -webkit-align-items: flex-start
+          align-items: flex-start
+
+          div.description
+            -webkit-box-ordinal-group: 2
+            -moz-box-ordinal-group: 2
+            -ms-flex-order: 2
+            -webkit-order: 2
+            order: 2
+
+            width: 100%
+            padding: 0
+            text-align: center
+
+          img.step-image
+            -webkit-box-ordinal-group: 1
+            -moz-box-ordinal-group: 1
+            -ms-flex-order: 1
+            -webkit-order: 1
+            order: 1
+
+            width: 70%
+            position: relative
+            left: 50%
+            transform: translateX(-50%)
+
+          &::before
+            transform: translate(-80%, 0%)
+
+        @media (max-width: 800px)
+          img.step-image
+            width: 100%
+
+          &::before
+            width: 50px
+            height: 50px
+            line-height: 50px
+            font-size: 35px
+            transform: translate(-80%, 25%)
+
+      @media (max-width: 600px)
+        padding-left: 0
+        padding-right: 0
+
+  @media (max-width: 600px)
+    grid-template-areas: "image" "title" "description" "ingredients" "steps" "comments"
+    grid-template-columns: 1fr
+    grid-template-rows: auto 1fr auto auto auto auto
+
+    img.main-image
+      width: 80%
+      height: initial
+      border-radius: 10px
+      position: relative
+      left: 50%
+      transform: translateX(-50%)
+      max-width: 800px
+      max-height: 800px
+      grid-area: image
+
+    > div.title
+      width: 80%
+      margin-left: auto
+      margin-right: auto
+      text-align: center
+
+      > div.text
+        margin: 0
+
+    > div.description
+      width: 80%
+      margin-left: 40px
 
   div.comments
     grid-area: comments
