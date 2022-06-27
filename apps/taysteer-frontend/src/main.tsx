@@ -8,6 +8,7 @@ import { Navigation } from './components/navigation/Navigation';
 import './scripts/script';
 import { Account } from './components/account/Account';
 import { RecipePage } from './pages/Recipe/Recipe';
+import { RegistrationPage } from './pages/Registration/Registration';
 
 ReactDOM.render(
   <StrictMode>
@@ -21,6 +22,9 @@ ReactDOM.render(
           <Routes>
             <Route path="/" element={<MainPage />} />
             <Route path="/recipes/:id" element={<RecipePage />} />
+            {['/register', '/registration'].map((path, index) => (
+              <Route path={path} element={<RegistrationPage />} key={index} />
+            ))}
           </Routes>
         </main>
       </Router>

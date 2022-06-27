@@ -4,15 +4,15 @@ import './Recipe.sass';
 
 export const RecipePage: React.FC = () => {
   useEffect(() => {
-    document.body.style.overflowY = "auto";
+    document.body.style.overflowY = 'auto';
     return () => {
-      document.body.style.overflowY = "hidden";
+      document.body.style.overflowY = 'hidden';
     };
   }, []);
 
   return (
     <div>
-        <Recipe />
+      <Recipe />
     </div>
   );
 };

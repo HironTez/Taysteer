@@ -1,0 +1,62 @@
+div.form-container
+  width: 100%
+  padding: 20px
+
+  *
+    width: 90%
+    display: block
+    margin: auto
+
+  div.title
+    text-align: center
+    font-size: 40px
+    font-weight: 400
+    margin-bottom: 70px
+
+    @media (max-width: 500px)
+      margin-bottom: 20px
+
+  label
+    font-weight: 400
+    font-size: 26px
+    margin-bottom: 10px
+
+    input
+      background-color: transparent
+      border: none
+      border-bottom: 2px solid gray
+      color: var(--main-color)
+      height: max-content
+      font-weight: 400
+      font-size: 24px
+      transition: all 0.3s ease-in-out
+      margin-top: 10px
+      margin-bottom: 10px
+
+      &::placeholder
+        opacity: 1
+        color: gray
+        font-weight: 400
+        font-size: 24px
+
+      &:focus
+        outline: none
+        border-color: var(--main-color)
+
+  input[type="submit"]
+    background-color: var(--additional-color)
+    font-weight: 400
+    font-size: 26px
+    border: none
+    padding: 6px
+    border-radius: 100px
+    color: snow
+    transition: all 0.2s ease-in-out
+    margin-top: 20px
+
+    &:hover
+      cursor: pointer
+      background-color: gray
+      color: snow
+
+  &::before
