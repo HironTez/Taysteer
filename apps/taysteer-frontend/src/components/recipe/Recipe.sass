@@ -71,6 +71,9 @@
     ul.list
       margin-top: 10px
 
+    @media ( max-width: 1000px )
+      margin-top: 0
+
   div.steps
     grid-area: steps
 
@@ -100,7 +103,7 @@
           content: counter(custom-counter)
           font-weight: bold
           font-size: 40px
-          transform: translate(-80%, -30%)
+          transform: translate(-80%, -25%)
           width: 70px
           height: 70px
           text-align: center
@@ -112,7 +115,6 @@
           font-weight: 400
           font-size: 35px
           text-align: left
-          margin-left: 40px
 
         div.description
           margin-left: auto
@@ -149,6 +151,8 @@
           -webkit-align-items: flex-start
           align-items: flex-start
 
+          margin-top: 0
+
           div.description
             -webkit-box-ordinal-group: 2
             -moz-box-ordinal-group: 2
@@ -156,7 +160,7 @@
             -webkit-order: 2
             order: 2
 
-            width: 100%
+            width: 70%
             padding: 0
             text-align: center
 
@@ -173,30 +177,41 @@
             transform: translateX(-50%)
 
           &::before
-            transform: translate(-80%, 0%)
+            transform: translate(-80%, 5%)
+            box-shadow: none
+            content: counter(custom-counter) " )"
 
         @media (max-width: 800px)
+          div.description
+            width: 87vw
+            max-width: 87vw
+            min-width: 265px
+
           img.step-image
             width: 100%
-
-          &::before
-            width: 50px
-            height: 50px
-            line-height: 50px
-            font-size: 35px
-            transform: translate(-80%, 25%)
 
       @media (max-width: 600px)
         padding-left: 0
         padding-right: 0
+        margin-left: 25px
+        margin-right: 25px
+
+        li.step::before
+          transform: translate(-40%, 30%)
+          width: 50px
+          height: 50px
+          line-height: 50px
+          font-size: 35px
 
   @media (max-width: 600px)
     grid-template-areas: "image" "title" "description" "ingredients" "steps" "comments"
     grid-template-columns: 1fr
     grid-template-rows: auto 1fr auto auto auto auto
+    margin-top: 0
 
     img.main-image
-      width: 80%
+      width: 87%
+      min-width: 265px
       height: initial
       border-radius: 10px
       position: relative
@@ -207,7 +222,10 @@
       grid-area: image
 
     > div.title
-      width: 80%
+      width: 87vw
+      width: min-content
+      max-width: 87vw
+      min-width: 265px
       margin-left: auto
       margin-right: auto
       text-align: center
@@ -216,8 +234,10 @@
         margin: 0
 
     > div.description
-      width: 80%
-      margin-left: 40px
+      width: 87vw
+      margin-left: auto
+      margin-right: auto
+      max-width: 87vw
 
   div.comments
     grid-area: comments
