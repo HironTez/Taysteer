@@ -1,4 +1,4 @@
-import { FormEventHandler, useCallback, useState } from 'react';
+import { FormEventHandler, useCallback } from 'react';
 import './Registration.sass';
 import $ from 'jquery';
 import { debounce } from '../../scripts/own.module';
@@ -6,6 +6,9 @@ import { debounce } from '../../scripts/own.module';
 export const Registration: React.FC = () => {
   const changeHandler: FormEventHandler<Element> = (event) => {
     const target = event.target as HTMLElement;
+    $('input.error').each((_index, element) =>
+      (element as HTMLInputElement).setCustomValidity('')
+    );
     $('.error').removeClass('error');
 
     debounceHandler(target);
@@ -30,6 +33,7 @@ export const Registration: React.FC = () => {
       passwordEl!.value !== confirmPasswordEl!.value
     ) {
       confirmPasswordEl!.classList.add('error');
+      confirmPasswordEl!.setCustomValidity('Passwords do not match');
     }
   };
 
