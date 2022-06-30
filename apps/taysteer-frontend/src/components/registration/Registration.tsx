@@ -49,7 +49,7 @@ export const Registration: React.FC = () => {
         onChange={changeHandler}
       >
         <label>
-          Name
+          Name (optional)
           <input
             type="text"
             name="name"
