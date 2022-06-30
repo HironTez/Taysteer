@@ -1,7 +1,7 @@
 import { FormEventHandler, useCallback } from 'react';
 import './Registration.sass';
 import $ from 'jquery';
-import { debounce } from '../../scripts/own.module';
+import { debounce, submitForm } from '../../scripts/own.module';
 
 export const Registration: React.FC = () => {
   const changeHandler: FormEventHandler<Element> = (event) => {
@@ -37,17 +37,25 @@ export const Registration: React.FC = () => {
     }
   };
 
+  const submitHandler: FormEventHandler<Element> = (event) => {
+    handleForm(event.currentTarget as HTMLElement); // Validate form
+    // Submit form
+    submitForm(event, '/api/users', '/', undefined, (error) => {
+      if (error.status === 409) {
+        $('input[name="login"]').addClass('error'); // Change input color
+        $('input[name="login"]').each((_i, element) => {
+          (element as HTMLInputElement).setCustomValidity(
+            'Login already exists'
+          );
+        });
+      }
+    });
+  };
+
   return (
     <div className="form-container">
       <div className="title">Sign up</div>
-      <iframe name="dummy-frame" className="dummy-frame"></iframe>
-      <form
-        action="/api/users"
-        method="post"
-        encType="multipart/form-data"
-        target="dummy-frame"
-        onChange={changeHandler}
-      >
+      <form target="/" onChange={changeHandler} onSubmit={submitHandler}>
         <label>
           Name (optional)
           <input

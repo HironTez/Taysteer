@@ -50,7 +50,6 @@ div#root
 
   > *
     display: flex
-    // justify-content: center
 
   > header
     justify-content: space-between
@@ -64,3 +63,40 @@ div#root
 
 iframe.dummy-frame
   display: none !important
+
+// Notiffictions popup
+div.popup
+  position: fixed
+  top: 10%
+  left: 50%
+  transform: translateX(-50%)
+  -webkit-transform: translateX(-50%)
+  -moz-transform: translateX(-50%)
+  -ms-transform: translateX(-50%)
+  -o-transform: translateX(-50%)
+  min-width: min(20vW, 20vh)
+  min-height: min(2vW, 2vh)
+  background-color: rgba(88, 6, 193, 0.75)
+  border-radius: max(2vw, 2vh)
+  -webkit-border-radius: max(2vw, 2vh)
+  -moz-border-radius: max(2vw, 2vh)
+  -ms-border-radius: max(2vw, 2vh)
+  -o-border-radius: max(2vw, 2vh)
+  display: flex
+  justify-content: center
+  align-items: center
+  padding: 20px
+  text-align: center
+  font-size: 24px
+  z-index: 10
+  opacity: 0
+  color: snow
+
+  &.info
+    background-color: rgb(0, 188, 212, 0.75)
+
+  &.success
+    background-color: rgba(0, 201, 0, 0.75)
+
+  &.error
+    background-color: rgba(254, 42, 42, 0.75)
