@@ -7,8 +7,9 @@ import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 import { Navigation } from './components/navigation/Navigation';
 import './scripts/script';
 import { Account } from './components/account/Account';
-import { RecipePage } from './pages/Recipe/Recipe';
-import { RegistrationPage } from './pages/Registration/Registration';
+import { Registration } from './components/authorization/Registration';
+import { Login } from './components/authorization/Login';
+import { Recipe } from './components/recipe/Recipe';
 
 ReactDOM.render(
   <StrictMode>
@@ -21,10 +22,11 @@ ReactDOM.render(
         <main>
           <Routes>
             <Route path="/" element={<MainPage />} />
-            <Route path="/recipes/:id" element={<RecipePage />} />
+            <Route path="/recipes/:id" element={<Recipe />} />
             {['/register', '/registration'].map((path, index) => (
-              <Route path={path} element={<RegistrationPage />} key={index} />
+              <Route path={path} element={<Registration />} key={index} />
             ))}
+            <Route path="/login" element={<Login />} />
           </Routes>
         </main>
       </Router>

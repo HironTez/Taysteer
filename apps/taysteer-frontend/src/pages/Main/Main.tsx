@@ -4,7 +4,7 @@ import backgroundImage from "../../assets/images/main.background.png";
 
 export const MainPage: React.FC = () => {
   return (
-    <div>
+    <div className="page-container">
       <div className="background-image">
         <img src={backgroundImage} alt="background image of food"/>
       </div>

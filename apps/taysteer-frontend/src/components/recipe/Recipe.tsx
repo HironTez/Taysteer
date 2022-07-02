@@ -16,6 +16,13 @@ export const Recipe: React.FC = () => {
     if (!recipe && !loading && !error) fetchRecipe(String(id));
   });
 
+  useEffect(() => {
+    document.body.style.overflowY = 'auto';
+    return () => {
+      document.body.style.overflowY = 'hidden';
+    };
+  });
+
   if (recipe && !loading && !error) {
     return (
       <div className="recipe-container">

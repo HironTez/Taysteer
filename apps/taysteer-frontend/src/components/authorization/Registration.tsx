@@ -1,5 +1,5 @@
 import { FormEventHandler, useCallback } from 'react';
-import './Registration.sass';
+import './Authorization.sass';
 import $ from 'jquery';
 import { debounce, submitForm } from '../../scripts/own.module';
 
@@ -53,50 +53,52 @@ export const Registration: React.FC = () => {
   };
 
   return (
-    <div className="form-container">
-      <div className="title">Sign up</div>
-      <form target="/" onChange={changeHandler} onSubmit={submitHandler}>
-        <label>
-          Name (optional)
-          <input
-            type="text"
-            name="name"
-            placeholder="Type your name"
-            maxLength={50}
-          />
-        </label>
-        <label>
-          Login
-          <input
-            type="text"
-            name="login"
-            placeholder="Type your login"
-            required
-            maxLength={50}
-          />
-        </label>
-        <label>
-          Password
-          <input
-            type="password"
-            name="password"
-            placeholder="Type your password"
-            required
-            maxLength={50}
-          />
-        </label>
-        <label>
-          Repeat your password
-          <input
-            type="password"
-            name="confirm-password"
-            placeholder="Re-type the password"
-            required
-            maxLength={50}
-          />
-        </label>
-        <input type="submit" value="Sign up" />
-      </form>
+    <div className="registration-container">
+      <div className="form-container">
+        <div className="title">Sign up</div>
+        <form target="/" onChange={changeHandler} onSubmit={submitHandler}>
+          <label>
+            Name (optional)
+            <input
+              type="text"
+              name="name"
+              placeholder="Type your name"
+              maxLength={50}
+            />
+          </label>
+          <label>
+            Login
+            <input
+              type="text"
+              name="login"
+              placeholder="Type your login"
+              required
+              maxLength={50}
+            />
+          </label>
+          <label>
+            Password
+            <input
+              type="password"
+              name="password"
+              placeholder="Type your password"
+              required
+              maxLength={50}
+            />
+          </label>
+          <label>
+            Repeat your password
+            <input
+              type="password"
+              name="confirm-password"
+              placeholder="Re-type the password"
+              required
+              maxLength={50}
+            />
+          </label>
+          <input type="submit" value="Sign up" />
+        </form>
+      </div>
     </div>
   );
 };

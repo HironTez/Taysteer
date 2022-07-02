@@ -1,16 +1,18 @@
-div.background-image
-  width: 30vw
-  // height: 
-  z-index: -1
+div.page-container
+  display: inherit
 
-  img
-    position: relative
-    top: 0
-    right: 70%
-    max-width: min(70vw, 800px)
-    max-height: 85%
+  div.background-image
+    width: 30vw
+    // height: 
     z-index: -1
 
-@media (max-width: 1000px)
-  div.background-image
-    display: none
+    img
+      position: relative
+      top: 0
+      right: 70%
+      max-width: min(70vw, 800px)
+      max-height: 85%
+      z-index: -1
+
+    @media (max-width: 1000px)
+      display: none
