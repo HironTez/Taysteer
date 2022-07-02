@@ -188,8 +188,8 @@ paths:
                   type: string
                   description: Password
               required:
-                - user
                 - login
+                - password
       responses:
         '200':
           description: Successful login

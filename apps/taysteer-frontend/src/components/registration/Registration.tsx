@@ -40,7 +40,7 @@ export const Registration: React.FC = () => {
   const submitHandler: FormEventHandler<Element> = (event) => {
     handleForm(event.currentTarget as HTMLElement); // Validate form
     // Submit form
-    submitForm(event, '/api/users', '/', undefined, (error) => {
+    submitForm(event, '/api/users', '/login', undefined, (error) => {
       if (error.status === 409) {
         $('input[name="login"]').addClass('error'); // Change input color
         $('input[name="login"]').each((_i, element) => {
