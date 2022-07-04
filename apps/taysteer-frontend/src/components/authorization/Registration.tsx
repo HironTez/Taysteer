@@ -1,7 +1,7 @@
 import { FormEventHandler, useCallback } from 'react';
 import './Authorization.sass';
 import $ from 'jquery';
-import { debounce, submitForm } from '../../scripts/own.module';
+import { debounce, popup, submitForm } from '../../scripts/own.module';
 
 export const Registration: React.FC = () => {
   const changeHandler: FormEventHandler<Element> = (event) => {
@@ -40,16 +40,26 @@ export const Registration: React.FC = () => {
   const submitHandler: FormEventHandler<Element> = (event) => {
     handleForm(event.currentTarget as HTMLElement); // Validate form
     // Submit form
-    submitForm(event, '/api/users', '/login', undefined, (error) => {
-      if (error.status === 409) {
-        $('input[name="login"]').addClass('error'); // Change input color
-        $('input[name="login"]').each((_i, element) => {
-          (element as HTMLInputElement).setCustomValidity(
-            'Login already exists'
-          );
-        });
+    submitForm(
+      event,
+      '/api/users',
+      '/login',
+      { method: 'post', enctype: 'multipart/form-data' },
+      undefined,
+      // On error
+      (error) => {
+        if (error.status === 409) {
+          popup('User with this login already exists', 'error'); // Show error
+          $('input[name="login"]').addClass('error'); // Change input color
+          // Add custom validity
+          $('input[name="login"]').each((_i, element) => {
+            (element as HTMLInputElement).setCustomValidity(
+              'Login already exists'
+            );
+          });
+        }
       }
-    });
+    );
   };
 
   return (

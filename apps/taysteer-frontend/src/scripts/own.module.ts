@@ -10,44 +10,54 @@ export const debounce = (fn: Function, ms = 300) => {
 };
 
 export const submitForm = (
-  e: FormEvent,
+  event: FormEvent,
   url: string,
   redirectURL = '/',
-  onsuccess?: (response: any) => void,
-  onerror?: (error: JQuery.jqXHR<any>) => void
+  settings: {
+    method?: 'get' | 'post';
+    enctype?: 'multipart/form-data' | 'application/json';
+  } = { method: 'get', enctype: 'application/json' },
+  onSuccess?: (response: any) => void,
+  onError?: (error: JQuery.jqXHR<any>) => void
 ) => {
-  e.preventDefault(); // Prevent from submitting form directly
-  const form = e.currentTarget as HTMLFormElement;
+  event.preventDefault(); // Prevent from submitting form directly
+  const form = event.currentTarget as HTMLFormElement;
   const formData = new FormData(form);
 
   $.ajax({
-    url: url,
-    method: 'post',
-    data: formData,
-    enctype: 'multipart/form-data',
-    processData: false,
-    contentType: false,
+    ...{
+      url: url,
+      method: settings.method || 'get',
+      processData: false,
+      contentType: false,
+    },
+    ...(settings.enctype === 'multipart/form-data'
+      ? ({ data: formData, enctype: settings.enctype } as JQuery.AjaxSettings)
+      : {
+          data: JSON.stringify(serializeForm(form)),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }),
   })
     .done((response) => {
       redirect(redirectURL);
       form.reset(); // Reset the form
 
-      if (onsuccess) onsuccess(response); // Callback
+      if (onSuccess) onSuccess(response); // Callback
     })
     .fail((error) => {
       // Show the error
-      if (error.status === 409) {
-        popup('User with this login already exists', 'error');
-      } else {
+      if (error.status >= 500) {
         popup('Something went wrong. Try again.', 'error');
       }
 
-      if (onerror) onerror(error); // Error callback
+      if (onError) onError(error); // Error callback
     });
 };
 
-export const redirect = (url: string) => {
-  window.location.href = url;
+const redirect = (url: string) => {
+  window.location.href = `/#${url}`;
 };
 
 export const popup = (
@@ -76,4 +86,13 @@ export const popup = (
       }
     );
   }, shownDuration);
+};
+
+const serializeForm = (form: HTMLFormElement): object => {
+  return $(form)
+    .serializeArray()
+    .reduce(function (data: any, array) {
+      data[array.name] = array.value;
+      return data;
+    }, {});
 };
