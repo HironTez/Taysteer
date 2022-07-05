@@ -3,33 +3,46 @@ import { useActions } from '../../hooks/useAction';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import './Account.sass';
 import profileImage from '../../assets/images/profile.default.jpg';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import $ from 'jquery';
 
 export const Account: React.FC = () => {
-  const { account, loading, error } = useTypedSelector(
+  const { account, loading } = useTypedSelector(
     (state) => state.account
   );
 
   const { fetchAccount } = useActions();
 
-  useEffect(() => {
-    if (!account && !loading && !error) fetchAccount();
-  });
+  const location = useLocation();
 
-  if (account) {
-    return (
-      <div className="account">
+  useEffect(() => {
+    if (!loading) {
+      fetchAccount();
+    }
+  }, [location]);
+
+  useEffect(() => {
+    if (account) {
+      $('.profile-container').addClass('active');
+      $('.authorization-container').removeClass('active');
+    } else {
+      $('.profile-container').removeClass('active');
+      $('.authorization-container').addClass('active');
+    }
+  }, [account]);
+
+  return (
+    <div className="account">
+      <div className="profile-container">
         <Link className="profile" to="/profile">
           <img
             className="avatar"
-            src={account.image || profileImage}
+            src={account?.image || profileImage}
             alt="avatar"
-          /></Link>
+          />
+        </Link>
       </div>
-    );
-  } else {
-    return (
-      <div className="account">
+      <div className="authorization-container active">
         <Link className="authorization sign-up" to="/register">
           Sign up
         </Link>
@@ -37,6 +50,6 @@ export const Account: React.FC = () => {
           Log in
         </Link>
       </div>
-    );
-  }
+    </div>
+  );
 };

@@ -3,43 +3,51 @@ div.account
   height: min-content
   text-align: center
 
-  > .authorization
-    height: min-content
-    font-size: 20px
-    padding-right: 25px
-    padding-left: 25px
-    padding-top: 6px
-    padding-bottom: 5px
-    margin-left: 10px
-    margin-top: 3px
-    margin-bottom: 3px
-    background-color: transparent
-    border-style: solid
-    border-radius: 15px
-    transition: 0.3s
-    white-space: nowrap
-    display: inline-block
+  .authorization-container
+    &:not(.active)
+      display: none
 
-    &:hover
-      cursor: pointer
-
-    &.sign-up
-      border-color: var(--additional-color)
-      color: var(--additional-color)
+    .authorization
+      height: min-content
+      font-size: 20px
+      padding-right: 25px
+      padding-left: 25px
+      padding-top: 6px
+      padding-bottom: 5px
+      margin-left: 10px
+      margin-top: 3px
+      margin-bottom: 3px
+      background-color: transparent
+      border-style: solid
+      border-radius: 15px
+      transition: 0.3s
+      white-space: nowrap
+      display: inline-block
 
       &:hover
-        background-color: var(--additional-color)
-        color: var(--main-color)
+        cursor: pointer
 
-    &.sign-in
-      border-color: transparent
+      &.sign-up
+        border-color: var(--additional-color)
+        color: var(--additional-color)
 
-      &:hover
-        background-color: lightgray
+        &:hover
+          background-color: var(--additional-color)
+          color: var(--main-color)
 
-  .profile
-    
-    img.avatar
-      width: 80px
-      height: 80px
-      border-radius: 50%
+      &.sign-in
+        border-color: transparent
+
+        &:hover
+          background-color: lightgray
+
+  .profile-container
+    &:not(.active)
+      display: none
+
+    .profile
+
+      img.avatar
+        width: 80px
+        height: 80px
+        border-radius: 50%
