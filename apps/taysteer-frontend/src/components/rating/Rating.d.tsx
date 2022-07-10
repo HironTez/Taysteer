@@ -1,3 +1,0 @@
-interface RatingProps {
-    rating: number;
-}

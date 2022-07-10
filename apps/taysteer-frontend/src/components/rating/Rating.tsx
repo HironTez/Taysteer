@@ -1,6 +1,9 @@
 import './Rating.sass';
 
-export const Rating: React.FC<{ rating: number }> = ({ rating = 0 }) => {
+export const Rating: React.FC<{ rating: number; countOfRatings?: number }> = ({
+  rating = 0,
+  countOfRatings,
+}) => {
   return (
     <div className={`rating rating-${rating}`}>
       <span className="rating-star 1"></span>
@@ -8,6 +11,7 @@ export const Rating: React.FC<{ rating: number }> = ({ rating = 0 }) => {
       <span className="rating-star 3"></span>
       <span className="rating-star 4"></span>
       <span className="rating-star 5"></span>
+      {countOfRatings ? <div className="rating-count">({countOfRatings})</div> : null}
     </div>
   );
 };
