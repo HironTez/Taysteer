@@ -34,14 +34,17 @@ async function bootstrap() {
   app.register(secureSession, {
     secret: SESSION_SECRET_KEY,
     salt: SESSION_SECRET_SALT,
+    cookie: {
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+    },
   });
   app.register(fastifyPassport.initialize());
   app.register(fastifyPassport.secureSession());
   app.register(fastifyMultiPart);
   app.register(fastifyProxy, {
     upstream: `http://localhost:${PORT_FRONTEND}`,
-    prefix: '/'
-  })
+    prefix: '/',
+  });
 
   const swaggerDocument = YAML.load(
     path.join(__dirname, '../../../apps/taysteer-backend/doc/api.yaml')
