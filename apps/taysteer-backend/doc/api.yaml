@@ -361,6 +361,7 @@ paths:
               schema:
                 oneOf:
                   - $ref: '#/components/schemas/UserToResponseDetailed'
+                  - $ref: '#/components/schemas/UserToResponse'
         '404':
           description: User not found
   /users/{user_id}/recipes:

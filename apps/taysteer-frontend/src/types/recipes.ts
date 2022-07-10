@@ -1,10 +1,4 @@
-interface RecipeT {
-  id: string;
-  title: string;
-  image: string;
-  description: string;
-  rating: number;
-}
+import { RecipeT } from "./entities";
 
 export interface RecipesState {
   recipes: RecipeT[];

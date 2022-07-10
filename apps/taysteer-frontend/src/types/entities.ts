@@ -1,3 +1,11 @@
+export interface RecipeT {
+  id: string;
+  title: string;
+  image: string;
+  description: string;
+  rating: number;
+}
+
 export interface UserT {
   id: string;
   name: string;
@@ -15,7 +23,7 @@ export interface RecipeDetailedT {
   ratingsCount: number;
   user: UserT;
   ingredients: Array<RecipeIngredientT>;
-  steps: Array<RecipeStepT>,
+  steps: Array<RecipeStepT>;
   countOfComments: number;
 }
 
@@ -29,4 +37,16 @@ interface RecipeStepT {
   title: string;
   description: string;
   image: string;
+}
+
+export interface ProfileDetailedT {
+  id: string;
+  name: string;
+  login: string;
+  image: string;
+  description: string;
+  rating: number;
+  ratingsCount: number;
+  recipes: Array<RecipeT>;
+  countOfRecipes: number;
 }
