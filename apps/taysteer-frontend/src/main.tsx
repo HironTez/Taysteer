@@ -10,6 +10,7 @@ import { Account } from './components/account/Account';
 import { Registration } from './components/authorization/Registration';
 import { Login } from './components/authorization/Login';
 import { Recipe } from './components/recipe/Recipe';
+import { Profile } from './components/profile/Profile';
 
 ReactDOM.render(
   <StrictMode>
@@ -27,6 +28,7 @@ ReactDOM.render(
               <Route path={path} element={<Registration />} key={index} />
             ))}
             <Route path="/login" element={<Login />} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         </main>
       </Router>

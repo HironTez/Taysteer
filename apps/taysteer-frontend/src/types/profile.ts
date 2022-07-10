@@ -7,20 +7,20 @@ export interface ProfileState {
 }
 
 export enum ProfileActionTypes {
-  FETCH_RECIPE = 'FETCH_RECIPE',
-  FETCH_RECIPE_ERROR = 'FETCH_RECIPE_ERROR',
-  FETCH_RECIPE_SUCCESS = 'FETCH_RECIPE_SUCCESS',
+  FETCH_PROFILE = 'FETCH_PROFILE',
+  FETCH_PROFILE_ERROR = 'FETCH_PROFILE_ERROR',
+  FETCH_PROFILE_SUCCESS = 'FETCH_PROFILE_SUCCESS',
 }
 
 interface FetchProfileAction {
-  type: ProfileActionTypes.FETCH_RECIPE;
+  type: ProfileActionTypes.FETCH_PROFILE;
 }
 interface FetchProfileSuccessAction {
-  type: ProfileActionTypes.FETCH_RECIPE_SUCCESS;
+  type: ProfileActionTypes.FETCH_PROFILE_SUCCESS;
   payload: any;
 }
 interface FetchProfileErrorAction {
-  type: ProfileActionTypes.FETCH_RECIPE_ERROR;
+  type: ProfileActionTypes.FETCH_PROFILE_ERROR;
   payload: string;
 }
 
