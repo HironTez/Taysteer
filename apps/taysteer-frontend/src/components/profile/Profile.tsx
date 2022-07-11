@@ -25,14 +25,19 @@ export const Profile: React.FC = () => {
     return (
       <div className="profile-container">
         <div className="name">{profile.name || 'User'}</div>
-        <div className="login">{profile.login}</div>
+        <div className="login">@{profile.login}</div>
         <div className="description">{profile.description}</div>
         <img
           className="avatar"
           src={profile.image || profileImage}
           alt="profile-avatar"
         ></img>
-        <Rating rating={profile.rating} />
+        <div className="rating-container">
+          <Rating rating={profile.rating} />
+        </div>
+        <div className="count-of-recipes">
+          {profile.countOfRecipes} recipe(s)
+        </div>
       </div>
     );
   } else if (loading) {

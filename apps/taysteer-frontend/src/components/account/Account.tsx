@@ -23,17 +23,17 @@ export const Account: React.FC = () => {
 
   useEffect(() => {
     if (account) {
-      $('.profile-container').addClass('active');
+      $('.min-profile-container').addClass('active');
       $('.authorization-container').removeClass('active');
     } else {
-      $('.profile-container').removeClass('active');
+      $('.min-profile-container').removeClass('active');
       $('.authorization-container').addClass('active');
     }
   }, [account]);
 
   return (
     <div className="account">
-      <div className="profile-container">
+      <div className="min-profile-container">
         <Link className="profile" to="/profile">
           <img
             className="avatar"
