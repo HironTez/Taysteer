@@ -2,7 +2,6 @@ import { Dispatch } from 'react';
 import { RecipesAction, RecipesActionTypes } from '../../types/recipes';
 
 export const fetchRecipes = (page = 1, userId?: string) => {
-  console.log(userId);
   return async (dispatch: Dispatch<RecipesAction>) => {
     try {
       dispatch({ type: RecipesActionTypes.FETCH_RECIPES });
@@ -31,4 +30,10 @@ export const fetchRecipes = (page = 1, userId?: string) => {
 
 export const setRecipesPage = (page: number): RecipesAction => {
   return { type: RecipesActionTypes.SET_RECIPES_PAGE, payload: page };
+};
+
+export const clearRecipes = () => {
+  return {
+    type: RecipesActionTypes.CLEAR_RECIPES,
+  };
 };

@@ -4,7 +4,7 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import './Recipe.list.sass';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Link, useLocation } from 'react-router-dom';
-import { horizontalScroll } from '../../scripts/horizontal.scroll';
+import { horizontalScroll } from '../../scripts/own.module';
 import { Loading } from '../loading.spinner/Loading.spinner';
 import { Error } from '../error.animation/Error.animation';
 import { Rating } from '../rating/Rating';
@@ -13,7 +13,7 @@ export const RecipeList: React.FC<{ userId?: string }> = ({ userId }) => {
   const { recipes, loading, error, end, page } = useTypedSelector(
     (state) => state.recipes
   );
-  const { fetchRecipes, setRecipesPage } = useActions();
+  const { fetchRecipes, setRecipesPage, clearRecipes } = useActions();
 
   useEffect(() => {
     if (recipes.length >= 10 && !end) fetchRecipes(page, userId); // Fetch recipes if it's a new page
@@ -22,7 +22,8 @@ export const RecipeList: React.FC<{ userId?: string }> = ({ userId }) => {
   const location = useLocation();
 
   useEffect(() => {
-    recipes.length = 0;
+    clearRecipes();
+    console.log(recipes, page)
     fetchRecipes(page, userId);
     horizontalScroll(); // Run the horizontal scroll script when the location changes
   }, [location]);
@@ -40,27 +41,24 @@ export const RecipeList: React.FC<{ userId?: string }> = ({ userId }) => {
           endMessage={error ? <Error /> : null}
           scrollableTarget="recipes-container"
         >
-          {recipes.map(
-            (
-              recipe // Format recipes
-            ) => (
-              <Link
-                to={`/recipes/${recipe.id}`}
-                key={recipe.id}
-                className="recipe-min"
-              >
-                <img
-                  className="image"
-                  src={recipe.image}
-                  alt="recipe food preview image"
-                />
-                <div className="title">{recipe.title}</div>
-                <Rating rating={recipe.rating} />
-                <div className="description">{recipe.description}</div>
-                <div className="readMore">Read more</div>
-              </Link>
-            )
-          )}
+          {/* Format recipes */}
+          {recipes.map((recipe) => (
+            <Link
+              to={`/recipes/${recipe.id}`}
+              key={recipe.id}
+              className="recipe-min"
+            >
+              <img
+                className="image"
+                src={recipe.image}
+                alt="recipe food preview image"
+              />
+              <div className="title">{recipe.title}</div>
+              <Rating rating={recipe.rating} />
+              <div className="description">{recipe.description}</div>
+              <div className="readMore">Read more</div>
+            </Link>
+          ))}
         </InfiniteScroll>
       </div>
     </div>

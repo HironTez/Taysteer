@@ -51,7 +51,6 @@
     "rxjs": "^7.0.0",
     "tslib": "^2.0.0",
     "typeorm": "^0.2.45",
-    "universalsmoothscroll": "^5.1.0-s",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {

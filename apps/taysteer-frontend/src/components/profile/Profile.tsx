@@ -8,6 +8,7 @@ import profileImage from '../../assets/images/profile.default.jpg';
 import './Profile.sass';
 import { Rating } from '../rating/Rating';
 import { RecipeList } from '../recipe.list/Recipe.list';
+import dishIcon from '../../assets/images/dish.svg';
 
 export const Profile: React.FC = () => {
   const { userId } = useParams();
@@ -44,7 +45,8 @@ export const Profile: React.FC = () => {
           <Rating rating={profile.rating} />
         </div>
         <div className="count-of-recipes">
-          {profile.countOfRecipes} {`recipe${profile.countOfRecipes > 1 ? 's' : ''}`}
+          {profile.countOfRecipes} {`recipe${profile.countOfRecipes > 1 ? 's' : ''} `}
+          <img src={dishIcon} alt="dish" className="symbolIcon"/>
         </div>
         <div className="recipes-container">
           <RecipeList userId={profile.id} />

@@ -1,4 +1,4 @@
-import { RecipeT } from "./entities";
+import { RecipeT } from './entities';
 
 export interface RecipesState {
   recipes: RecipeT[];
@@ -13,6 +13,7 @@ export enum RecipesActionTypes {
   FETCH_RECIPES_ERROR = 'FETCH_RECIPES_ERROR',
   FETCH_RECIPES_SUCCESS = 'FETCH_RECIPES_SUCCESS',
   SET_RECIPES_PAGE = 'SET_RECIPES_PAGE',
+  CLEAR_RECIPES = 'CLEAR_RECIPES',
 }
 
 interface FetchRecipesAction {
@@ -30,9 +31,13 @@ interface SetRecipesPage {
   type: RecipesActionTypes.SET_RECIPES_PAGE;
   payload: number;
 }
+interface CLEAR_RECIPES {
+  type: RecipesActionTypes.CLEAR_RECIPES;
+}
 
 export type RecipesAction =
   | FetchRecipesAction
   | FetchRecipesSuccessAction
   | FetchRecipesErrorAction
-  | SetRecipesPage;
+  | SetRecipesPage
+  | CLEAR_RECIPES;
