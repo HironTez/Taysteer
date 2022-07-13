@@ -6,7 +6,6 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { Link, useLocation } from 'react-router-dom';
 import { horizontalScroll } from '../../scripts/horizontal.scroll';
 import { Loading } from '../loading.spinner/Loading.spinner';
-import { End } from '../done.animation/Done.animation';
 import { Error } from '../error.animation/Error.animation';
 import { Rating } from '../rating/Rating';
 

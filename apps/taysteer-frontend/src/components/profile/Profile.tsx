@@ -44,7 +44,7 @@ export const Profile: React.FC = () => {
           <Rating rating={profile.rating} />
         </div>
         <div className="count-of-recipes">
-          {profile.countOfRecipes} recipe(s)
+          {profile.countOfRecipes} {`recipe${profile.countOfRecipes > 1 ? 's' : ''}`}
         </div>
         <div className="recipes-container">
           <RecipeList userId={profile.id} />

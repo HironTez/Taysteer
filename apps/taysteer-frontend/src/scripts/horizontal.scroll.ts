@@ -11,6 +11,7 @@ export const horizontalScroll = () => {
   uss.hrefSetup();
 
   scrollableDivs?.on('mousewheel', (event) => {
+    event.preventDefault();
     const originalEvent = event.originalEvent as WheelEvent;
     if (
       originalEvent.deltaY !== 0 &&
