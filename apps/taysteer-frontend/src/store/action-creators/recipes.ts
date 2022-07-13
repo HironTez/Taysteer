@@ -1,13 +1,13 @@
 import { Dispatch } from 'react';
 import { RecipesAction, RecipesActionTypes } from '../../types/recipes';
 
-export const fetchRecipes = (page = 1) => {
+export const fetchRecipes = (page = 1, userId?: string) => {
+  console.log(userId);
   return async (dispatch: Dispatch<RecipesAction>) => {
     try {
       dispatch({ type: RecipesActionTypes.FETCH_RECIPES });
-      const response = await fetch(
-        `/api/recipes?page=${page}`
-      );
+      const link = userId ? `/api/users/${userId}/recipes` : '/api/recipes';
+      const response = await fetch(`${link}?page=${page}`);
       if (response.status !== 200) {
         dispatch({
           type: RecipesActionTypes.FETCH_RECIPES_ERROR,

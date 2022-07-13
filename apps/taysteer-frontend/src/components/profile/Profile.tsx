@@ -7,6 +7,7 @@ import { Error } from '../error.animation/Error.animation';
 import profileImage from '../../assets/images/profile.default.jpg';
 import './Profile.sass';
 import { Rating } from '../rating/Rating';
+import { RecipeList } from '../recipe.list/Recipe.list';
 
 export const Profile: React.FC = () => {
   const { userId } = useParams();
@@ -20,6 +21,13 @@ export const Profile: React.FC = () => {
   useEffect(() => {
     if (!loading && !error) fetchProfile(userId!);
   }, [account]);
+
+  useEffect(() => {
+    document.body.style.overflowY = 'auto';
+    return () => {
+      document.body.style.overflowY = 'hidden';
+    };
+  });
 
   if (profile && !loading && !error) {
     return (
@@ -37,6 +45,9 @@ export const Profile: React.FC = () => {
         </div>
         <div className="count-of-recipes">
           {profile.countOfRecipes} recipe(s)
+        </div>
+        <div className="recipes-container">
+          <RecipeList userId={profile.id} />
         </div>
       </div>
     );
