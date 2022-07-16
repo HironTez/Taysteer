@@ -93,6 +93,7 @@
 
 #recipes-container.horizontal-scroll.active
   overflow-x: auto
+  overflow-y: hidden
   max-width: 70vw
 
   .infinite-scroll-component
@@ -102,6 +103,7 @@
     grid-template-rows: auto auto auto
 
 #recipes-container.horizontal-scroll:not(.active)
+  overflow-x: hidden
   overflow-y: auto
   max-height: 85vh
   max-height: calc(var(--vh, 1vh) * 85)

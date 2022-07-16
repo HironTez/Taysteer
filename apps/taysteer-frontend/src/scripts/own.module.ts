@@ -138,3 +138,49 @@ const serializeForm = (form: HTMLFormElement): object => {
       return data;
     }, {});
 };
+
+// Add shadow to the scroll elements
+export const scrollShadow = () => {
+  // Get scrollable elements
+  const scrollableDivs = $('.scroll-shadow');
+  // Add shadow elements
+  scrollableDivs.each((_index, element) => {
+    if (!$(element).children('.shadow').length) {
+      const shadow = $(`<div class="shadow"></div>`);
+
+      shadow.css({
+        maxHeight: element.scrollHeight,
+        maxWidth: element.scrollWidth,
+      });
+      $(element).prepend(shadow);
+    }
+  });
+  scrollableDivs.on('DOMNodeInserted', (event) => {
+    $(event.currentTarget).children('.shadow').css({
+      maxHeight: event.currentTarget.offsetHeight,
+      maxWidth: event.currentTarget.offsetWidth,
+    });
+  });
+  // Change shadow on scroll
+  $(scrollableDivs).on('scroll', (event) => {
+    const scrollTop = event.currentTarget.scrollTop;
+    const scrollLeft = event.currentTarget.scrollLeft;
+    const direction = scrollTop && !scrollLeft ? 'vertical' : 'horizontal';
+    const shadowTop =
+      direction === 'vertical' ? (scrollTop > 50 ? 50 : scrollTop / 50) : 0;
+    const shadowLeft =
+      direction === 'horizontal' ? (scrollLeft > 50 ? 50 : scrollLeft / 50) : 0;
+    const shadowElement = $(event.currentTarget).children('.shadow');
+    if (shadowTop) {
+      shadowElement.addClass('top');
+    } else {
+      shadowElement.removeClass('top');
+    }
+    if (shadowLeft) {
+      shadowElement.addClass('left');
+    } else {
+      shadowElement.removeClass('left');
+    }
+    shadowElement.css({ opacity: shadowTop || shadowLeft });
+  });
+};

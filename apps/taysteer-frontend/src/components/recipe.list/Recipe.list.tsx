@@ -4,7 +4,7 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import './Recipe.list.sass';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Link, useLocation } from 'react-router-dom';
-import { horizontalScroll } from '../../scripts/own.module';
+import { horizontalScroll, scrollShadow } from '../../scripts/own.module';
 import { Loading } from '../loading.spinner/Loading.spinner';
 import { Error } from '../error.animation/Error.animation';
 import { Rating } from '../rating/Rating';
@@ -26,11 +26,12 @@ export const RecipeList: React.FC<{ userId?: string }> = ({ userId }) => {
     console.log(recipes, page)
     fetchRecipes(page, userId);
     horizontalScroll(); // Run the horizontal scroll script when the location changes
+    scrollShadow(); // Run the scroll shadow script when the location changes
   }, [location]);
 
   return (
     <div className="recipes">
-      <div id="recipes-container" className="horizontal-scroll">
+      <div id="recipes-container" className="horizontal-scroll scroll-shadow start">
         <InfiniteScroll // Set up infinite scroll
           dataLength={recipes.length}
           next={() => {
