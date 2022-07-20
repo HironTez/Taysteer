@@ -149,16 +149,16 @@ export const scrollShadow = () => {
       const shadow = $(`<div class="shadow"></div>`);
 
       shadow.css({
-        maxHeight: element.scrollHeight,
-        maxWidth: element.scrollWidth,
+        maxHeight: element.clientHeight,
+        maxWidth: element.clientWidth,
       });
       $(element).prepend(shadow);
     }
   });
   scrollableDivs.on('DOMNodeInserted', (event) => {
     $(event.currentTarget).children('.shadow').css({
-      maxHeight: event.currentTarget.offsetHeight,
-      maxWidth: event.currentTarget.offsetWidth,
+      maxHeight: event.currentTarget.clientHeight,
+      maxWidth: event.currentTarget.clientWidth,
     });
   });
   // Change shadow on scroll

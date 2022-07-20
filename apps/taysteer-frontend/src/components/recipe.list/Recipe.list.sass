@@ -116,3 +116,17 @@
     > div:not(.recipe-min)
       margin-left: auto
       margin-right: auto
+
+.shadow
+  position: absolute
+  z-index: 3
+
+  &.top
+    box-shadow: inset 0 7px 9px -7px rgba(0,0,0,0.4)
+    width: 100%
+    height: 10px
+
+  &.left
+    box-shadow: inset 7px 0 9px -7px rgba(0,0,0,0.4)
+    width: 10px
+    height: 100%
