@@ -32,7 +32,7 @@ export const setRecipesPage = (page: number): RecipesAction => {
   return { type: RecipesActionTypes.SET_RECIPES_PAGE, payload: page };
 };
 
-export const clearRecipes = () => {
+export const clearRecipes = (): RecipesAction => {
   return {
     type: RecipesActionTypes.CLEAR_RECIPES,
   };

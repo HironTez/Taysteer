@@ -31,7 +31,7 @@ interface SetRecipesPage {
   type: RecipesActionTypes.SET_RECIPES_PAGE;
   payload: number;
 }
-interface CLEAR_RECIPES {
+interface ClearRecipes {
   type: RecipesActionTypes.CLEAR_RECIPES;
 }
 
@@ -40,4 +40,4 @@ export type RecipesAction =
   | FetchRecipesSuccessAction
   | FetchRecipesErrorAction
   | SetRecipesPage
-  | CLEAR_RECIPES;
+  | ClearRecipes;
