@@ -16,22 +16,25 @@ export const RecipeList: React.FC<{ userId?: string }> = ({ userId }) => {
   const { fetchRecipes, setRecipesPage, clearRecipes } = useActions();
 
   useEffect(() => {
-    if (recipes.length >= 10 && !end) fetchRecipes(page, userId); // Fetch recipes if it's a new page
+    if (!end && page !== 1) fetchRecipes(page, userId); // Fetch recipes if it's a new page
   }, [page]);
 
   const location = useLocation();
 
   useEffect(() => {
-    clearRecipes();
-    console.log(recipes, page)
-    fetchRecipes(page, userId);
-    horizontalScroll(); // Run the horizontal scroll script when the location changes
-    scrollShadow(); // Run the scroll shadow script when the location changes
+    clearRecipes(); // Clear recipes
+    fetchRecipes(page, userId); // Fetch new recipes
+    // Re-run scripts
+    horizontalScroll();
+    scrollShadow();
   }, [location]);
 
   return (
     <div className="recipes">
-      <div id="recipes-container" className="horizontal-scroll scroll-shadow start">
+      <div
+        id="recipes-container"
+        className="horizontal-scroll scroll-shadow start"
+      >
         <InfiniteScroll // Set up infinite scroll
           dataLength={recipes.length}
           next={() => {
