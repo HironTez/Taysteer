@@ -11,12 +11,12 @@ export const horizontalScroll = () => {
   uss.hrefSetup();
 
   scrollableDivs?.on('mousewheel', (event) => {
-    event.preventDefault();
     const originalEvent = event.originalEvent as WheelEvent;
     if (
       originalEvent.deltaY !== 0 &&
       event.currentTarget.classList.contains('active')
-    ) {
+      ) {
+      event.preventDefault();
       event.stopPropagation();
       uss.scrollXBy(originalEvent.deltaY, event.currentTarget, null, false);
     }
