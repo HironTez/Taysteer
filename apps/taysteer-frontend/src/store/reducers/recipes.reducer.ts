@@ -32,8 +32,8 @@ export const recipesReducer = (
     case RecipesActionTypes.SET_RECIPES_PAGE:
       return { ...state, page: action.payload };
     case RecipesActionTypes.CLEAR_RECIPES:
-      state.recipes.length = 0;
-      return { ...state, recipes: [] };
+      state.recipes = [];
+      return { ...state, recipes: [], page: 1 };
     default:
       return state;
   }

@@ -24,7 +24,7 @@ export const RecipeList: React.FC<{ userId?: string }> = ({ userId }) => {
   // When url changes
   useEffect(() => {
     clearRecipes(); // Clear recipes
-    fetchRecipes(page, userId); // Fetch new recipes
+    fetchRecipes(1, userId); // Fetch new recipes
     // Re-run scripts
     horizontalScroll();
     scrollShadow();
