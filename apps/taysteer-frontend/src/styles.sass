@@ -11,6 +11,7 @@ body
   background-repeat: repeat-y
   overflow: hidden
   min-height: 100vh
+  max-height: calc(var(--vh, 1vh) * 100)
   min-height: -webkit-fill-available
   width: 100vw
   margin: 0
@@ -72,13 +73,20 @@ div.popup
   -ms-transform: translateX(-50%)
   -o-transform: translateX(-50%)
   min-width: min(20vW, 20vh)
+  min-width: min(20vW, calc(var(--vh, 1vh) * 20))
   min-height: min(2vW, 2vh)
+  min-height: min(2vW, calc(var(--vh, 1vh) * 2))
   background-color: rgba(88, 6, 193, 0.75)
   border-radius: max(2vw, 2vh)
+  border-radius: max(2vw, calc(var(--vh, 1vh) * 2))
   -webkit-border-radius: max(2vw, 2vh)
+  -webkit-border-radius: max(2vw, calc(var(--vh, 1vh) * 2))
   -moz-border-radius: max(2vw, 2vh)
+  -moz-border-radius: max(2vw, calc(var(--vh, 1vh) * 2))
   -ms-border-radius: max(2vw, 2vh)
+  -ms-border-radius: max(2vw, calc(var(--vh, 1vh) * 2))
   -o-border-radius: max(2vw, 2vh)
+  -o-border-radius: max(2vw, calc(var(--vh, 1vh) * 2))
   display: flex
   justify-content: center
   align-items: center
