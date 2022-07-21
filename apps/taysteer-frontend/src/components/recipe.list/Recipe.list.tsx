@@ -21,6 +21,7 @@ export const RecipeList: React.FC<{ userId?: string }> = ({ userId }) => {
 
   const location = useLocation();
 
+  // When url changes
   useEffect(() => {
     clearRecipes(); // Clear recipes
     fetchRecipes(page, userId); // Fetch new recipes

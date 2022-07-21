@@ -84,6 +84,8 @@ export const Registration: React.FC = () => {
               placeholder="Type your login"
               required
               maxLength={50}
+              autoCapitalize="none"
+              autoCorrect="off"
             />
           </label>
           <label>
