@@ -184,3 +184,11 @@ export const scrollShadow = () => {
     shadowElement.css({ opacity: shadowTop || shadowLeft });
   });
 };
+
+// Allow vertical scrolling for react page
+export const allowVerticalScroll = () => {
+  document.body.style.overflowY = 'auto';
+  return () => {
+    document.body.style.overflowY = 'hidden';
+  };
+};

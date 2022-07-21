@@ -9,6 +9,7 @@ import './Profile.sass';
 import { Rating } from '../rating/Rating';
 import { RecipeList } from '../recipe.list/Recipe.list';
 import dishIcon from '../../assets/images/dish.svg';
+import { allowVerticalScroll } from '../../scripts/own.module';
 
 export const Profile: React.FC = () => {
   const { userId } = useParams();
@@ -23,12 +24,7 @@ export const Profile: React.FC = () => {
     if (!loading && !error) fetchProfile(userId!);
   }, [account]);
 
-  useEffect(() => {
-    document.body.style.overflowY = 'auto';
-    return () => {
-      document.body.style.overflowY = 'hidden';
-    };
-  });
+  useEffect(allowVerticalScroll);
 
   if (profile && !loading && !error) {
     return (

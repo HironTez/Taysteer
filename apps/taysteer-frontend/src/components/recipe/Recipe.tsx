@@ -6,6 +6,7 @@ import { useActions } from '../../hooks/useAction';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import './Recipe.sass';
 import { Rating } from '../rating/Rating';
+import { allowVerticalScroll } from '../../scripts/own.module';
 
 export const Recipe: React.FC = () => {
   const { id } = useParams();
@@ -16,12 +17,7 @@ export const Recipe: React.FC = () => {
     if (!recipe && !loading && !error) fetchRecipe(String(id));
   });
 
-  useEffect(() => {
-    document.body.style.overflowY = 'auto';
-    return () => {
-      document.body.style.overflowY = 'hidden';
-    };
-  });
+  useEffect(allowVerticalScroll);
 
   if (recipe && !loading && !error) {
     return (

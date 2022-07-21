@@ -1,20 +1,24 @@
 div.page-container
   display: inherit
 
-  div.background-image
-    width: 30vw
+  img.background-image
+    // width: 50vw
+    object-fit: cover
+    border-radius: 50px
+    position: absolute
+    top: 50vh
+    right: 70%
+    max-width: min(70vw, 850px)
+    max-height: 85vh
     z-index: -1
+    transform: translateY(-50%)
 
-    img
-      position: relative
-      top: 0
-      right: 70%
-      max-width: min(70vw, 800px)
-      max-height: 85%
-      z-index: -1
+    @media (max-width: 1000px)
+      display: none
 
   .recipes
     max-width: 70vw
 
-    @media (max-width: 1000px)
-      display: none
+    @media (min-width: 1000px)
+      position: absolute
+      left: 30vw

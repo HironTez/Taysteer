@@ -1,13 +1,15 @@
 import { RecipeList } from '../../components/recipe.list/Recipe.list';
 import './Main.sass';
 import backgroundImage from '../../assets/images/main.background.png';
+import { useEffect } from 'react';
+import { allowVerticalScroll } from '../../scripts/own.module';
 
 export const MainPage: React.FC = () => {
+  useEffect(allowVerticalScroll);
+
   return (
     <div className="page-container">
-      <div className="background-image">
-        <img src={backgroundImage} alt="background image of food" />
-      </div>
+      <img src={backgroundImage} alt="background image of food" className="background-image"/>
       <RecipeList />
     </div>
   );
