@@ -80,42 +80,45 @@
     align-self: end
     grid-area: readmore
 
-#recipes-container
-  border-radius: 10px
+.recipes
+  max-width: inherit
 
-  &::-webkit-scrollbar-track
-    margin: 10px
+  #recipes-container
+    border-radius: 10px
 
-  .infinite-scroll-component
-    > div:not(.recipe-min)
-      grid-row-end: span 3
+    &::-webkit-scrollbar-track
       margin: 10px
 
-#recipes-container.horizontal-scroll.active
-  overflow-x: auto
-  overflow-y: hidden
-  max-width: 70vw
+    .infinite-scroll-component
+      > div:not(.recipe-min)
+        grid-row-end: span 3
+        margin: 10px
 
-  .infinite-scroll-component
-    width: max-content
-    display: grid
-    grid-auto-flow: column
-    grid-template-rows: auto auto auto
+  #recipes-container.horizontal-scroll.active
+    overflow-x: auto
+    overflow-y: hidden
+    max-width: inherit
 
-#recipes-container.horizontal-scroll:not(.active)
-  overflow-x: hidden
-  overflow-y: auto
-  max-height: 85vh
-  max-height: calc(var(--vh, 1vh) * 85)
-  width: min-content
-  position: relative
-  left: 50%
-  transform: translate(-50%)
+    .infinite-scroll-component
+      width: max-content
+      display: grid
+      grid-auto-flow: column
+      grid-template-rows: auto auto auto
 
-  .infinite-scroll-component
-    > div:not(.recipe-min)
-      margin-left: auto
-      margin-right: auto
+  #recipes-container.horizontal-scroll:not(.active)
+    overflow-x: hidden
+    overflow-y: auto
+    max-height: 85vh
+    max-height: calc(var(--vh, 1vh) * 85)
+    width: min-content
+    position: relative
+    left: 50%
+    transform: translate(-50%)
+
+    .infinite-scroll-component
+      > div:not(.recipe-min)
+        margin-left: auto
+        margin-right: auto
 
 .shadow
   position: absolute
