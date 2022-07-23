@@ -3,10 +3,10 @@ div.account
   height: min-content
   text-align: center
 
-  .authorization-container
-    &:not(.active)
-      display: none
+  & > *:not(.active)
+    display: none
 
+  .authorization-container
     .authorization
       height: min-content
       font-size: 20px
@@ -42,12 +42,32 @@ div.account
           background-color: lightgray
 
   .min-profile-container
-    &:not(.active)
-      display: none
-
     .profile
-
       img.avatar
         width: 80px
         height: 80px
         border-radius: 50%
+
+  .deauthorization-container
+    .logout
+      height: min-content
+      font-size: 20px
+      padding-right: 25px
+      padding-left: 25px
+      padding-top: 6px
+      padding-bottom: 5px
+      margin-left: 10px
+      margin-top: 3px
+      margin-bottom: 3px
+      background-color: transparent
+      border-style: solid
+      border-radius: 15px
+      transition: 0.3s
+      white-space: nowrap
+      display: inline-block
+      border-color: transparent
+      background-color: lightgray
+
+      &:hover
+        cursor: pointer
+        background-color: lightcoral

@@ -3,33 +3,46 @@ import { useActions } from '../../hooks/useAction';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import './Account.sass';
 import profileImage from '../../assets/images/profile.default.jpg';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import $ from 'jquery';
+import { popup } from '../../scripts/own.module';
 
 export const Account: React.FC = () => {
-  const { account, loading } = useTypedSelector(
-    (state) => state.account
-  );
+  const { account, loading } = useTypedSelector((state) => state.account);
 
   const { fetchAccount } = useActions();
 
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // Update auth status
     if (!loading) {
       fetchAccount();
     }
   }, [location]);
 
   useEffect(() => {
-    if (account) {
+    $('.account > *').removeClass('active');
+    if (location.pathname === '/profile') {
+      $('.deauthorization-container').addClass('active');
+    } else if (account) {
       $('.min-profile-container').addClass('active');
-      $('.authorization-container').removeClass('active');
     } else {
-      $('.min-profile-container').removeClass('active');
       $('.authorization-container').addClass('active');
     }
   }, [account]);
+
+  const logOut = () => {
+    $.ajax({ url: '/api/logout', method: 'POST' })
+      .done(() => {
+        fetchAccount();
+        navigate('/');
+      })
+      .fail(() => {
+        popup('Error on logout. Please try again later.', 'error');
+      });
+  };
 
   return (
     <div className="account">
@@ -49,6 +62,9 @@ export const Account: React.FC = () => {
         <Link className="authorization sign-in" to="/login">
           Log in
         </Link>
+      </div>
+      <div className="deauthorization-container">
+        <button className="logout" onClick={logOut}>Log out</button>
       </div>
     </div>
   );

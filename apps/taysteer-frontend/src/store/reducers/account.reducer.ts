@@ -21,7 +21,7 @@ export const accountReducer = (
         error: null,
       };
     case AccountActionTypes.FETCH_ACCOUNT_ERROR:
-      return { ...state, loading: false, error: action.payload };
+      return { account: null, loading: false, error: action.payload };
     default:
       return state;
   }
