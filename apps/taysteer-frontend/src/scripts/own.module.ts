@@ -140,9 +140,9 @@ const serializeForm = (form: HTMLFormElement): object => {
 };
 
 // Add shadow to the scroll elements
-export const scrollShadow = () => {
+export const horizontalScrollShadow = () => {
   // Get scrollable elements
-  const scrollableDivs = $('.scroll-shadow');
+  const scrollableDivs = $('.horizontal-scroll-shadow');
   // Add shadow elements
   scrollableDivs.each((_index, element) => {
     if (!$(element).children('.shadow').length) {
