@@ -1,0 +1,10 @@
+Frontend:
+- Add profile page editing
+- Add author's profile link to the recipe page
+- Add rate element to the recipe page
+- Add comments to the recipe page
+- Add possibility to write a comment to the recipe page
+- Add leaderboard page
+- Add page for creating a new recipe
+
+- ? Hidden navbar on small devices

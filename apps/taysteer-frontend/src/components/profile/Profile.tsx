@@ -41,7 +41,7 @@ export const Profile: React.FC = () => {
           <Rating rating={profile.rating} />
         </div>
         <div className="count-of-recipes">
-          {profile.countOfRecipes} {`recipe${profile.countOfRecipes > 1 ? 's' : ''} `}
+          {profile.countOfRecipes} {`recipe${profile.countOfRecipes !== 1 ? 's' : ''} `}
           <img src={dishIcon} alt="dish" className="symbolIcon"/>
         </div>
         <div className="recipes-container">

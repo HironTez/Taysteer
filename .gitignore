@@ -42,5 +42,4 @@ Thumbs.db
 logs/*
 !logs/.gitkeep
 
-project.plan.txt
 /not.used

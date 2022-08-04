@@ -9,12 +9,12 @@ import { Rating } from '../rating/Rating';
 import { allowVerticalScroll } from '../../scripts/own.module';
 
 export const Recipe: React.FC = () => {
-  const { id } = useParams();
+  const { recipeId } = useParams();
   const { recipe, loading, error } = useTypedSelector((state) => state.recipe);
   const { fetchRecipe } = useActions();
 
   useEffect(() => {
-    if (!recipe && !loading && !error) fetchRecipe(String(id));
+    if (!recipe && !loading && !error) fetchRecipe(recipeId!);
   });
 
   useEffect(allowVerticalScroll);
