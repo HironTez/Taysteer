@@ -23,12 +23,13 @@ ReactDOM.render(
         <main>
           <Routes>
             <Route path="/" element={<MainPage />} />
-            <Route path="/recipes/:id" element={<Recipe />} />
+            <Route path="/recipes/:recipeId" element={<Recipe />} />
             {['/register', '/registration'].map((path, index) => (
               <Route path={path} element={<Registration />} key={index} />
             ))}
             <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/:userId" element={<Profile />} />
           </Routes>
         </main>
       </Router>
