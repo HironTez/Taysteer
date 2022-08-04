@@ -37,8 +37,6 @@ components:
           type: string
         rating:
           type: number
-        ratingsCount:
-          type: number
         recipes:
           type: array
           items:
@@ -409,38 +407,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserToResponse'
-  /users/{user_id}/rate:
-    post:
-      tags:
-        - Users
-      parameters:
-        - name: user_id
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: rating
-          in: query
-          required: true
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 5
-      summary: Rate the user
-      description: Rates the user by ID
-      responses:
-        '200':
-          description: The user has been rated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserToResponse'
-        '400':
-          description: Bad request
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: Not found
   /users/delete_image:
     delete:
       tags:

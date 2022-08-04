@@ -8,7 +8,6 @@ import {
   UpdateUserT,
   DeleteUserT,
   GetUsersByRatingT,
-  RateUserT,
   CheckAccessT,
   ValidateUserDataT,
   UserStringTypes,
@@ -21,7 +20,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import bcrypt from 'bcryptjs';
 import { ADMIN_LOGIN, ADMIN_PASSWORD } from '../../configs/common/config';
-import { UserRating } from './user.rating.model';
 import { deleteImage, uploadImage } from '../../utils/image.uploader';
 
 @Injectable()
@@ -29,8 +27,6 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(UserRating)
-    private readonly userRatersRepository: Repository<UserRating>,
     @InjectRepository(Recipe)
     private readonly recipeRepository: Repository<Recipe>
   ) {
@@ -80,9 +76,7 @@ export class UsersService {
   };
 
   getUserById: GetByIdT = (id) =>
-    this.userRepository.findOne(id, {
-      relations: [UserStringTypes.RATERS],
-    });
+    this.userRepository.findOne(id);
 
   getUserByLogin: GetByLoginT = (login) =>
     this.userRepository.findOne({ login: login });
@@ -183,63 +177,6 @@ export class UsersService {
       take: 10,
     });
     return users;
-  };
-
-  rateUser: RateUserT = async (id, raterId, rating) => {
-    // Validate data
-    if (!rating) return false;
-    else if (rating > 5) rating = 5;
-
-    // Get the user with relations
-    const user = await this.getUserById(id);
-    if (!user) return false;
-
-    const rater = await this.getUserById(raterId);
-
-    // Try to find the rating
-    const findingResult = await this.userRatersRepository.findOne(
-      {
-        rater: rater,
-        user: user,
-      },
-      {
-        relations: [UserStringTypes.RATER, UserStringTypes.USER],
-      }
-    );
-    // Create a new rater if not found
-    const ratingObject =
-      findingResult || this.userRatersRepository.create(new UserRating());
-    ratingObject.rater = rater;
-    ratingObject.rating = Math.round(rating);
-
-    // Save the rater
-    await this.userRatersRepository.save(ratingObject);
-
-    let new_ratings_count = user.ratingsCount,
-      new_ratings_sum = user.ratingsSum - user.rating + rating,
-      new_rating = Math.round(rating);
-
-    // If it's a first rating
-    if (!findingResult) {
-      new_ratings_count = user.ratingsCount + 1;
-      new_ratings_sum = user.ratingsSum + rating;
-      user.raters.push(ratingObject);
-    }
-    // If it's the update of the rating
-    else {
-      new_rating = Math.round(new_ratings_sum / new_ratings_count);
-    }
-
-    // Update the user
-    return this.userRepository.save({
-      ...user,
-      ...{
-        ratingsCount: new_ratings_count,
-        ratingsSum: new_ratings_sum,
-        rating: new_rating,
-        raters: user.raters,
-      },
-    });
   };
 
   deleteUserImage: DeleteUserImageT = async (userId) => {

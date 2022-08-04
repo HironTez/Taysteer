@@ -13,7 +13,6 @@ export type AddUserT = (data: AsyncIterableIterator<MultipartFile>) => Promise<U
 export type UpdateUserT = (id: string, data: AsyncIterableIterator<MultipartFile>) => Promise<User | false | string>;
 export type DeleteUserT = (id: string) => Promise<number>;
 export type GetUsersByRatingT = (page: number) => Promise<Array<User>>;
-export type RateUserT = (id: string, raterId: string, rating: number) => Promise<User | false>;
 export type DeleteUserImageT = (userId: string) => Promise<User | false>;
 export type GetUserRecipesT = (userId: string, page: number) => Promise<Array<Recipe>>;
 
@@ -22,7 +21,6 @@ export enum UserStringTypes {
   CONFLICT = 'conflict',
   IMAGES_FOLDER = 'user_avatar',
   RECIPES = 'recipes',
-  RATER = 'rater',
-  RATERS = 'raters',
-  USER = 'user'
+  USER = 'user',
+  RATING = 'rating',
 }

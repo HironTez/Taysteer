@@ -15,7 +15,7 @@ export interface RecipeToResponseDetailedT {
   description: string;
   rating: number;
   ratingsCount: number;
-  user: UserToResponseT;
+  user: Promise<UserToResponseT>;
   ingredients: Array<RecipeIngredientT>;
   steps: Array<RecipeStepT>,
   countOfComments: number;
@@ -36,7 +36,7 @@ export interface RecipeStepT {
 export interface CommentToResponseT {
   id: number;
   text: string;
-  user: UserToResponseT;
+  user: Promise<UserToResponseT>;
   date: Date;
   updated: boolean;
   countOfChildComments: number;
@@ -45,7 +45,7 @@ export interface CommentToResponseT {
 export interface CommentToResponseDetailedT {
   id: number;
   text: string;
-  user: UserToResponseT;
+  user: Promise<UserToResponseT>;
   date: Date;
   updated: boolean;
   childComments: Array<CommentToResponseT> | null;

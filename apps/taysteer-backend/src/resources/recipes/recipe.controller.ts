@@ -105,7 +105,7 @@ export class RecipeController {
 
   @Post(':recipeId/rate')
   @UseGuards(CookieAuthGuard)
-  async rateUser(
+  async rateRecipe(
     @Req() req: ExtendedRequest,
     @Res() res: Response,
     @Param('recipeId') recipeId: string,

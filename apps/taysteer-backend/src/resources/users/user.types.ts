@@ -13,7 +13,6 @@ export interface UserToResponseDetailedT {
   image: string;
   description: string;
   rating: number;
-  ratingsCount: number;
   countOfRecipes: number;
 }
 
