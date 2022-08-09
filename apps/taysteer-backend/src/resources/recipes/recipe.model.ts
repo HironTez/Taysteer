@@ -36,7 +36,7 @@ export class Recipe extends BaseEntity {
   ingredients: Array<RecipeIngredientT>;
 
   @Column('json')
-  steps: Array<RecipeStepT>;
+  steps: {[key: number]: RecipeStepT};
 
   @Column('int', { width: 10 })
   rating: number;
@@ -61,7 +61,7 @@ export class Recipe extends BaseEntity {
     image = '',
     description = '',
     ingredients = [],
-    steps = [],
+    steps = {},
     user = new User(),
     update = false,
   } = {}) {

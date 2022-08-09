@@ -79,9 +79,9 @@ components:
           items:
             $ref: '#/components/schemas/RecipeIngredient'
         steps:
-          type: array
+          type: object
           items:
-            $ref: '#/components/schemas/RecipeStepToResponse'
+            $ref: '#/components/schemas/RecipeSteps'
         countOfComments:
           type: number
     RecipeIngredient:
@@ -93,6 +93,13 @@ components:
           type: string
         optional:
           type: boolean
+    RecipeSteps:
+      type: object
+      properties:
+        default:
+          $ref: '#/components/schemas/RecipeStep'
+      additionalProperties:
+        $ref: '#/components/schemas/RecipeStep'
     RecipeStep:
       type: object
       properties:
@@ -474,9 +481,9 @@ paths:
                   items:
                     $ref: '#/components/schemas/RecipeIngredient'
                 steps:
-                  type: array
+                  type: object
                   items:
-                    $ref: '#/components/schemas/RecipeStep'
+                    $ref: '#/components/schemas/RecipeSteps'
                 stepImage1:
                   type: string
                   format: binary
@@ -485,6 +492,18 @@ paths:
                   type: string
                   format: binary
                   description: The step 2 image
+                stepImage3:
+                  type: string
+                  format: binary
+                  description: The step 3 image
+                stepImage4:
+                  type: string
+                  format: binary
+                  description: The step 4 image
+                stepImage5:
+                  type: string
+                  format: binary
+                  description: The step 5 image
               required:
                 - title
                 - description
@@ -590,9 +609,9 @@ paths:
                   items:
                     $ref: '#/components/schemas/RecipeIngredient'
                 steps:
-                  type: array
+                  type: object
                   items:
-                    $ref: '#/components/schemas/RecipeStep'
+                    $ref: '#/components/schemas/RecipeSteps'
                 stepImage1:
                   type: string
                   format: binary

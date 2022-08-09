@@ -23,7 +23,7 @@ export interface RecipeDetailedT {
   ratingsCount: number;
   user: UserT;
   ingredients: Array<RecipeIngredientT>;
-  steps: Array<RecipeStepT>;
+  steps: {[type: string]: RecipeStepT};
   countOfComments: number;
 }
 

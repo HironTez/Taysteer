@@ -17,7 +17,7 @@ export interface RecipeToResponseDetailedT {
   ratingsCount: number;
   user: Promise<UserToResponseT>;
   ingredients: Array<RecipeIngredientT>;
-  steps: Array<RecipeStepT>,
+  steps: {[key: number]: RecipeStepT},
   countOfComments: number;
 }
 
