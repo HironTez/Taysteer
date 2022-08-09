@@ -51,12 +51,13 @@ export class RecipeService {
     for (const ingredient of recipe.ingredients) {
       if (
         ingredient.count > 1_000_000 ||
-        ingredient.count < 1 ||
+        ingredient.count < 0 ||
         ingredient.name.length > 100
       )
         return false;
     }
-    for (const step of recipe.steps) {
+    for (const stepKey of Object.keys(recipe.steps)) {
+      const step = recipe.steps[stepKey];
       if (
         step.title.length > 100 ||
         step.description.length > 500 ||
@@ -126,13 +127,33 @@ export class RecipeService {
       // Insert field if it's a field
       if (part['value']) {
         try {
-          recipeData[part.fieldname] = JSON.parse(`[${part['value']}]`);
-        } catch {
+          console.log(part.fieldname);
+
+          // Get steps
+          if (part.fieldname === 'steps') {
+            console.log(part['value']);
+            const newData = JSON.parse(part['value']);
+            for (const stepKey of Object.keys(recipeData.steps)) {
+              const oldStep = recipeData.steps[stepKey];
+              if (oldStep.image) {
+                newData[stepKey].image = oldStep.image;
+              }
+            }
+
+            recipeData[part.fieldname] = newData;
+          } else {
+            // Get other data
+            recipeData[part.fieldname] = JSON.parse(`[${part['value']}]`);
+          }
+        } catch (error) {
+          console.log(error);
           recipeData[part.fieldname] = part['value'];
         }
       }
       // Upload if it's a file
       else if (part.file) {
+        console.log('file');
+
         const isMainImage = part.fieldname == RecipeStringTypes.IMAGE;
         const isStepImage = part.fieldname.includes(
           RecipeStringTypes.STEP_IMAGE
@@ -140,6 +161,8 @@ export class RecipeService {
 
         // Calculate image id
         let id = 0;
+        console.log(isStepImage);
+
         if (isStepImage) {
           // Get image id
           id =
@@ -147,12 +170,11 @@ export class RecipeService {
             1;
           // Check id
           if (id < 0) return false;
-          else if (
-            !recipeData.steps[id] ||
-            recipeData.steps[id] == recipeData.steps[-1]
-          )
-            return false;
-        } else if (!isMainImage) return false; // Exit if it's not supported image
+          else if (!recipeData.steps || !recipeData.steps[id]) {
+            if (!recipeData.steps) recipeData.steps = {};
+            recipeData.steps[id] = { title: '', description: '', image: '' };
+          } else if (!isMainImage) return false; // Exit if it's not supported image
+        }
 
         // Upload image
         const uploadedResponse = await uploadImage(
@@ -164,14 +186,17 @@ export class RecipeService {
           if (isMainImage) recipeData.image = uploadedResponse;
           else if (isStepImage) recipeData.steps[id].image = uploadedResponse;
         }
-      } else return false;
+      }
     }
+    console.log(recipeData);
 
     // Validate data
     if (!this.validateRecipeData(recipeData)) return false;
+    console.log(1);
 
     // Create recipe
     const recipe = this.recipeRepository.create(new Recipe(recipeData));
+    console.log(2);
 
     // Save recipe
     return await this.recipeRepository.save(recipe);
@@ -231,7 +256,10 @@ export class RecipeService {
     if (!this.validateRecipeData(recipeData)) return false;
 
     // Delete old images from the server
-    const images = [recipe.image, ...recipe.steps.map((step) => step.image)];
+    const images = [
+      recipe.image,
+      ...Object.keys(recipe.steps).map((key) => recipe.steps[key].image),
+    ];
     images.forEach((image) => deleteImage(image));
 
     const newRecipe = new Recipe({ ...recipeData, ...{ update: true } });
@@ -248,7 +276,10 @@ export class RecipeService {
     const recipe = await this.getRecipeById(id);
 
     // Delete images
-    const images = [recipe.image, ...recipe.steps.map((step) => step.image)];
+    const images = [
+      recipe.image,
+      ...Object.keys(recipe.steps).map((key) => recipe.steps[key].image),
+    ];
     images.forEach((image) => deleteImage(image));
 
     // Delete the recipe
@@ -317,10 +348,7 @@ export class RecipeService {
   getComments: GetCommentsT = async (recipeId, page = 1) => {
     const recipe = await this.getRecipeById(recipeId);
     return this.recipeCommentsRepository.find({
-      relations: [
-        RecipeStringTypes.RECIPE,
-        RecipeStringTypes.USER,
-      ],
+      relations: [RecipeStringTypes.RECIPE, RecipeStringTypes.USER],
       where: { recipe: recipe },
       order: { date: 'DESC' },
       skip: page ? (page - 1) * 10 : 0,
