@@ -50,7 +50,8 @@ export const Recipe: React.FC = () => {
         <div className="steps">
           <div className="title">Steps to make it</div>
           <ol className="list">
-            {recipe.steps.map((step, index) => {
+            {Object.keys(recipe.steps).map((stepKey, index) => {
+              const step = recipe.steps[stepKey];
               return (
                 <li className="step" key={`step-${index}`}>
                   <div className="title">{step.title}</div>
