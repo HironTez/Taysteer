@@ -13,7 +13,7 @@ export const RecipeList: React.FC<{ userId?: string }> = ({ userId }) => {
   const { recipes, loading, error, end, page } = useTypedSelector(
     (state) => state.recipes
   );
-  const { fetchRecipes, setRecipesPage, clearRecipes } = useActions();
+  const { fetchRecipes, setRecipePage, clearRecipeList } = useActions();
 
   useEffect(() => {
     if (!end && page !== 1) fetchRecipes(page, userId); // Fetch recipes if it's a new page
@@ -23,7 +23,7 @@ export const RecipeList: React.FC<{ userId?: string }> = ({ userId }) => {
 
   // When url changes
   useEffect(() => {
-    clearRecipes(); // Clear recipes
+    clearRecipeList(); // Clear recipes
     fetchRecipes(1, userId); // Fetch new recipes
     // Re-run scripts
     horizontalScroll();
@@ -39,7 +39,7 @@ export const RecipeList: React.FC<{ userId?: string }> = ({ userId }) => {
         <InfiniteScroll // Set up infinite scroll
           dataLength={recipes.length}
           next={() => {
-            setRecipesPage(page + 1);
+            setRecipePage(page + 1);
           }}
           hasMore={loading || (!end && !error)}
           loader={<Loading />}

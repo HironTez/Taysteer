@@ -1,9 +1,9 @@
 export class PromiseController {
   constructor() {
     this.promise = new Promise((resolve, reject) => {
-      this.reject = reject
-      this.resolve = resolve
-    })
+      this.reject = reject;
+      this.resolve = resolve;
+    });
   }
   promise: Promise<any>;
   resolve: (reason?: any) => void;

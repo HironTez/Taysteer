@@ -1,6 +1,6 @@
 import {
-  RecipesAction,
-  RecipesActionTypes,
+  RecipeActions,
+  RecipeActionTypes,
   RecipesState,
 } from '../../types/recipes';
 
@@ -14,12 +14,12 @@ const initialState: RecipesState = {
 
 export const recipesReducer = (
   state: RecipesState = initialState,
-  action: RecipesAction
+  action: RecipeActions
 ): RecipesState => {
   switch (action.type) {
-    case RecipesActionTypes.FETCH_RECIPES:
+    case RecipeActionTypes.FETCH_RECIPES:
       return { ...state, loading: true, error: null };
-    case RecipesActionTypes.FETCH_RECIPES_SUCCESS:
+    case RecipeActionTypes.FETCH_RECIPES_SUCCESS:
       return {
         ...state,
         loading: false,
@@ -27,11 +27,11 @@ export const recipesReducer = (
         end: action.payload.length < 10,
         recipes: state.recipes.concat(action.payload),
       };
-    case RecipesActionTypes.FETCH_RECIPES_ERROR:
+    case RecipeActionTypes.FETCH_RECIPES_ERROR:
       return { ...state, loading: false, error: action.payload };
-    case RecipesActionTypes.SET_RECIPES_PAGE:
+    case RecipeActionTypes.SET_RECIPES_PAGE:
       return { ...state, page: action.payload };
-    case RecipesActionTypes.CLEAR_RECIPES:
+    case RecipeActionTypes.CLEAR_RECIPES:
       state.recipes = [];
       return { ...state, recipes: [], page: 1 };
     default:
