@@ -15,9 +15,9 @@ export const Recipe: React.FC = () => {
 
   useEffect(() => {
     if (!recipe && !loading && !error) fetchRecipe(recipeId!);
-  });
+  }, [recipe, loading, error]);
 
-  useEffect(allowVerticalScroll);
+  useEffect(allowVerticalScroll, []);
 
   if (recipe && !loading && !error) {
     return (

@@ -22,9 +22,9 @@ export const Profile: React.FC = () => {
 
   useEffect(() => {
     if (!loading && !error) fetchProfile(userId!);
-  }, [account]);
+  }, [account, loading, error]);
 
-  useEffect(allowVerticalScroll);
+  useEffect(allowVerticalScroll, );
 
   if (profile && !loading && !error) {
     return (
