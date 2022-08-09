@@ -139,7 +139,6 @@ export class UsersController {
 
   @Get(':id/recipes')
   async getUserRecipes(
-    @Req() req: ExtendedRequest,
     @Res() res: Response,
     @Param('id') id: string,
     @Query('page') page: number
