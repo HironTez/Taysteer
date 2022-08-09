@@ -8,7 +8,7 @@ export interface RecipesState {
   page: number;
 }
 
-export enum RecipesActionTypes {
+export enum RecipeActionTypes {
   FETCH_RECIPES = 'FETCH_RECIPES',
   FETCH_RECIPES_ERROR = 'FETCH_RECIPES_ERROR',
   FETCH_RECIPES_SUCCESS = 'FETCH_RECIPES_SUCCESS',
@@ -16,28 +16,28 @@ export enum RecipesActionTypes {
   CLEAR_RECIPES = 'CLEAR_RECIPES',
 }
 
-interface FetchRecipesAction {
-  type: RecipesActionTypes.FETCH_RECIPES;
+interface FetchRecipeActions {
+  type: RecipeActionTypes.FETCH_RECIPES;
 }
 interface FetchRecipesSuccessAction {
-  type: RecipesActionTypes.FETCH_RECIPES_SUCCESS;
+  type: RecipeActionTypes.FETCH_RECIPES_SUCCESS;
   payload: any;
 }
 interface FetchRecipesErrorAction {
-  type: RecipesActionTypes.FETCH_RECIPES_ERROR;
+  type: RecipeActionTypes.FETCH_RECIPES_ERROR;
   payload: string;
 }
 interface SetRecipesPage {
-  type: RecipesActionTypes.SET_RECIPES_PAGE;
+  type: RecipeActionTypes.SET_RECIPES_PAGE;
   payload: number;
 }
-interface ClearRecipes {
-  type: RecipesActionTypes.CLEAR_RECIPES;
+interface ClearRecipeList {
+  type: RecipeActionTypes.CLEAR_RECIPES;
 }
 
-export type RecipesAction =
-  | FetchRecipesAction
+export type RecipeActions =
+  | FetchRecipeActions
   | FetchRecipesSuccessAction
   | FetchRecipesErrorAction
   | SetRecipesPage
-  | ClearRecipes;
+  | ClearRecipeList;
