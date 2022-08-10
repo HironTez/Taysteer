@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import $ from 'jquery';
 import { FormEvent } from 'react';
 
@@ -15,7 +16,7 @@ export const horizontalScroll = () => {
     if (
       originalEvent.deltaY !== 0 &&
       event.currentTarget.classList.contains('active')
-      ) {
+    ) {
       event.preventDefault();
       event.stopPropagation();
       uss.scrollXBy(originalEvent.deltaY, event.currentTarget, null, false);
@@ -29,7 +30,7 @@ export const horizontalScroll = () => {
   // Change the scroll direction relative to the screen width
   const processScrollDirection = () => {
     scrollableDivs.each((_index, element) => {
-      if ($(window).width()! < 1000) {
+      if (Number($(window).width()) < 1000) {
         if (element.classList.contains('active'))
           element.classList.remove('active');
       } else {
@@ -43,6 +44,7 @@ export const horizontalScroll = () => {
   window.onresize = processScrollDirection;
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export const debounce = (fn: Function, ms = 300) => {
   let timeoutId: ReturnType<typeof setTimeout>;
   return function (this: any, ...args: any[]) {
@@ -191,4 +193,11 @@ export const allowVerticalScroll = () => {
   return () => {
     document.body.style.overflowY = 'hidden';
   };
+};
+
+// Scroll to element
+export const scrollToElem = (elem: HTMLElement) => {
+  console.log(elem);
+  const posToScroll = elem.offsetTop; // Get element position to scroll to
+  window.scrollTo({ top: posToScroll + 1, left: 0, behavior: 'smooth' }); // Scroll to the position
 };
