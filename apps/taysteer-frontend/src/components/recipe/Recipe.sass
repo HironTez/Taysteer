@@ -7,22 +7,23 @@
 
   display: grid
   grid-template-areas: "image title" "image description" "ingredients ingredients" "steps steps" "comments comments"
-  grid-template-columns: min(40%, 520px) 1fr
+  grid-template-columns: min(40%, 600px) 1fr
   grid-template-rows: auto 1fr auto auto auto
 
   *
     height: min-content
 
   img.main-image
-    $width: 60vw
+    $size: 50vw
+    $max-size: calc(var(--vh, 1vh) * 90)
     object-fit: cover
-    width: $width
-    height: $width
+    width: $size
+    height: $size
+    max-width: $max-size
+    max-height: $max-size
     border-radius: 50%
     position: relative
-    right: 20vw
-    max-width: 800px
-    max-height: 800px
+    right: 10vw
     grid-area: image
 
   div.title
@@ -39,6 +40,8 @@
     margin-right: 20px
 
     div.text
+      width: max-content
+      max-width: inherit
       margin-right: 20px
 
     *
@@ -55,10 +58,39 @@
     margin-left: 20px
     margin-right: 20px
 
+    button.scrollToNext
+      height: min-content
+      font-size: 20px
+      padding-right: 25px
+      padding-left: 25px
+      padding-top: 6px
+      padding-bottom: 5px
+      background-color: transparent
+      border-style: solid
+      border-radius: 15px
+      transition: 0.3s
+      white-space: nowrap
+      display: inline-block
+      border-color: var(--additional-color)
+      color: var(--additional-color)
+
+      &:hover
+        cursor: pointer
+        background-color: var(--additional-color)
+        color: var(--main-color)
+
+      &.sign-in
+        border-color: transparent
+
+        &:hover
+          background-color: lightgray
+
   div.ingredients
+    max-width: 83vw
     font-weight: 200
     font-size: 30px
     margin-left: 10%
+    margin-right: auto
     margin-top: 50px
     margin-bottom: 20px
     grid-area: ingredients
@@ -116,6 +148,10 @@
           font-weight: 400
           font-size: 35px
           text-align: left
+          margin-left: 40px
+          margin-right: auto
+          width: max-content
+          max-width: inherit
 
         div.description
           margin-left: auto

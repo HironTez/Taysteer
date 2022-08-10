@@ -6,7 +6,8 @@ import { useActions } from '../../hooks/useAction';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import './Recipe.sass';
 import { Rating } from '../rating/Rating';
-import { allowVerticalScroll } from '../../scripts/own.module';
+import { allowVerticalScroll, scrollToElem } from '../../scripts/own.module';
+import $ from 'jquery';
 
 export const Recipe: React.FC = () => {
   const { recipeId } = useParams();
@@ -14,24 +15,35 @@ export const Recipe: React.FC = () => {
   const { fetchRecipe } = useActions();
 
   useEffect(() => {
-    if (!recipe && !loading && !error) fetchRecipe(recipeId!);
-  }, [recipe, loading, error]);
+    if (!recipe && !loading && !error) fetchRecipe(String(recipeId));
+  }, [recipe, loading, error, fetchRecipe, recipeId]);
 
   useEffect(allowVerticalScroll, []);
 
   if (recipe && !loading && !error) {
     return (
       <div className="recipe-container">
-        <img
-          className="main-image"
-          src={recipe.image}
-          alt="photo of the dish"
-        />
+        <img className="main-image" src={recipe.image} alt="The dish" />
         <div className="title">
           <div className="text">{recipe.title}</div>
           <Rating rating={recipe.rating} />
         </div>
-        <div className="description">{recipe.description}</div>
+        <div className="description">
+          {recipe.description}
+          {recipe.description.length < 180 && window.innerWidth > 1150 && (
+            <div>
+              <br />
+              <button
+                className="scrollToNext"
+                onClick={() => {
+                  scrollToElem($('div.ingredients').get(0) as HTMLElement);
+                }}
+              >
+                Jump to recipe
+              </button>
+            </div>
+          )}
+        </div>
 
         <div className="ingredients">
           <div className="title">Ingredients:</div>
