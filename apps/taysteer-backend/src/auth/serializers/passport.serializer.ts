@@ -8,8 +8,12 @@ export abstract class PassportSerializer {
 
   constructor() {
     const passportInstance = this.getPassportInstance();
-    passportInstance.registerUserSerializer((user: UserMinT, request) => this.serializeUser(user, request));
-    passportInstance.registerUserDeserializer((userId: string, request) => this.deserializeUser(userId, request));
+    passportInstance.registerUserSerializer((user: UserMinT, request) =>
+      this.serializeUser(user, request)
+    );
+    passportInstance.registerUserDeserializer((userId: string, request) =>
+      this.deserializeUser(userId, request)
+    );
   }
 
   getPassportInstance() {

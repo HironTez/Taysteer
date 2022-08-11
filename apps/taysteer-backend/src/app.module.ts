@@ -13,10 +13,14 @@ import { UserModule } from './resources/users/user.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(connectionOptions), AuthModule, UserModule, RecipeModule],
+  imports: [
+    TypeOrmModule.forRoot(connectionOptions),
+    AuthModule,
+    UserModule,
+    RecipeModule,
+  ],
   providers: [HttpErrorFilter],
 })
-
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(ReqLogMiddleware).forRoutes({

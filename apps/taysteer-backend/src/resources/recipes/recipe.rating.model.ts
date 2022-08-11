@@ -1,6 +1,12 @@
 import { User } from './../users/user.model';
 import { Recipe } from './recipe.model';
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  BaseEntity,
+  ManyToOne,
+} from 'typeorm';
 
 @Entity('RecipeRating')
 export class RecipeRating extends BaseEntity {

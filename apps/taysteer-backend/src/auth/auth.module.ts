@@ -11,10 +11,10 @@ import { User } from '../resources/users/user.model';
   imports: [
     TypeOrmModule.forFeature([User]),
     PassportModule.register({
-      session: true
-    })
+      session: true,
+    }),
   ],
   providers: [AuthService, LocalStrategy, LocalSerializer],
-  controllers: [AuthController]
+  controllers: [AuthController],
 })
 export class AuthModule {}

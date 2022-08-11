@@ -20,8 +20,10 @@ export const Account: React.FC = () => {
     if (!loading) {
       fetchAccount();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location]);
 
+  // Change active html element
   useEffect(() => {
     $('.account > *').removeClass('active');
     if (location.pathname === '/profile') {
@@ -31,7 +33,7 @@ export const Account: React.FC = () => {
     } else {
       $('.authorization-container').addClass('active');
     }
-  }, [account]);
+  }, [account, location]);
 
   const logOut = () => {
     $.ajax({ url: '/api/logout', method: 'POST' })

@@ -1,4 +1,4 @@
-import { UserT } from "./entities";
+import { UserT } from './entities';
 
 export interface AccountState {
   account: UserT | null;
@@ -17,7 +17,7 @@ interface FetchAccountAction {
 }
 interface FetchAccountSuccessAction {
   type: AccountActionTypes.FETCH_ACCOUNT_SUCCESS;
-  payload: any;
+  payload: UserT;
 }
 interface FetchAccountErrorAction {
   type: AccountActionTypes.FETCH_ACCOUNT_ERROR;

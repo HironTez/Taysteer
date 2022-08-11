@@ -1,4 +1,4 @@
-import { RecipeDetailedT } from "./entities";
+import { RecipeDetailedT } from './entities';
 
 export interface RecipeState {
   recipe: RecipeDetailedT | null;
@@ -17,7 +17,7 @@ interface FetchRecipeAction {
 }
 interface FetchRecipeSuccessAction {
   type: RecipeActionTypes.FETCH_RECIPE_SUCCESS;
-  payload: any;
+  payload: RecipeDetailedT;
 }
 interface FetchRecipeErrorAction {
   type: RecipeActionTypes.FETCH_RECIPE_ERROR;
