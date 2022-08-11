@@ -39,9 +39,10 @@ export class UsersController {
     @Query('detailed') detailed = 'false'
   ) {
     const user = await this.usersService.getUserById(req.user.id);
-    const response = detailed === 'true'
-      ? await User.toResponseDetailed(user)
-      : await User.toResponse(user);
+    const response =
+      detailed === 'true'
+        ? await User.toResponseDetailed(user)
+        : await User.toResponse(user);
     return res.status(HttpStatus.OK).send(response);
   }
 
@@ -112,7 +113,9 @@ export class UsersController {
   @Get('rating')
   async getUsersByRating(@Res() res: Response, @Query('page') page: number) {
     const users = await this.usersService.getUsersByRating(page);
-    const usersToResponse = users.map(async (user) => await User.toResponse(user));
+    const usersToResponse = users.map(
+      async (user) => await User.toResponse(user)
+    );
     return res.status(HttpStatus.OK).send(await Promise.all(usersToResponse));
   }
 
@@ -133,7 +136,9 @@ export class UsersController {
       req.user.id
     );
     return userWithDeletedImage
-      ? res.status(HttpStatus.OK).send(await User.toResponse(userWithDeletedImage))
+      ? res
+          .status(HttpStatus.OK)
+          .send(await User.toResponse(userWithDeletedImage))
       : res.status(HttpStatus.BAD_REQUEST).send();
   }
 

@@ -176,7 +176,9 @@ export class RecipeController {
       recipeId
     );
     return createdComment
-      ? res.status(HttpStatus.CREATED).send(await Comment.toResponse(createdComment))
+      ? res
+          .status(HttpStatus.CREATED)
+          .send(await Comment.toResponse(createdComment))
       : res.status(HttpStatus.BAD_REQUEST).send();
   }
 
@@ -234,7 +236,9 @@ export class RecipeController {
       commentId
     );
     return createdComment
-      ? res.status(HttpStatus.CREATED).send(await Comment.toResponse(createdComment))
+      ? res
+          .status(HttpStatus.CREATED)
+          .send(await Comment.toResponse(createdComment))
       : res.status(HttpStatus.BAD_REQUEST).send();
   }
 }

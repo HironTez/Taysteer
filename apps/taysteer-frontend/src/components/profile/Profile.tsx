@@ -21,10 +21,11 @@ export const Profile: React.FC = () => {
   const { account } = useTypedSelector((state) => state.account);
 
   useEffect(() => {
-    if (!loading && !error) fetchProfile(userId!);
-  }, [account, loading, error]);
+    if (!loading && !error) fetchProfile(userId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, userId]);
 
-  useEffect(allowVerticalScroll, );
+  useEffect(allowVerticalScroll, []);
 
   if (profile && !loading && !error) {
     return (
@@ -41,8 +42,9 @@ export const Profile: React.FC = () => {
           <Rating rating={profile.rating} />
         </div>
         <div className="count-of-recipes">
-          {profile.countOfRecipes} {`recipe${profile.countOfRecipes !== 1 ? 's' : ''} `}
-          <img src={dishIcon} alt="dish" className="symbolIcon"/>
+          {profile.countOfRecipes}{' '}
+          {`recipe${profile.countOfRecipes !== 1 ? 's' : ''}`}
+          <img src={dishIcon} alt="dish" className="symbolIcon" />
         </div>
         <div className="recipes-container">
           <RecipeList userId={profile.id} />

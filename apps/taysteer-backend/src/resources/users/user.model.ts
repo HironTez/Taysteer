@@ -57,13 +57,15 @@ export class User extends BaseEntity {
   }
 
   private async calculateRating(): Promise<number> {
-    return (await getRepository(Recipe).find({
-      relations: [UserStringTypes.USER],
-      where: { user: this },
-    })
-  ).reduce((acc, recipe, index) => {
-    return (acc * index + recipe.rating) / (index + 1);
-  }, 0); }
+    return (
+      await getRepository(Recipe).find({
+        relations: [UserStringTypes.USER],
+        where: { user: this },
+      })
+    ).reduce((acc, recipe, index) => {
+      return (acc * index + recipe.rating) / (index + 1);
+    }, 0);
+  }
 
   static async toResponse(user: User): Promise<UserToResponseT> {
     const rating = await user.calculateRating();

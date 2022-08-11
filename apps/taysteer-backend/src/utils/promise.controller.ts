@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export class PromiseController {
   constructor() {
     this.promise = new Promise((resolve, reject) => {

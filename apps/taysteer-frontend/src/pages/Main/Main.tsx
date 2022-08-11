@@ -9,7 +9,7 @@ export const MainPage: React.FC = () => {
 
   return (
     <div className="page-container">
-      <img src={backgroundImage} alt="background image of food" className="background-image"/>
+      <img src={backgroundImage} alt="wallpaper with food" className="background-image"/>
       <RecipeList />
     </div>
   );

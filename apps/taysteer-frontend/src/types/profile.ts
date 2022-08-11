@@ -1,4 +1,4 @@
-import { ProfileDetailedT } from "./entities";
+import { ProfileDetailedT } from './entities';
 
 export interface ProfileState {
   profile: ProfileDetailedT | null;
@@ -17,7 +17,7 @@ interface FetchProfileAction {
 }
 interface FetchProfileSuccessAction {
   type: ProfileActionTypes.FETCH_PROFILE_SUCCESS;
-  payload: any;
+  payload: ProfileDetailedT;
 }
 interface FetchProfileErrorAction {
   type: ProfileActionTypes.FETCH_PROFILE_ERROR;

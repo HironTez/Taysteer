@@ -61,7 +61,9 @@ export class Comment extends BaseEntity {
     };
   }
 
-  static async toResponseDetailed(comment: Comment): Promise<CommentToResponseDetailedT> {
+  static async toResponseDetailed(
+    comment: Comment
+  ): Promise<CommentToResponseDetailedT> {
     const { id, text, user, date, updated, childComments } = comment;
     return {
       id,
@@ -70,9 +72,11 @@ export class Comment extends BaseEntity {
       date,
       updated,
       childComments: childComments
-        ? await Promise.all(childComments.map(
-            async (comment) => await Comment.toResponse(comment)
-          ))
+        ? await Promise.all(
+            childComments.map(
+              async (comment) => await Comment.toResponse(comment)
+            )
+          )
         : null,
     };
   }

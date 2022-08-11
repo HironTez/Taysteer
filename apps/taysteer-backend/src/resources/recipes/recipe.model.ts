@@ -6,7 +6,7 @@ import {
   BaseEntity,
   OneToMany,
   ManyToOne,
-  getRepository
+  getRepository,
 } from 'typeorm';
 import { User } from '../users/user.model';
 import { Comment } from './recipe.comment.model';
@@ -36,7 +36,7 @@ export class Recipe extends BaseEntity {
   ingredients: Array<RecipeIngredientT>;
 
   @Column('json')
-  steps: {[key: number]: RecipeStepT};
+  steps: { [key: number]: RecipeStepT };
 
   @Column('int', { width: 10 })
   rating: number;
@@ -84,7 +84,9 @@ export class Recipe extends BaseEntity {
     return { id, title, image, description, rating };
   }
 
-  static async toResponseDetailed(recipe: Recipe): Promise<RecipeToResponseDetailedT> {
+  static async toResponseDetailed(
+    recipe: Recipe
+  ): Promise<RecipeToResponseDetailedT> {
     const {
       id,
       title,
@@ -106,7 +108,10 @@ export class Recipe extends BaseEntity {
       user: User.toResponse(user),
       ingredients,
       steps,
-      countOfComments: await getRepository(Comment).count({relations: [RecipeStringTypes.RECIPE], where: {recipe: recipe}}),
+      countOfComments: await getRepository(Comment).count({
+        relations: [RecipeStringTypes.RECIPE],
+        where: { recipe: recipe },
+      }),
     };
   }
 }
