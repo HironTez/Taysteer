@@ -1,7 +1,7 @@
 import { ProfileAction, ProfileActionTypes } from './../../types/profile';
 import { Dispatch } from 'react';
 
-export const fetchProfile = (userId: string) => {
+export const fetchProfile = (userId: string | undefined) => {
   return async (dispatch: Dispatch<ProfileAction>) => {
     try {
       dispatch({ type: ProfileActionTypes.FETCH_PROFILE });

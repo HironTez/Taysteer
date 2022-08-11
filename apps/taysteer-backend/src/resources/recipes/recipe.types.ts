@@ -1,4 +1,4 @@
-import { UserToResponseT } from "../users/user.types";
+import { UserToResponseT } from '../users/user.types';
 
 export interface RecipeToResponseT {
   id: string;
@@ -17,7 +17,7 @@ export interface RecipeToResponseDetailedT {
   ratingsCount: number;
   user: Promise<UserToResponseT>;
   ingredients: Array<RecipeIngredientT>;
-  steps: {[key: number]: RecipeStepT},
+  steps: { [key: number]: RecipeStepT };
   countOfComments: number;
 }
 

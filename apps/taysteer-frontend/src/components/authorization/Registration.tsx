@@ -15,9 +15,10 @@ export const Registration: React.FC = () => {
   };
 
   const debounceHandler = useCallback(
-    debounce((arg: HTMLElement) => {
-      handleForm(arg);
-    }, 1000),
+    (target: HTMLElement) =>
+      debounce(() => {
+        handleForm(target);
+      }, 1000),
     []
   );
 
@@ -29,11 +30,11 @@ export const Registration: React.FC = () => {
       'input[name="confirm-password"]'
     ) as HTMLInputElement;
     if (
-      (target == confirmPasswordEl || target == passwordEl) &&
-      passwordEl!.value !== confirmPasswordEl!.value
+      (target === confirmPasswordEl || target === passwordEl) &&
+      passwordEl.value !== confirmPasswordEl.value
     ) {
-      confirmPasswordEl!.classList.add('error');
-      confirmPasswordEl!.setCustomValidity('Passwords do not match');
+      confirmPasswordEl.classList.add('error');
+      confirmPasswordEl.setCustomValidity('Passwords do not match');
     }
   };
 

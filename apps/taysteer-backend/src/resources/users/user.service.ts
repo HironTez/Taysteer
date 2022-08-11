@@ -75,8 +75,7 @@ export class UsersService {
     return true;
   };
 
-  getUserById: GetByIdT = (id) =>
-    this.userRepository.findOne(id);
+  getUserById: GetByIdT = (id) => this.userRepository.findOne(id);
 
   getUserByLogin: GetByLoginT = (login) =>
     this.userRepository.findOne({ login: login });

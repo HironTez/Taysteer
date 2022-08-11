@@ -4,7 +4,10 @@ import { useTypedSelector } from '../../hooks/useTypedSelector';
 import './Recipe.list.sass';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Link, useLocation } from 'react-router-dom';
-import { horizontalScroll, horizontalScrollShadow } from '../../scripts/own.module';
+import {
+  horizontalScroll,
+  horizontalScrollShadow,
+} from '../../scripts/own.module';
 import { Loading } from '../loading.spinner/Loading.spinner';
 import { Error } from '../error.animation/Error.animation';
 import { Rating } from '../rating/Rating';
@@ -17,7 +20,7 @@ export const RecipeList: React.FC<{ userId?: string }> = ({ userId }) => {
 
   useEffect(() => {
     if (!end && page !== 1) fetchRecipes(page, userId); // Fetch recipes if it's a new page
-  }, [page]);
+  }, [page, userId, end, fetchRecipes]);
 
   const location = useLocation();
 
@@ -28,7 +31,8 @@ export const RecipeList: React.FC<{ userId?: string }> = ({ userId }) => {
     // Re-run scripts
     horizontalScroll();
     horizontalScrollShadow();
-  }, [location]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location, userId]);
 
   return (
     <div className="recipes">
@@ -56,7 +60,7 @@ export const RecipeList: React.FC<{ userId?: string }> = ({ userId }) => {
               <img
                 className="image"
                 src={recipe.image}
-                alt="recipe food preview image"
+                alt="recipe food preview"
               />
               <div className="title">{recipe.title}</div>
               <Rating rating={recipe.rating} />

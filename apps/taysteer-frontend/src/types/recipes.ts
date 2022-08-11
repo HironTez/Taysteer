@@ -21,7 +21,7 @@ interface FetchRecipeActions {
 }
 interface FetchRecipesSuccessAction {
   type: RecipeActionTypes.FETCH_RECIPES_SUCCESS;
-  payload: any;
+  payload: RecipeT[];
 }
 interface FetchRecipesErrorAction {
   type: RecipeActionTypes.FETCH_RECIPES_ERROR;
