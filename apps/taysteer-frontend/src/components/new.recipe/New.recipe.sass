@@ -1,0 +1,11 @@
+.new-recipe
+  display: grid
+  grid-template-areas: "image title" "image description" "ingredients ingredients" "steps steps" "comments comments"
+  grid-template-columns: min(40%, 600px) 1fr
+  grid-template-rows: auto 1fr auto auto auto
+
+  .image-uploading
+    display: inline-block
+
+    &.main-image
+      grid-area: image
