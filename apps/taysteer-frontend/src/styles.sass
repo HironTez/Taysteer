@@ -109,3 +109,42 @@ div.popup
 .symbolIcon
   max-width: 25px
   max-height: 25px
+
+.image-uploading
+  $width: 40vw
+  $height: calc(var(--vh, 1vh) * 90)
+  $width-calculated: min($width, calc($height * 1.5))
+  $height-calculated: min($height, calc($width / 1.5))
+  width: $width-calculated
+  height: $height-calculated
+  background-color: #FCD767
+  transition: all 0.5s ease-in-out
+  border-radius: 10px
+
+  &.rounded
+    height: $width-calculated
+    border-radius: 50%
+
+    &::before
+      line-height: $width-calculated
+
+    &::after
+      line-height: calc($width-calculated * 1.15)
+
+  &:hover
+    background-color: #e0bf5b
+    cursor: pointer
+
+  &::before
+    width: inherit
+    height: inherit
+    display: inline-block
+    text-align: center
+    color: snow
+    text-shadow: 0 0 0.1px #000
+    content: "Upload photo"
+    font-size: max(min(3vw, 50px), 20px)
+    line-height: $height-calculated
+
+    @media (max-width: 300px)
+      font-size: 15px
