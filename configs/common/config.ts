@@ -1,5 +1,7 @@
-export const PORT_BACKEND = process.env['PORT_BACKEND'];
-export const PORT_FRONTEND = process.env['PORT_FRONTEND'];
+export const HOST_BACKEND = process.env['HOST_BACKEND'] || 'localhost';
+export const HOST_FRONTEND = process.env['HOST_FRONTEND'] || 'localhost';
+export const PORT_BACKEND = process.env['PORT_BACKEND'] || 4000;
+export const PORT_FRONTEND = process.env['PORT_FRONTEND'] || 3000;
 export const SESSION_SECRET_KEY = process.env['SESSION_SECRET_KEY'];
 export const SESSION_SECRET_SALT = process.env['SESSION_SECRET_SALT'];
 export const POSTGRES_HOST = process.env['POSTGRES_HOST'];

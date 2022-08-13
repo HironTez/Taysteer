@@ -45,7 +45,7 @@
       "options": {
         "buildTarget": "taysteer-frontend:build",
         "hmr": true,
-        "proxyConfig": "apps/taysteer-frontend/proxy.conf.json",
+        "proxyConfig": "apps/taysteer-frontend/proxy.conf.js",
         "port": 3000
       },
       "configurations": {

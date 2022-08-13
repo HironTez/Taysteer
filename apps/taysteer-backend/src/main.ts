@@ -4,7 +4,7 @@ import {
   SESSION_SECRET_KEY,
   PORT_BACKEND,
   SESSION_SECRET_SALT,
-} from './configs/common/config';
+} from '../../../configs/common/config';
 import {
   FastifyAdapter,
   NestFastifyApplication,
