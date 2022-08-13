@@ -5,7 +5,7 @@ import {
   POSTGRES_USER,
   POSTGRES_PASSWORD,
   POSTGRES_DATABASE,
-} from './configs/common/config';
+} from '../../../configs/common/config';
 import { Recipe } from './resources/recipes/recipe.model';
 import { RecipeRating } from './resources/recipes/recipe.rating.model';
 import { User } from './resources/users/user.model';

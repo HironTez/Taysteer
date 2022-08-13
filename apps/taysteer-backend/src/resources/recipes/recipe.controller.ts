@@ -41,7 +41,7 @@ export class RecipeController {
     );
     return createdRecipe
       ? res.status(HttpStatus.CREATED).send(Recipe.toResponse(createdRecipe))
-      : res.status(HttpStatus.BAD_REQUEST);
+      : res.status(HttpStatus.BAD_REQUEST).send();
   }
 
   @Get('find')
