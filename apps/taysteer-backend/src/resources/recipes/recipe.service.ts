@@ -59,8 +59,8 @@ export class RecipeService {
     for (const stepKey of Object.keys(recipe.steps)) {
       const step = recipe.steps[stepKey];
       if (
-        step.title.length > 100 ||
-        step.description.length > 500 ||
+        step.title?.length > 100 ||
+        step.description?.length > 500 ||
         !step.image
       )
         return false;
@@ -116,159 +116,173 @@ export class RecipeService {
     });
 
   addRecipe: AddRecipeT = async (form, userId) => {
-    const recipeData = new RecipeDataDto(); // Create the object for recipe data
-    // Add user to recipe
-    const user = await this.usersService.getUserById(userId);
-    if (!user) return false;
-    recipeData.user = user;
+    try {
+      const recipeData = new RecipeDataDto(); // Create the object for recipe data
+      // Add user to recipe
+      const user = await this.usersService.getUserById(userId);
+      if (!user) return false;
+      recipeData.user = user;
 
-    // Extract form data
-    for await (const part of form) {
-      // Insert field if it's a field
-      if (part['value']) {
-        try {
-          console.log(part.fieldname);
-
-          // Get steps
-          if (part.fieldname === 'steps') {
-            console.log(part['value']);
-            const newData = JSON.parse(part['value']);
-            for (const stepKey of Object.keys(recipeData.steps)) {
-              const oldStep = recipeData.steps[stepKey];
-              if (oldStep.image) {
-                newData[stepKey].image = oldStep.image;
+      // Extract form data
+      for await (const part of form) {
+        // Insert field if it's a field
+        if (part['value']) {
+          try {
+            // Get steps
+            if (part.fieldname === 'steps') {
+              const newData = JSON.parse(part['value']);
+              for (const stepKey of Object.keys(recipeData.steps)) {
+                const oldStep = recipeData.steps[stepKey];
+                if (oldStep.image) {
+                  newData[stepKey].image = oldStep.image;
+                }
               }
+
+              recipeData[part.fieldname] = newData;
+            } else {
+              // Get other data
+              recipeData[part.fieldname] = JSON.parse(`[${part['value']}]`);
             }
-
-            recipeData[part.fieldname] = newData;
-          } else {
-            // Get other data
-            recipeData[part.fieldname] = JSON.parse(`[${part['value']}]`);
+          } catch {
+            try {
+              recipeData[part.fieldname] = JSON.parse(part['value']);
+            } catch {
+              recipeData[part.fieldname] = part['value'];
+            }
           }
-        } catch (error) {
-          console.log(error);
-          recipeData[part.fieldname] = part['value'];
         }
-      }
-      // Upload if it's a file
-      else if (part.file) {
-        console.log('file');
+        // Upload if it's a file
+        else if (part.file) {
+          const isMainImage = part.fieldname == RecipeStringTypes.IMAGE;
+          const isStepImage = part.fieldname.includes(
+            RecipeStringTypes.STEP_IMAGE
+          );
 
-        const isMainImage = part.fieldname == RecipeStringTypes.IMAGE;
-        const isStepImage = part.fieldname.includes(
-          RecipeStringTypes.STEP_IMAGE
-        );
-
-        // Calculate image id
-        let id = 0;
-        console.log(isStepImage);
-
-        if (isStepImage) {
-          // Get image id
-          id =
-            Number(part.fieldname.replace(RecipeStringTypes.STEP_IMAGE, '')) -
-            1;
-          // Check id
-          if (id < 0) return false;
-          else if (!recipeData.steps || !recipeData.steps[id]) {
-            if (!recipeData.steps) recipeData.steps = {};
-            recipeData.steps[id] = { title: '', description: '', image: '' };
+          // Calculate image id
+          let id = '1';
+          if (isStepImage) {
+            // Get image id
+            id = part.fieldname.replace(RecipeStringTypes.STEP_IMAGE, '');
+            // Check id
+            if (Number(id) < 1) return false;
+            else if (!recipeData.steps || !recipeData.steps[id]) {
+              if (!recipeData.steps) recipeData.steps = {};
+              recipeData.steps[id] = { title: '', description: '', image: '' };
+            }
           } else if (!isMainImage) return false; // Exit if it's not supported image
-        }
 
-        // Upload image
-        const uploadedResponse = await uploadImage(
-          part.file,
-          RecipeStringTypes.IMAGE_FOLDER
-        );
-        // Save link
-        if (uploadedResponse) {
-          if (isMainImage) recipeData.image = uploadedResponse;
-          else if (isStepImage) recipeData.steps[id].image = uploadedResponse;
+          // Upload image
+          const uploadedResponse = await uploadImage(
+            part.file,
+            RecipeStringTypes.IMAGE_FOLDER
+          );
+          // Save link
+          if (uploadedResponse) {
+            if (isMainImage) recipeData.image = uploadedResponse;
+            else if (isStepImage) recipeData.steps[id].image = uploadedResponse;
+          }
         }
       }
+
+      // Validate data
+      if (!this.validateRecipeData(recipeData)) return false;
+
+      // Create recipe
+      const recipe = this.recipeRepository.create(new Recipe(recipeData));
+
+      // Save recipe
+      return await this.recipeRepository.save(recipe);
+    } catch {
+      return false;
     }
-    console.log(recipeData);
-
-    // Validate data
-    if (!this.validateRecipeData(recipeData)) return false;
-    console.log(1);
-
-    // Create recipe
-    const recipe = this.recipeRepository.create(new Recipe(recipeData));
-    console.log(2);
-
-    // Save recipe
-    return await this.recipeRepository.save(recipe);
   };
 
   updateRecipe: UpdateRecipeT = async (form, recipeId) => {
-    const recipe = await this.recipeRepository.findOne(recipeId);
+    try {
+      const recipe = await this.recipeRepository.findOne(recipeId);
 
-    // Extract form data
-    const recipeData = new RecipeDataDto();
-    for await (const part of form) {
-      // Insert field if it's a field
-      if (part['value']) {
-        try {
-          recipeData[part.fieldname] = JSON.parse(`[${part['value']}]`);
-        } catch {
-          recipeData[part.fieldname] = part['value'];
+      // Extract form data
+      const recipeData = new RecipeDataDto();
+      for await (const part of form) {
+        // Insert field if it's a field
+        if (part['value']) {
+          try {
+            // Get steps
+            if (part.fieldname === 'steps') {
+              const newData = JSON.parse(part['value']);
+              for (const stepKey of Object.keys(recipeData.steps)) {
+                const oldStep = recipeData.steps[stepKey];
+                if (oldStep.image) {
+                  newData[stepKey].image = oldStep.image;
+                }
+              }
+
+              recipeData[part.fieldname] = newData;
+            } else {
+              // Get other data
+              recipeData[part.fieldname] = JSON.parse(`[${part['value']}]`);
+            }
+          } catch {
+            try {
+              recipeData[part.fieldname] = JSON.parse(part['value']);
+            } catch {
+              recipeData[part.fieldname] = part['value'];
+            }
+          }
+        }
+        // Upload if it's a file
+        else if (part.file) {
+          const isMainImage = part.fieldname == RecipeStringTypes.IMAGE;
+          const isStepImage = part.fieldname.includes(
+            RecipeStringTypes.STEP_IMAGE
+          );
+
+          // Calculate image id
+          let id = '1';
+          if (isStepImage) {
+            // Get image id
+            id = part.fieldname.replace(RecipeStringTypes.STEP_IMAGE, '');
+            // Check id
+            if (Number(id) < 1) return false;
+            else if (!recipeData.steps || !recipeData.steps[id]) {
+              if (!recipeData.steps) recipeData.steps = {};
+              recipeData.steps[id] = { title: '', description: '', image: '' };
+            }
+          } else if (!isMainImage) return false; // Exit if it's not supported image
+
+          // Upload image
+          const uploadedResponse = await uploadImage(
+            part.file,
+            RecipeStringTypes.IMAGE_FOLDER
+          );
+          // Save link
+          if (uploadedResponse) {
+            if (isMainImage) recipeData.image = uploadedResponse;
+            else if (isStepImage) recipeData.steps[id].image = uploadedResponse;
+          }
         }
       }
-      // Upload if it's a file
-      else if (part.file) {
-        const isMainImage = part.fieldname == RecipeStringTypes.IMAGE;
-        const isStepImage = part.fieldname.includes(
-          RecipeStringTypes.STEP_IMAGE
-        );
 
-        // Calculate image id
-        let id = 0;
-        if (isStepImage) {
-          // Get image id
-          id =
-            Number(part.fieldname.replace(RecipeStringTypes.STEP_IMAGE, '')) -
-            1;
-          // Check id
-          if (id < 0) return false;
-          else if (
-            !recipeData.steps[id] ||
-            recipeData.steps[id] == recipeData.steps[-1]
-          )
-            return false;
-        } else if (!isMainImage) return false; // Exit if it's not supported image
+      // Validate data
+      if (!this.validateRecipeData(recipeData)) return false;
 
-        // Upload image
-        const uploadedResponse = await uploadImage(
-          part.file,
-          RecipeStringTypes.IMAGE_FOLDER
-        );
-        // Save link
-        if (uploadedResponse) {
-          if (isMainImage) recipeData.image = uploadedResponse;
-          else if (isStepImage) recipeData.steps[id].image = uploadedResponse;
-        }
-      } else return false;
+      // Delete old images from the server
+      const images = [
+        recipe.image,
+        ...Object.keys(recipe.steps).map((key) => recipe.steps[key].image),
+      ];
+      images.forEach((image) => deleteImage(image));
+
+      const newRecipe = new Recipe({ ...recipeData, ...{ update: true } });
+
+      // Save recipe
+      return await this.recipeRepository.save({
+        ...recipe,
+        ...newRecipe,
+      });
+    } catch {
+      return false;
     }
-
-    // Validate data
-    if (!this.validateRecipeData(recipeData)) return false;
-
-    // Delete old images from the server
-    const images = [
-      recipe.image,
-      ...Object.keys(recipe.steps).map((key) => recipe.steps[key].image),
-    ];
-    images.forEach((image) => deleteImage(image));
-
-    const newRecipe = new Recipe({ ...recipeData, ...{ update: true } });
-
-    // Save recipe
-    return await this.recipeRepository.save({
-      ...recipe,
-      ...newRecipe,
-    });
   };
 
   deleteRecipe: DeleteRecipeT = async (id) => {

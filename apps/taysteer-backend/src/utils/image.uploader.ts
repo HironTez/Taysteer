@@ -1,4 +1,4 @@
-import { cloudinary } from '../configs/utils/cloudinary';
+import { cloudinary } from '../../../../configs/utils/cloudinary';
 import { PromiseController } from './promise.controller';
 import { deleteImageT, uploadImageT } from './util.types';
 
