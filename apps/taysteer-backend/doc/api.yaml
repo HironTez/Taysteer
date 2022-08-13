@@ -612,6 +612,18 @@ paths:
                   type: string
                   format: binary
                   description: The step 2 image
+                stepImage3:
+                  type: string
+                  format: binary
+                  description: The step 3 image
+                stepImage4:
+                  type: string
+                  format: binary
+                  description: The step 4 image
+                stepImage5:
+                  type: string
+                  format: binary
+                  description: The step 5 image
               required:
                 - title
                 - description
