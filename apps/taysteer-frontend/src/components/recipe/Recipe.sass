@@ -30,13 +30,10 @@
     font-size: 40px
     font-weight: 400
     margin-top: 20px
-    margin-bottom: 20px
     height: min-content
-    flex-grow: 1
-    flex-basis: 50%
     grid-area: title
-    max-width: 60vw
-    margin-left: 20px
+    max-width: min(55vw, 450px)
+    margin-left: 40px
     margin-right: 20px
 
     div.text
@@ -47,6 +44,9 @@
     *
       display: inline-block
 
+    @media ( max-width: 1000px )
+      margin-left: 20px
+
   div.description
     font-weight: 200
     font-size: 30px
@@ -54,8 +54,8 @@
     margin-top: 20px
     margin-bottom: 20px
     grid-area: description
-    max-width: 60vw
-    margin-left: 20px
+    max-width: min(55vw, 450px)
+    margin-left: 40px
     margin-right: 20px
 
     button.scrollToNext
@@ -84,6 +84,9 @@
 
         &:hover
           background-color: lightgray
+
+    @media ( max-width: 1000px )
+      margin-left: 20px
 
   div.ingredients
     max-width: 83vw
@@ -151,7 +154,7 @@
           margin-left: 40px
           margin-right: auto
           width: max-content
-          max-width: inherit
+          max-width: 60vw
 
         div.description
           margin-left: auto
@@ -161,6 +164,7 @@
           padding-left: 50px
           padding-right: 50px
           vertical-align: top
+          max-width: 60vw
 
         img.step-image
           width: 50%

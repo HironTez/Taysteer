@@ -43,7 +43,7 @@ export const Profile: React.FC = () => {
         </div>
         <div className="count-of-recipes">
           {profile.countOfRecipes}{' '}
-          {`recipe${profile.countOfRecipes !== 1 ? 's' : ''}`}
+          {`recipe${profile.countOfRecipes !== 1 ? 's' : ''}\xa0`}
           <img src={dishIcon} alt="dish" className="symbolIcon" />
         </div>
         <div className="recipes-container">
