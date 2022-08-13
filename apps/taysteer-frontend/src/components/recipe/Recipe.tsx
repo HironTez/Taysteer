@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { Error } from '../error.animation/Error.animation';
 import { Loading } from '../loading.spinner/Loading.spinner';
 import { useActions } from '../../hooks/useAction';
@@ -13,10 +13,13 @@ export const Recipe: React.FC = () => {
   const { recipeId } = useParams();
   const { recipe, loading, error } = useTypedSelector((state) => state.recipe);
   const { fetchRecipe } = useActions();
+  const location = useLocation();
 
   useEffect(() => {
-    if (!recipe && !loading && !error) fetchRecipe(String(recipeId));
-  }, [recipe, loading, error, fetchRecipe, recipeId]);
+    if (!loading && !error) fetchRecipe(String(recipeId));
+    console.log(recipe?.title)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error, recipeId, location]);
 
   useEffect(allowVerticalScroll, []);
 
