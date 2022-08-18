@@ -116,8 +116,8 @@ div.popup
 .image-uploading
   $width: 40vw
   $height: calc(var(--vh, 1vh) * 90)
-  $width-calculated: min($width, calc($height * 1.5))
-  $height-calculated: min($height, calc($width / 1.5))
+  $width-calculated: min($width, calc($height * 1.7))
+  $height-calculated: min($height, calc($width / 1.7))
   width: $width-calculated
   height: $height-calculated
   background-color: #FCD767
@@ -126,6 +126,7 @@ div.popup
   background-size: cover
   background-repeat: no-repeat
   background-position: center
+  line-height: $height-calculated
 
   &.rounded
     height: $width-calculated
