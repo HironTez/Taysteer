@@ -102,7 +102,7 @@
     .ingredient
       display: flex
       margin-top: 5px
-      
+
       .ingredient-count
         width: 10%
         min-width: 50px
@@ -138,6 +138,7 @@
       border-radius: 15px
       border: var(--additional-color) solid 2px
       color: var(--additional-color)
+      background-color: transparent
       font-size: 30px
       transition: all 0.5s ease-in-out
 
@@ -150,3 +151,96 @@
       margin-left: auto
       margin-right: auto
       width: 80vw
+
+  .steps
+    grid-area: steps
+
+    & > .title
+      text-align: center
+      margin-left: auto
+      margin-right: auto
+      font-size: 40px
+      font-weight: 400
+      margin-top: 50px
+      height: min-content
+
+    ol.list
+      list-style: none
+      counter-reset: custom-counter
+      margin-top: 10px
+      margin-bottom: 10px
+      margin-left: 50px
+      margin-right: 50px
+      padding-left: 50px
+      padding-right: 50px
+
+      li.step
+        counter-increment: custom-counter
+        margin-top: 30px
+        font-weight: 200
+        font-size: 30px
+        margin-left: 50px
+        margin-right: 50px
+
+        &::before
+          position: absolute
+          content: counter(custom-counter)
+          font-weight: bold
+          font-size: 40px
+          transform: translate(-150%, -25%)
+          width: 70px
+          height: 70px
+          text-align: center
+          line-height: 70px
+          border-radius: 50%
+          box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.25)
+
+      .title
+        width: calc(100% - 20px)
+        margin-bottom: 5px
+
+      .description
+        display: inline-block
+        width: calc(50% - 24px)
+        vertical-align: top
+        margin-right: 5px
+        height: 22.1vw
+
+      .step-image
+        display: inline-block
+
+      .remove-step
+        color: var(--main-color)
+        font-size: 20px
+        width: 40px
+        height: 40px
+        border-radius: 50%
+        background-color: transparent
+        border: none
+        transition: all 0.5s ease-in-out
+        vertical-align: middle
+        margin-top: 5px
+
+        &:hover
+          color: snow
+          background-color: var(--additional-color)
+          cursor: pointer
+
+    .add-step
+      display: block
+      width: 120px
+      height: 40px
+      margin-left: auto
+      margin-right: auto
+      margin-top: 5px
+      border-radius: 15px
+      border: var(--additional-color) solid 2px
+      color: var(--additional-color)
+      background-color: transparent
+      font-size: 30px
+      transition: all 0.5s ease-in-out
+
+      &:hover
+        cursor: pointer
+        background-color: var(--additional-color)
+        color: snow

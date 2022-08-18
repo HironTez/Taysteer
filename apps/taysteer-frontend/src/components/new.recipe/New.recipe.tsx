@@ -5,11 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { allowVerticalScroll } from '../../scripts/own.module';
 import $ from 'jquery';
 
-interface ingredients {
-  count: number | null;
-  name: string | null;
-}
-
 export const NewRecipe: React.FC = () => {
   const { account, loading } = useTypedSelector((state) => state.account);
   const navigate = useNavigate();
@@ -25,8 +20,10 @@ export const NewRecipe: React.FC = () => {
     }
   }, [account, firstRun, loading, navigate]);
 
+  // Allow vertical scroll
   useEffect(allowVerticalScroll, []);
 
+  // Handle image file selection
   const handleImageInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     const reader = new FileReader();
@@ -42,53 +39,16 @@ export const NewRecipe: React.FC = () => {
     }
   };
 
-  const newIngredientElem = (id = 0) => (
-    <div
-      className="ingredient"
-      key={id}
-      id={String(id)}
-      onChange={() => {
-        changeIngredient(id);
-      }}
-    >
-      <input
-        type="number"
-        placeholder="Count"
-        name="ingredient-count"
-        className="ingredient-count"
-        min="0.1"
-      />
-      <input
-        type="text"
-        placeholder="Ingredient"
-        name="ingredient-title"
-        className="ingredient-title"
-      />
-      <button
-        className="remove-ingredient"
-        type="button"
-        onClick={() => {
-          removeIngredient(id);
-        }}
-      >
-        &#9587;
-      </button>
-    </div>
-  );
-
-  const initialIngredients: ingredients[] = [
-    { count: null, name: null },
-    { count: null, name: null },
+  // Ingredients
+  const initialIngredients: Ingredient[] = [
+    { count: null, name: '' },
+    { count: null, name: '' },
   ];
 
   const [ingredientList, setIngredientList] = useState(initialIngredients);
 
-  // useEffect(() => {
-  //   console.log(ingredientList);
-  // }, [ingredientList]);
-
   const addIngredient = () => {
-    setIngredientList([...ingredientList, { count: null, name: null }]);
+    setIngredientList([...ingredientList, { count: null, name: '' }]);
   };
 
   const removeIngredient = (id: number) => {
@@ -114,8 +74,75 @@ export const NewRecipe: React.FC = () => {
     setIngredientList(newIngredientList);
   };
 
+  // Steps
+  const initialStepList: Step[] = [
+    { title: '', description: '', image: null },
+    { title: '', description: '', image: null },
+  ];
+
+  const [stepList, setStepList] = useState(initialStepList);
+
+  const addStep = () => {
+    setStepList([...stepList, { title: '', description: '', image: null }]);
+  };
+
+  const removeStep = (id: number) => {
+    setStepList(stepList.filter((_step, index) => index !== id));
+  };
+
+  const changeStep = (id: number) => {
+    const stepElem = $(`#${id}.step`);
+    const step = { ...stepList[id] };
+    const title = $(stepElem).find('input.title').val();
+    if (title) {
+      step.title = String(title);
+    }
+    const description = $(stepElem).find('textarea.description').val();
+    if (description) {
+      step.description = String(description);
+    }
+    const image = $(stepElem).find('input.step-image').prop('files')?.[0];
+    if (image) {
+      step.image = image;
+    }
+
+    const newStepList = [...stepList];
+    newStepList[id] = step;
+    setStepList(newStepList);
+  };
+
+  // Recipe
+  const initialRecipe: Recipe = {
+    title: '',
+    description: '',
+    image: null,
+    ingredients: ingredientList,
+    steps: stepList,
+  };
+
+  const [recipe, setRecipe] = useState(initialRecipe);
+
+  const changeRecipe = () => {
+    const newRecipe = { ...recipe };
+    const title = $('.new-recipe .title').val();
+    if (title) {
+      newRecipe.title = String(title);
+    }
+    const description = $('.new-recipe .description').val();
+    if (description) {
+      newRecipe.description = String(description);
+    }
+    const image = $('.new-recipe .main-image').prop('files')?.[0];
+    if (image) {
+      newRecipe.image = image;
+    }
+    newRecipe.ingredients = ingredientList;
+    newRecipe.steps = stepList;
+    setRecipe(newRecipe);
+  };
+
   return (
-    <div className="new-recipe">
+    <div className="new-recipe" onChange={changeRecipe}>
       <input
         className="image-uploading rounded main-image"
         type="file"
@@ -137,13 +164,49 @@ export const NewRecipe: React.FC = () => {
         <textarea
           className="description"
           name="description"
-          placeholder="Enter the description of the recipe"
+          placeholder="Enter the description of the recipe here"
         />
       </label>
 
       <div className="ingredients">
         <div className="title">Ingredients</div>
-        {ingredientList.map((_ingredient, index) => newIngredientElem(index))}
+        {ingredientList.map((ingredient, index) => (
+          <div
+            className="ingredient"
+            key={index}
+            id={String(index)}
+            onChange={() => {
+              changeIngredient(index);
+            }}
+          >
+            <input
+              type="number"
+              placeholder="Count"
+              name="ingredient-count"
+              className="ingredient-count"
+              min="0.1"
+              value={ingredient.count ?? undefined}
+              onChange={() => null}
+            />
+            <input
+              type="text"
+              placeholder="Enter the name of the ingredient here"
+              name="ingredient-title"
+              className="ingredient-title"
+              value={ingredient.name ?? undefined}
+              onChange={() => null}
+            />
+            <button
+              className="remove-ingredient"
+              type="button"
+              onClick={() => {
+                removeIngredient(index);
+              }}
+            >
+              &#9587;
+            </button>
+          </div>
+        ))}
         <button
           className="add-ingredient"
           type="button"
@@ -153,25 +216,56 @@ export const NewRecipe: React.FC = () => {
         </button>
       </div>
 
-      {/* <div className="steps">
+      <div className="steps">
         <div className="title">Steps to make it</div>
         <ol className="list">
-          {Object.keys(recipe.steps).map((stepKey, index) => {
-            const step = recipe.steps[stepKey];
-            return (
-              <li className="step" key={`step-${index}`}>
-                <div className="title">{step.title}</div>
-                <div className="description">{step.description}</div>
-                <img
-                  src={step.image}
-                  alt="A step of the recipe"
-                  className="step-image"
-                />
-              </li>
-            );
-          })}
+          {stepList.map((step, index) => (
+            <li
+              className="step"
+              key={index}
+              id={String(index)}
+              onChange={() => {
+                changeStep(index);
+              }}
+            >
+              <input
+                type="text"
+                placeholder="Enter the title of the step here"
+                name="step-title"
+                className="title"
+                value={step.title}
+                onChange={() => null}
+              />
+              <textarea
+                placeholder="Enter the description of the step here"
+                name="step-description"
+                className="description"
+                value={step.description}
+                onChange={() => null}
+              />
+              <input
+                type="file"
+                accept="image/*"
+                name="step-image"
+                className="image-uploading step-image"
+                onChange={handleImageInput}
+              />
+              <button
+                className="remove-step"
+                type="button"
+                onClick={() => {
+                  removeStep(index);
+                }}
+              >
+                &#9587;
+              </button>
+            </li>
+          ))}
         </ol>
-      </div> */}
+        <button className="add-step" type="button" onClick={addStep}>
+          +
+        </button>
+      </div>
     </div>
   );
 };
