@@ -17,7 +17,6 @@ export const Recipe: React.FC = () => {
 
   useEffect(() => {
     if (!loading && !error) fetchRecipe(String(recipeId));
-    console.log(recipe?.title)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error, recipeId, location]);
 

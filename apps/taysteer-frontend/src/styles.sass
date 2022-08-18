@@ -1,5 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Yanone+Kaffeesatz:wght@300;400&display=swap')
 
+textarea
+  resize: none
+
 html
   height: -webkit-fill-available
   --main-color: #0E1111
@@ -120,6 +123,9 @@ div.popup
   background-color: #FCD767
   transition: all 0.5s ease-in-out
   border-radius: 10px
+  background-size: cover
+  background-repeat: no-repeat
+  background-position: center
 
   &.rounded
     height: $width-calculated
@@ -144,7 +150,16 @@ div.popup
     text-shadow: 0 0 0.1px #000
     content: "Upload photo"
     font-size: max(min(3vw, 50px), 20px)
-    line-height: $height-calculated
+    line-height: inherit
+    transition: all 0.5s ease-in-out
 
     @media (max-width: 300px)
       font-size: 15px
+
+  &.selected::before
+    opacity: 0
+    content: ""
+
+  &.selected:hover::before
+    background-color: #00000050
+    opacity: 1
