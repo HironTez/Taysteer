@@ -26,7 +26,7 @@ export const fetchProfile = (userId: string | undefined) => {
         type: ProfileActionTypes.FETCH_PROFILE_SUCCESS,
         payload: responseJson,
       });
-    } catch (e) {
+    } catch {
       dispatch({
         type: ProfileActionTypes.FETCH_PROFILE_ERROR,
         payload: 'Error on account loading',

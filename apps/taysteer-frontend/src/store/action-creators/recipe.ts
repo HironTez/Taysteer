@@ -18,7 +18,7 @@ export const fetchRecipe = (id: string) => {
         type: RecipeActionTypes.FETCH_RECIPE_SUCCESS,
         payload: responseJson,
       });
-    } catch (e) {
+    } catch {
       dispatch({
         type: RecipeActionTypes.FETCH_RECIPE_ERROR,
         payload: 'Error on recipe loading',

@@ -24,7 +24,7 @@ export const fetchAccount = () => {
         type: AccountActionTypes.FETCH_ACCOUNT_SUCCESS,
         payload: responseJson,
       });
-    } catch (e) {
+    } catch {
       dispatch({
         type: AccountActionTypes.FETCH_ACCOUNT_ERROR,
         payload: 'Error on account loading',

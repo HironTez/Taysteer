@@ -1,24 +1,28 @@
-import './New.recipe.sass';
+import './Create.recipe.sass';
 import React, { useEffect, useState } from 'react';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { useNavigate } from 'react-router-dom';
-import { allowVerticalScroll } from '../../scripts/own.module';
+import { allowVerticalScroll, popup } from '../../scripts/own.module';
 import $ from 'jquery';
+import { useActions } from '../../hooks/useAction';
+import { Loading } from '../loading.spinner/Loading.spinner';
 
-export const NewRecipe: React.FC = () => {
-  const { account, loading } = useTypedSelector((state) => state.account);
+export const CreateRecipe: React.FC = () => {
+  const { account, loading: accountLoading } = useTypedSelector(
+    (state) => state.account
+  );
   const navigate = useNavigate();
 
   const [firstRun, setFirstRun] = useState(true);
 
   // Exit if not logged in
   useEffect(() => {
-    if (!account && !loading && !firstRun) {
+    if (!account && !accountLoading && !firstRun) {
       navigate('/login');
     } else {
-      setFirstRun(true);
+      setFirstRun(false);
     }
-  }, [account, firstRun, loading, navigate]);
+  }, [account, firstRun, accountLoading, navigate]);
 
   // Allow vertical scroll
   useEffect(allowVerticalScroll, []);
@@ -63,11 +67,11 @@ export const NewRecipe: React.FC = () => {
     const count = $(ingredientElem).find('input.ingredient-count').val();
     if (count) {
       ingredient.count = Number(count);
+    } else {
+      ingredient.count = null;
     }
     const name = $(ingredientElem).find('input.ingredient-title').val();
-    if (name) {
-      ingredient.name = String(name);
-    }
+    ingredient.name = String(name);
 
     const newIngredientList = [...ingredientList];
     newIngredientList[id] = ingredient;
@@ -94,17 +98,11 @@ export const NewRecipe: React.FC = () => {
     const stepElem = $(`#${id}.step`);
     const step = { ...stepList[id] };
     const title = $(stepElem).find('input.title').val();
-    if (title) {
-      step.title = String(title);
-    }
+    step.title = String(title);
     const description = $(stepElem).find('textarea.description').val();
-    if (description) {
-      step.description = String(description);
-    }
+    step.description = String(description);
     const image = $(stepElem).find('input.step-image').prop('files')?.[0];
-    if (image) {
-      step.image = image;
-    }
+    step.image = image;
 
     const newStepList = [...stepList];
     newStepList[id] = step;
@@ -125,21 +123,128 @@ export const NewRecipe: React.FC = () => {
   const changeRecipe = () => {
     const newRecipe = { ...recipe };
     const title = $('.new-recipe .title').val();
-    if (title) {
       newRecipe.title = String(title);
-    }
     const description = $('.new-recipe .description').val();
-    if (description) {
       newRecipe.description = String(description);
-    }
     const image = $('.new-recipe .main-image').prop('files')?.[0];
-    if (image) {
       newRecipe.image = image;
-    }
+    setRecipe(newRecipe);
+  };
+
+  // Update recipe on ingredients or steps change
+  useEffect(() => {
+    const newRecipe = { ...recipe };
     newRecipe.ingredients = ingredientList;
     newRecipe.steps = stepList;
     setRecipe(newRecipe);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ingredientList, stepList]);
+
+  const validateRecipe = () => {
+    if (!recipe.title || recipe.title.length > 50)
+      return {
+        success: false,
+        message: 'Title must be between 1 and 50 characters',
+      };
+    if (!recipe.description || recipe.description.length > 500)
+      return {
+        success: false,
+        message: 'Description must be between 1 and 500 characters',
+      };
+    if (!recipe.image) return { success: false, message: 'Image is required' };
+    for (const ingredient of recipe.ingredients) {
+      if (
+        ingredient.count === null ||
+        ingredient.count > 1_000_000 ||
+        ingredient.count < 0
+      )
+        return {
+          success: false,
+          message: 'Ingredient count must be between 0 and 1,000,000',
+        };
+      if (!ingredient.name || ingredient.name.length > 100)
+        return {
+          success: false,
+          message: 'Ingredient name must be between 1 and 100 characters',
+        };
+    }
+    for (const step of recipe.steps) {
+      if (!step.title || step.title.length > 100)
+        return {
+          success: false,
+          message: 'Step title must be between 1 and 100 characters',
+        };
+      if (!step.description || step.description.length > 500)
+        return {
+          success: false,
+          message: 'Step description must be between 1 and 500 characters',
+        };
+      if (!step.image)
+        return { success: false, message: 'Step image is required' };
+    }
+    return { success: true };
   };
+
+  const submitRecipe = () => {
+    if (validateRecipe().success) {
+      // Set main data
+      const formData = new FormData();
+      formData.append('title', recipe.title);
+      formData.append('description', recipe.description);
+      formData.append('image', recipe.image ?? '');
+      formData.append('ingredients', JSON.stringify(recipe.ingredients));
+
+      const newSteps: {
+        [key: number]: { title: string; description: string };
+      } = {};
+      const stepImages = [];
+
+      // Set steps
+      for (const step of recipe.steps) {
+        const index = recipe.steps.indexOf(step);
+
+        newSteps[index] = {
+          title: step.title,
+          description: step.description,
+        };
+        stepImages.push(step.image ?? '');
+      }
+
+      formData.append('steps', JSON.stringify(newSteps));
+
+      // Set step images
+      for (const image of stepImages) {
+        const index = stepImages.indexOf(image);
+        formData.append(`stepImage${index + 1}`, image);
+      }
+
+      fetchCreateRecipe(formData);
+    } else {
+      popup(
+        validateRecipe().message ??
+          'Error on recipe validating. Please check the data',
+        'error'
+      );
+    }
+  };
+
+  const {
+    recipe: responseRecipe,
+    loading: responseRecipeLoading,
+    error: responseRecipeError,
+  } = useTypedSelector((state) => state.createRecipe);
+
+  const { fetchCreateRecipe } = useActions();
+
+  useEffect(() => {
+    // On success redirect to recipe page
+    if (responseRecipe && !responseRecipeLoading && !responseRecipeError) {
+      navigate(`/recipes/${responseRecipe.id}`);
+      // On error show popup
+    } else if (responseRecipeError) {
+      popup(responseRecipeError, 'error');
+    }
+  }, [navigate, responseRecipe, responseRecipeError, responseRecipeLoading]);
 
   return (
     <div className="new-recipe" onChange={changeRecipe}>
@@ -185,7 +290,7 @@ export const NewRecipe: React.FC = () => {
               name="ingredient-count"
               className="ingredient-count"
               min="0.1"
-              value={ingredient.count ?? undefined}
+              value={ingredient.count ?? ''}
               onChange={() => null}
             />
             <input
@@ -193,7 +298,7 @@ export const NewRecipe: React.FC = () => {
               placeholder="Enter the name of the ingredient here"
               name="ingredient-title"
               className="ingredient-title"
-              value={ingredient.name ?? undefined}
+              value={ingredient.name}
               onChange={() => null}
             />
             <button
@@ -266,6 +371,19 @@ export const NewRecipe: React.FC = () => {
           +
         </button>
       </div>
+      <div className="action">
+        <a className="cancel" href="/">
+          Cancel
+        </a>
+        <button className="submit" type="button" onClick={submitRecipe}>
+          Submit
+        </button>
+      </div>
+      {responseRecipeLoading && (
+        <div className="loading">
+          <Loading />
+        </div>
+      )}
     </div>
   );
 };

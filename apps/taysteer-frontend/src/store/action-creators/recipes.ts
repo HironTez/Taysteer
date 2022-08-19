@@ -19,7 +19,7 @@ export const fetchRecipes = (page = 1, userId?: string) => {
         type: RecipeActionTypes.FETCH_RECIPES_SUCCESS,
         payload: responseJson,
       });
-    } catch (e) {
+    } catch {
       dispatch({
         type: RecipeActionTypes.FETCH_RECIPES_ERROR,
         payload: 'Error on recipe loading',
