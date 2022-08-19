@@ -201,3 +201,20 @@ export const scrollToElem = (elem: HTMLElement) => {
   const posToScroll = elem.offsetTop; // Get element position to scroll to
   window.scrollTo({ top: posToScroll + 1, left: 0, behavior: 'smooth' }); // Scroll to the position
 };
+
+// Allows to return values from callback functions
+// Usage:
+// const promiseController = new PromiseController();
+// someFunc((callbackData) => {return promiseController.resolve(callbackData);})
+// const response = await promiseController.promise;
+export class PromiseController {
+  constructor() {
+    this.promise = new Promise((resolve, reject) => {
+      this.resolve = resolve;
+      this.reject = reject;
+    });
+  }
+  promise: Promise<any>;
+  resolve: (reason?: any) => void = () => null;
+  reject: (value: any) => void = () => null;
+}

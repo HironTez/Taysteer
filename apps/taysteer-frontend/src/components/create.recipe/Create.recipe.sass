@@ -6,7 +6,7 @@
   line-height: 1.2
 
   display: grid
-  grid-template-areas: "image title" "image description" "ingredients ingredients" "steps steps"
+  grid-template-areas: "image title" "image description" "ingredients ingredients" "steps steps" "action action"
   grid-template-columns: min(40%, 600px) 1fr
   grid-template-rows: auto 1fr auto auto
 
@@ -309,7 +309,6 @@
       height: 40px
       margin-left: auto
       margin-right: auto
-      margin-top: 5px
       border-radius: 15px
       border: var(--additional-color) solid 2px
       color: var(--additional-color)
@@ -321,6 +320,58 @@
         cursor: pointer
         background-color: var(--additional-color)
         color: snow
+
+  .action
+    width: max-content
+    height: min-content
+    margin-left: auto
+    margin-right: auto
+    margin-top: 50px
+    margin-bottom: 50px
+    grid-area: action
+
+    & > *
+      background-color: transparent
+      border-style: solid
+      border-width: 2px
+      border-radius: 15px
+      transition: 0.3s
+      font-size: 20px
+      white-space: nowrap
+      padding-right: 25px
+      padding-left: 25px
+      padding-top: 6px
+      padding-bottom: 5px
+
+      &:nth-child(1)
+        margin-right: 10px
+
+      &:hover
+        cursor: pointer
+
+    .cancel
+      border-color: transparent
+      background-color: lightgray
+
+      &:hover
+        background-color: darkgray
+
+    .submit
+      border-color: var(--additional-color)
+      color: var(--additional-color)
+
+      &:hover
+        background-color: var(--additional-color)
+        color: var(--main-color)
+
+  .loading
+    position: fixed
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    background-color: rgba(0, 0, 0, 0.5)  
+    display: flex
 
   @media (max-width: 600px)
     grid-template-areas: "image" "title" "description" "ingredients" "steps" "comments"
