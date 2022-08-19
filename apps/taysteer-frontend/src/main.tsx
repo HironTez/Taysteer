@@ -11,7 +11,7 @@ import { Registration } from './components/authorization/Registration';
 import { Login } from './components/authorization/Login';
 import { Recipe } from './components/recipe/Recipe';
 import { Profile } from './components/profile/Profile';
-import { NewRecipe } from './components/new.recipe/New.recipe';
+import { CreateRecipe } from './components/create.recipe/Create.recipe';
 
 ReactDOM.render(
   <StrictMode>
@@ -31,7 +31,7 @@ ReactDOM.render(
             <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/:userId" element={<Profile />} />
-            <Route path="/new-recipe" element={<NewRecipe />} />
+            <Route path="/new-recipe" element={<CreateRecipe />} />
           </Routes>
         </main>
       </Router>
