@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { NavLink, useLocation, useParams } from 'react-router-dom';
 import { Error } from '../error.animation/Error.animation';
 import { Loading } from '../loading.spinner/Loading.spinner';
 import { useActions } from '../../hooks/useAction';
@@ -8,6 +8,7 @@ import './Recipe.sass';
 import { Rating } from '../rating/Rating';
 import { allowVerticalScroll, scrollToElem } from '../../scripts/own.module';
 import $ from 'jquery';
+import editIcon from '../../assets/images/navigation/edit-icon.svg';
 
 export const Recipe: React.FC = () => {
   const { recipeId } = useParams();
@@ -15,9 +16,11 @@ export const Recipe: React.FC = () => {
   const { fetchRecipe } = useActions();
   const location = useLocation();
 
+  const { account } = useTypedSelector((state) => state.account);
+
   useEffect(() => {
     if (!loading && !error) fetchRecipe(String(recipeId));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error, recipeId, location]);
 
   useEffect(allowVerticalScroll, []);
@@ -27,7 +30,14 @@ export const Recipe: React.FC = () => {
       <div className="recipe-container">
         <img className="main-image" src={recipe.image} alt="The dish" />
         <div className="title">
-          <div className="text">{recipe.title}</div>
+          <div className="text">
+            {recipe.title}
+            {recipe.user.id === account?.id && (
+              <NavLink to="./edit" className="edit-link">
+                <img src={editIcon} alt="edit" className="edit-icon" />
+              </NavLink>
+            )}
+          </div>
           <Rating rating={recipe.rating} />
         </div>
         <div className="description">
