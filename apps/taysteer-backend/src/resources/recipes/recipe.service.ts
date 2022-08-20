@@ -220,7 +220,7 @@ export class RecipeService {
               recipeData[part.fieldname] = newData;
             } else {
               // Get other data
-              recipeData[part.fieldname] = JSON.parse(`[${part['value']}]`);
+              recipeData[part.fieldname] = JSON.parse(part['value']);
             }
           } catch {
             try {
@@ -241,9 +241,9 @@ export class RecipeService {
           let id = '1';
           if (isStepImage) {
             // Get image id
-            id = part.fieldname.replace(RecipeStringTypes.STEP_IMAGE, '');
+            id = String(Number(part.fieldname.replace(RecipeStringTypes.STEP_IMAGE, '')) - 1);
             // Check id
-            if (Number(id) < 1) return false;
+            if (Number(id) < 0) return false;
             else if (!recipeData.steps || !recipeData.steps[id]) {
               if (!recipeData.steps) recipeData.steps = {};
               recipeData.steps[id] = { title: '', description: '', image: '' };

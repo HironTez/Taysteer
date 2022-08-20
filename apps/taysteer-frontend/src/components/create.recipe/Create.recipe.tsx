@@ -7,7 +7,11 @@ import $ from 'jquery';
 import { useActions } from '../../hooks/useAction';
 import { Loading } from '../loading.spinner/Loading.spinner';
 
-export const CreateRecipe: React.FC = () => {
+export const UploadRecipe: React.FC<{
+  oldRecipe?: Recipe | null;
+  oldRecipeId?: string;
+  oldRecipeLoading?: boolean;
+}> = ({ oldRecipe, oldRecipeId, oldRecipeLoading }) => {
   const { account, loading: accountLoading } = useTypedSelector(
     (state) => state.account
   );
@@ -15,12 +19,16 @@ export const CreateRecipe: React.FC = () => {
 
   const [firstRun, setFirstRun] = useState(true);
 
+  useEffect(() => {
+    if (firstRun) {
+      setFirstRun(false);
+    }
+  }, [firstRun]);
+
   // Exit if not logged in
   useEffect(() => {
     if (!account && !accountLoading && !firstRun) {
       navigate('/login');
-    } else {
-      setFirstRun(false);
     }
   }, [account, firstRun, accountLoading, navigate]);
 
@@ -28,18 +36,22 @@ export const CreateRecipe: React.FC = () => {
   useEffect(allowVerticalScroll, []);
 
   // Handle image file selection
-  const handleImageInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleImageInput = (
+    e: React.ChangeEvent<HTMLInputElement> | HTMLInputElement
+  ) => {
+    const target = e instanceof HTMLInputElement ? e : e.target;
+
+    const file = target.files?.[0];
     const reader = new FileReader();
     reader.onloadend = () => {
-      $(e.target).css('backgroundImage', `url("${reader.result}")`);
-      $(e.target).addClass('selected');
+      $(target).css('backgroundImage', `url("${reader.result}")`);
+      $(target).addClass('selected');
     };
     if (file) {
       reader.readAsDataURL(file);
     } else {
-      $(e.target).css('backgroundImage', 'none');
-      $(e.target).removeClass('selected');
+      $(target).css('backgroundImage', 'none');
+      $(target).removeClass('selected');
     }
   };
 
@@ -109,6 +121,54 @@ export const CreateRecipe: React.FC = () => {
     setStepList(newStepList);
   };
 
+  // If it's a recipe updating
+  const [oldRecipeLoaded, setOldRecipeLoaded] = useState(false);
+
+  useEffect(() => {
+    if (oldRecipe && oldRecipeId && !oldRecipeLoading && !oldRecipeLoaded) {
+      setRecipe(oldRecipe);
+      setIngredientList(oldRecipe.ingredients);
+      setStepList(oldRecipe.steps);
+
+      if (
+        ingredientList === oldRecipe.ingredients &&
+        stepList === oldRecipe.steps
+      ) {
+        // Set main image
+        if (oldRecipe.image) {
+          const dataTransfer = new DataTransfer();
+          const mainImage = $('.new-recipe .main-image');
+          const mainImageElem = mainImage.get(0) as HTMLInputElement;
+          dataTransfer.items.add(oldRecipe.image);
+          mainImageElem.files = dataTransfer.files;
+          handleImageInput(mainImageElem);
+        }
+
+        // Set step images
+        oldRecipe.steps.forEach((_step, index) => {
+          const image = oldRecipe.steps[index].image;
+          if (image) {
+            const dataTransfer = new DataTransfer();
+            const stepImage = $(`.new-recipe .steps .step .step-image`)[index];
+            const stepImageElem = stepImage as HTMLInputElement;
+            dataTransfer.items.add(image);
+            stepImageElem.files = dataTransfer.files;
+            handleImageInput(stepImageElem);
+          }
+        });
+
+        setOldRecipeLoaded(true);
+      }
+    }
+  }, [
+    oldRecipe,
+    oldRecipeLoaded,
+    oldRecipeId,
+    oldRecipeLoading,
+    ingredientList,
+    stepList,
+  ]);
+
   // Recipe
   const initialRecipe: Recipe = {
     title: '',
@@ -123,11 +183,11 @@ export const CreateRecipe: React.FC = () => {
   const changeRecipe = () => {
     const newRecipe = { ...recipe };
     const title = $('.new-recipe .title').val();
-      newRecipe.title = String(title);
+    newRecipe.title = String(title);
     const description = $('.new-recipe .description').val();
-      newRecipe.description = String(description);
+    newRecipe.description = String(description);
     const image = $('.new-recipe .main-image').prop('files')?.[0];
-      newRecipe.image = image;
+    newRecipe.image = image;
     setRecipe(newRecipe);
   };
 
@@ -218,7 +278,7 @@ export const CreateRecipe: React.FC = () => {
         formData.append(`stepImage${index + 1}`, image);
       }
 
-      fetchCreateRecipe(formData);
+      fetchUploadRecipe(formData, oldRecipeLoaded, oldRecipeId);
     } else {
       popup(
         validateRecipe().message ??
@@ -232,9 +292,9 @@ export const CreateRecipe: React.FC = () => {
     recipe: responseRecipe,
     loading: responseRecipeLoading,
     error: responseRecipeError,
-  } = useTypedSelector((state) => state.createRecipe);
+  } = useTypedSelector((state) => state.uploadRecipe);
 
-  const { fetchCreateRecipe } = useActions();
+  const { fetchUploadRecipe } = useActions();
 
   useEffect(() => {
     // On success redirect to recipe page
@@ -262,6 +322,8 @@ export const CreateRecipe: React.FC = () => {
           name="title"
           type="text"
           placeholder="Enter the title of the recipe"
+          value={recipe.title}
+          onChange={() => null}
         />
       </label>
       <label className="description-container">
@@ -270,6 +332,8 @@ export const CreateRecipe: React.FC = () => {
           className="description"
           name="description"
           placeholder="Enter the description of the recipe here"
+          value={recipe.description}
+          onChange={() => null}
         />
       </label>
 
@@ -379,7 +443,7 @@ export const CreateRecipe: React.FC = () => {
           Submit
         </button>
       </div>
-      {responseRecipeLoading && (
+      {(responseRecipeLoading || oldRecipeLoading) && (
         <div className="loading">
           <Loading />
         </div>

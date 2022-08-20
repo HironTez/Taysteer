@@ -17,6 +17,7 @@ import {
   RecipeToResponseT,
   RecipeToResponseDetailedT,
 } from './recipe.types';
+import { objectPromise } from '../../utils/promise.loader';
 
 @Entity('Recipe')
 export class Recipe extends BaseEntity {
@@ -98,7 +99,7 @@ export class Recipe extends BaseEntity {
       ingredients,
       steps,
     } = recipe;
-    return {
+    return objectPromise({
       id,
       title,
       image,
@@ -112,6 +113,6 @@ export class Recipe extends BaseEntity {
         relations: [RecipeStringTypes.RECIPE],
         where: { recipe: recipe },
       }),
-    };
+    });
   }
 }

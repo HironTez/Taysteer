@@ -1,17 +1,17 @@
 import { Dispatch } from 'react';
 import {
-  CreateRecipeAction,
-  CreateRecipeActionTypes,
-} from '../../types/create.recipe';
+  UploadRecipeAction,
+  UploadRecipeActionTypes,
+} from '../../types/upload.recipe';
 import $ from 'jquery';
 
-export const fetchCreateRecipe = (recipe: FormData) => {
-  return async (dispatch: Dispatch<CreateRecipeAction>) => {
+export const fetchUploadRecipe = (recipe: FormData, edit = false, recipeId?: string) => {
+  return async (dispatch: Dispatch<UploadRecipeAction>) => {
     try {
-      dispatch({ type: CreateRecipeActionTypes.FETCH_CREATE_RECIPE });
+      dispatch({ type: UploadRecipeActionTypes.FETCH_UPLOAD_RECIPE });
       $.ajax({
-        url: `/api/recipes`,
-        method: 'POST',
+        url: edit ? `/api/recipes/${recipeId}` : `/api/recipes`,
+        method: edit ? 'PUT' : 'POST',
         processData: false,
         contentType: false,
         data: recipe,
@@ -19,26 +19,26 @@ export const fetchCreateRecipe = (recipe: FormData) => {
       })
         .done((response) => {
           dispatch({
-            type: CreateRecipeActionTypes.FETCH_CREATE_RECIPE_SUCCESS,
+            type: UploadRecipeActionTypes.FETCH_UPLOAD_RECIPE_SUCCESS,
             payload: response,
           });
         })
         .fail((error) => {
           if (error.status === 401) {
             dispatch({
-              type: CreateRecipeActionTypes.FETCH_CREATE_RECIPE_ERROR,
+              type: UploadRecipeActionTypes.FETCH_UPLOAD_RECIPE_ERROR,
               payload: 'Unauthorized',
             });
           } else {
             dispatch({
-              type: CreateRecipeActionTypes.FETCH_CREATE_RECIPE_ERROR,
+              type: UploadRecipeActionTypes.FETCH_UPLOAD_RECIPE_ERROR,
               payload: 'Error on recipe uploading',
             });
           }
         });
     } catch {
       dispatch({
-        type: CreateRecipeActionTypes.FETCH_CREATE_RECIPE_ERROR,
+        type: UploadRecipeActionTypes.FETCH_UPLOAD_RECIPE_ERROR,
         payload: 'Error on recipe uploading',
       });
     }
