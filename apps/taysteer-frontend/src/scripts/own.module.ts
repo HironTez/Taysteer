@@ -197,7 +197,6 @@ export const allowVerticalScroll = () => {
 
 // Scroll to element
 export const scrollToElem = (elem: HTMLElement) => {
-  console.log(elem);
   const posToScroll = elem.offsetTop; // Get element position to scroll to
   window.scrollTo({ top: posToScroll + 1, left: 0, behavior: 'smooth' }); // Scroll to the position
 };
@@ -218,3 +217,10 @@ export class PromiseController {
   resolve: (reason?: any) => void = () => null;
   reject: (value: any) => void = () => null;
 }
+
+export const urlToObject = async (imageUrl: string) => {
+  const response = await fetch(imageUrl);
+  const blob = await response.blob();
+  const file = new File([blob], 'image.jpg', { type: blob.type });
+  return file;
+};
