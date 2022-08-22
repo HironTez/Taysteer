@@ -5,7 +5,7 @@ export const Rating: React.FC<{ rating: number; countOfRatings?: number }> = ({
   countOfRatings,
 }) => {
   return (
-    <div className={`rating rating-${rating}`}>
+    <div className={`rating rating-${Math.round(rating)}`}>
       <span className="rating-star 1"></span>
       <span className="rating-star 2"></span>
       <span className="rating-star 3"></span>

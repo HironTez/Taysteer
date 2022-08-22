@@ -56,19 +56,21 @@ export class User extends BaseEntity {
     this.rating = 0;
   }
 
-  private async calculateRating(): Promise<number> {
+  static async calculateRating(user: User): Promise<number> {
     return (
       await getRepository(Recipe).find({
         relations: [UserStringTypes.USER],
-        where: { user: this },
+        where: { user: user },
       })
-    ).reduce((acc, recipe, index) => {
-      return (acc * index + recipe.rating) / (index + 1);
+    ).filter((recipe) => {
+      return recipe.rating > 0;
+    }).reduce((accumulated, recipe, index) => {
+      return (accumulated * index + recipe.rating) / (index + 1);
     }, 0);
   }
 
   static async toResponse(user: User): Promise<UserToResponseT> {
-    const rating = await user.calculateRating();
+    const rating = await User.calculateRating(user);
     const { id, name, login, image } = user;
     return { id, name, login, image, rating } as User;
   }
@@ -76,7 +78,7 @@ export class User extends BaseEntity {
   static async toResponseDetailed(
     user: User
   ): Promise<UserToResponseDetailedT> {
-    const rating = await user.calculateRating();
+    const rating = await User.calculateRating(user);
     const countOfRecipes = await getRepository(Recipe).count({
       relations: [UserStringTypes.USER],
       where: { user: user },
