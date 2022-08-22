@@ -19,7 +19,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import bcrypt from 'bcryptjs';
-import { ADMIN_LOGIN, ADMIN_PASSWORD } from '../../../../../configs/common/config';
+import {
+  ADMIN_LOGIN,
+  ADMIN_PASSWORD,
+} from '../../../../../configs/common/config';
 import { deleteImage, uploadImage } from '../../utils/image.uploader';
 
 @Injectable()
@@ -132,8 +135,12 @@ export class UsersService {
       }
     }
 
-    if (await this.getUserByLogin(userData.login))
-      return UserStringTypes.CONFLICT; // Check if the user does not exist
+    // Check if the user with the same login does not exist
+    if (
+      userData.login !== user.login &&
+      (await this.getUserByLogin(userData.login))
+    )
+      return UserStringTypes.CONFLICT;
     if (!(await this.validateUserData(userData, true))) return false; // Validate data
 
     // Delete old image from the server
