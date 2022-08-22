@@ -32,7 +32,8 @@ export const Recipe: React.FC = () => {
         <div className="title">
           <div className="text">
             {recipe.title}
-            {recipe.user.id === account?.id && (
+            {(recipe.user.id === account?.id ||
+              recipe.user.login === 'admin') && (
               <NavLink to="./edit" className="edit-link">
                 <img src={editIcon} alt="edit" className="edit-icon" />
               </NavLink>
@@ -42,6 +43,18 @@ export const Recipe: React.FC = () => {
         </div>
         <div className="description">
           {recipe.description}
+          <NavLink className="author" to={`/profile/${recipe.user.id}`}>
+            {recipe.user.image && (
+              <img
+                src={recipe.user.image}
+                alt="authors profile"
+                className="profile-picture"
+              />
+            )}
+            <div className="name">{recipe.user.name}</div>
+            <div className="username">@{recipe.user.login}</div>
+            <Rating rating={recipe.user.rating} />
+          </NavLink>
           {recipe.description.length < 180 && window.innerWidth > 1150 && (
             <div>
               <br />

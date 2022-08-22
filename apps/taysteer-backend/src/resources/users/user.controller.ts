@@ -80,7 +80,7 @@ export class UsersController {
       req.parts()
     );
 
-    if (updatedUser == UserStringTypes.CONFLICT)
+    if (updatedUser === UserStringTypes.CONFLICT)
       return res.status(HttpStatus.CONFLICT).send(); // Response if user with new login already exist
 
     return updatedUser && typeof updatedUser != 'string'
