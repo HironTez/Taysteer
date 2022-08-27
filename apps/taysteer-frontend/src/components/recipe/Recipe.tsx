@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink, useLocation, useParams } from 'react-router-dom';
 import { Error } from '../error.animation/Error.animation';
 import { Loading } from '../loading.spinner/Loading.spinner';
@@ -6,11 +6,13 @@ import { useActions } from '../../hooks/useAction';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import './Recipe.sass';
 import { Rating } from '../rating/Rating';
-import { allowVerticalScroll, scrollToElem } from '../../scripts/own.module';
+import { allowVerticalScroll, scrollToElem, popup } from '../../scripts/own.module';
 import $ from 'jquery';
 import editIcon from '../../assets/images/navigation/edit-icon.svg';
+import { Rate } from '../rate/Rate';
 
 export const Recipe: React.FC = () => {
+  // Get the recipe
   const { recipeId } = useParams();
   const { recipe, loading, error } = useTypedSelector((state) => state.recipe);
   const { fetchRecipe } = useActions();
@@ -24,6 +26,26 @@ export const Recipe: React.FC = () => {
   }, [error, recipeId, location]);
 
   useEffect(allowVerticalScroll, []);
+
+  // Rate a recipe
+  const [myRating, setMyRating] = useState(0);
+
+  const {
+    loading: recipeRatingLoading,
+    error: recipeRatingError,
+  } = useTypedSelector((state) => state.rateRecipe);
+
+  const { fetchRateRecipe } = useActions();
+
+  useEffect(() => {
+    if (myRating !== 0 && !recipeRatingLoading && !recipeRatingError) {
+      fetchRateRecipe(recipe?.id ?? '', myRating);
+    } else if (recipeRatingError) {
+      setMyRating(0);
+      popup(recipeRatingError, 'error');
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [myRating, recipeRatingError]);
 
   if (recipe && !loading && !error) {
     return (
@@ -102,6 +124,12 @@ export const Recipe: React.FC = () => {
               );
             })}
           </ol>
+        </div>
+
+        {/* {recipe.user.id === account?.id && } */}
+        <div className="rate-recipe">
+          Rate this recipe:
+          <Rate rating={myRating} setRating={setMyRating} />
         </div>
 
         <div className="comments"></div>

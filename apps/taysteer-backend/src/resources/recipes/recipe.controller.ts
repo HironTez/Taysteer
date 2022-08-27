@@ -75,7 +75,7 @@ export class RecipeController {
       req.user.id,
       recipeId
     );
-    if (!hasRecipeAccess) return res.status(HttpStatus.NOT_FOUND).send();
+    if (!hasRecipeAccess) return res.status(HttpStatus.FORBIDDEN).send();
     const updatedRecipe = await this.recipeService.updateRecipe(
       req.parts(),
       recipeId
@@ -96,7 +96,7 @@ export class RecipeController {
       req.user.id,
       recipeId
     );
-    if (!hasRecipeAccess) return res.status(HttpStatus.NOT_FOUND).send();
+    if (!hasRecipeAccess) return res.status(HttpStatus.FORBIDDEN).send();
     const deleted = await this.recipeService.deleteRecipe(recipeId);
     return deleted
       ? res.status(HttpStatus.NO_CONTENT).send()
@@ -115,7 +115,7 @@ export class RecipeController {
       req.user.id,
       recipeId
     ));
-    if (!hasRecipeAccess) return res.status(HttpStatus.NOT_FOUND).send();
+    if (!hasRecipeAccess) return res.status(HttpStatus.FORBIDDEN).send();
 
     const ratedRecipe = await this.recipeService.rateRecipe(
       recipeId,
@@ -194,7 +194,7 @@ export class RecipeController {
       req.user.id,
       commentId
     );
-    if (!hasRecipeAccess) return res.status(HttpStatus.NOT_FOUND).send();
+    if (!hasRecipeAccess) return res.status(HttpStatus.FORBIDDEN).send();
     const updatedComment = await this.recipeService.updateComment(
       body.text,
       commentId
@@ -215,7 +215,7 @@ export class RecipeController {
       req.user.id,
       commentId
     );
-    if (!hasRecipeAccess) return res.status(HttpStatus.NOT_FOUND).send();
+    if (!hasRecipeAccess) return res.status(HttpStatus.FORBIDDEN).send();
     const deletedComment = await this.recipeService.deleteComment(commentId);
     return deletedComment
       ? res.status(HttpStatus.NO_CONTENT).send()

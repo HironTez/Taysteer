@@ -644,8 +644,8 @@ paths:
           description: Bad request
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: Not found
+        '403':
+          description: Forbidden
     delete:
       tags:
         - Recipes
@@ -660,10 +660,12 @@ paths:
       responses:
         '204':
           description: The recipe has been deleted
+        '400':
+          description: Bad request
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: Recipe not found
+        '403':
+          description: Forbidden
   /recipes/{recipe_id}/rate:
     post:
       tags:
@@ -694,8 +696,8 @@ paths:
           description: Bad request
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: Not found
+        '403':
+          description: Forbidden
   /recipes/{recipe_id}/comments:
     post:
       tags:
@@ -722,15 +724,15 @@ paths:
               required:
                 - text
       responses:
-        201:
+        '201':
           description: The comment has been created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RecipeCommentToResponse'
-        400:
+        '400':
           description: Bad request
-        401:
+        '401':
           $ref: '#/components/responses/UnauthorizedError'
     get:
       tags:
@@ -776,15 +778,15 @@ paths:
           schema:
             type: integer
       responses:
-        200:
+        '200':
           description: Got the comment
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RecipeCommentToResponseDetailed'
-        404:
+        '404':
           description: Not found
-        401:
+        '401':
           $ref: '#/components/responses/UnauthorizedError'
     post:
       tags:
@@ -811,15 +813,15 @@ paths:
               required:
                 - text
       responses:
-        201:
+        '201':
           description: The comment has been created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RecipeCommentToResponse'
-        400:
+        '400':
           description: Bad request
-        401:
+        '401':
           $ref: '#/components/responses/UnauthorizedError'
 
     put:
@@ -847,16 +849,18 @@ paths:
               required:
                 - text
       responses:
-        201:
+        '201':
           description: The comment has been updated
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RecipeCommentToResponse'
-        400:
+        '400':
           description: Bad request
-        401:
+        '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          description: Forbidden
     delete:
       tags:
         - Recipes
@@ -869,9 +873,11 @@ paths:
           schema:
             type: number
       responses:
-        204:
+        '204':
           description: The comment has been deleted
-        400:
+        '400':
           description: Bad request
-        401:
+        '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          description: Forbidden

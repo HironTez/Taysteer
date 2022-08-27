@@ -224,3 +224,7 @@ export const urlToObject = async (imageUrl: string) => {
   const file = new File([blob], 'image.jpg', { type: blob.type });
   return file;
 };
+
+// Get list with range of number
+export const range = (start: number, end: number) =>
+  Array.from({ length: end - start + 1 }, (_, k) => k + start);
