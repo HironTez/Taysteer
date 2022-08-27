@@ -1,18 +1,18 @@
-interface Ingredient {
+interface NewIngredientT {
   count: number | null;
   name: string;
 }
 
-interface Step {
+interface NewStepT {
   title: string;
   description: string;
   image: File | null;
 }
 
-interface Recipe {
+interface NewRecipeT {
   title: string;
   description: string;
   image: File | null;
-  ingredients: Ingredient[];
-  steps: Step[];
+  ingredients: NewIngredientT[];
+  steps: NewStepT[];
 }
