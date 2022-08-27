@@ -11,7 +11,7 @@ import { Registration } from './components/authorization/Registration';
 import { Login } from './components/authorization/Login';
 import { Recipe } from './components/recipe/Recipe';
 import { Profile } from './components/profile/Profile';
-import { UploadRecipe } from './components/create.recipe/Create.recipe';
+import { UploadRecipe } from './components/upload.recipe/Upload.recipe';
 import { EditRecipe } from './components/edit.recipe/Edit.recipe';
 
 ReactDOM.render(

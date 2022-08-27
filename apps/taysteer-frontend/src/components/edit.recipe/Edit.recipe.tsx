@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useActions } from '../../hooks/useAction';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { urlToObject } from '../../scripts/own.module';
-import { UploadRecipe } from '../create.recipe/Create.recipe';
+import { UploadRecipe } from '../upload.recipe/Upload.recipe';
 
 export const EditRecipe: React.FC = () => {
   const { recipeId } = useParams();
@@ -15,11 +15,11 @@ export const EditRecipe: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recipeId]);
 
-  const [oldRecipe, setOldRecipe] = useState<Recipe | null>(null);
+  const [oldRecipe, setOldRecipe] = useState<RecipeT | null>(null);
 
   const setRecipeData = async () => {
     if (recipe) {
-      const oldRecipeData: Recipe = {
+      const oldRecipeData: RecipeT = {
         title: recipe.title,
         description: recipe.description,
         image: await urlToObject(recipe.image),
