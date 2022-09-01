@@ -228,3 +228,35 @@ export const urlToObject = async (imageUrl: string) => {
 // Get list with range of number
 export const range = (start: number, end: number) =>
   Array.from({ length: end - start + 1 }, (_, k) => k + start);
+
+// Convert date object to "time ago" string
+export const dateToTimeAgo = (date: Date): string => {
+  const now = new Date(Date.now());
+  const difftime = now.getTime() - new Date(date).getTime();
+  const diffDate = new Date(difftime);
+  const [sec, min, hr, day, month, year] = [
+    diffDate.getSeconds(),
+    diffDate.getMinutes(),
+    diffDate.getHours() - 1,
+    diffDate.getDate() - 1,
+    diffDate.getMonth(),
+    diffDate.getFullYear() - 1970,
+  ];
+  const toString = (property: number, end: string) => {
+    return `${property} ${end}${property > 1 ? 's' : ''} ago`;
+  };
+
+  return year >= 1
+    ? toString(year, 'year')
+    : month >= 1
+    ? toString(month, 'month')
+    : day >= 1
+    ? toString(day, 'day')
+    : hr >= 1
+    ? toString(hr, 'hr')
+    : min >= 1
+    ? toString(min, 'min')
+    : day >= 1
+    ? toString(sec, 'sec')
+    : '';
+};

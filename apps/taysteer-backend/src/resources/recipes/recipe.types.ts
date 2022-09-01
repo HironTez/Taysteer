@@ -48,5 +48,6 @@ export interface CommentToResponseDetailedT {
   user: Promise<UserToResponseT>;
   date: Date;
   updated: boolean;
+  countOfChildComments: number;
   childComments: Array<CommentToResponseT> | null;
 }

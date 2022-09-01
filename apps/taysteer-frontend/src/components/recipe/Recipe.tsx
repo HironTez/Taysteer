@@ -10,6 +10,7 @@ import { allowVerticalScroll, scrollToElem, popup } from '../../scripts/own.modu
 import $ from 'jquery';
 import editIcon from '../../assets/images/navigation/edit-icon.svg';
 import { Rate } from '../rate/Rate';
+import { RecipeComments } from '../recipe.comments/Recipe.comments';
 
 export const Recipe: React.FC = () => {
   // Get the recipe
@@ -132,7 +133,9 @@ export const Recipe: React.FC = () => {
           <Rate rating={myRating} setRating={setMyRating} />
         </div>
 
-        <div className="comments"></div>
+        <div className="comments">
+          <RecipeComments recipeId={recipe.id} countOfComments={recipe.countOfComments}/>
+        </div>
       </div>
     );
   } else if (loading) {

@@ -1,0 +1,57 @@
+.recipe-comments-container
+  padding-left: 50px
+  margin-top: 50px
+
+  .infinite-scroll-component
+    overflow: hidden !important
+
+  .title
+    margin-left: 0 !important
+
+  .comment-container
+
+    .comment
+      display: grid
+      grid-template-columns: min-content auto
+      grid-template-rows: 1fr
+      grid-template-areas: "image content"
+      max-width: calc(100vw - 100px)
+
+      .profile-picture
+        max-width: 100px
+        max-height: 100px
+        border-radius: 50%
+        object-fit: cover
+        display: inline-block
+        grid-area: image
+
+      .content-wrapper
+        padding: 10px
+        grid-area: content
+        display: inline-block
+
+        .info
+          display: block
+          width: 100%
+
+          & > *
+            display: inline-block
+            margin-right: 7px
+
+          .name
+            font-weight: 600
+
+          .edited
+            font-style: italic
+
+        .text
+          width: 100%
+
+    .child-comments-container
+      display: flex
+
+      .vertical-line
+        border-left: 2px solid gray
+
+      .child-comments
+        padding-left: 30px

@@ -162,7 +162,10 @@ export class RecipeService {
           let id = '1';
           if (isStepImage) {
             // Get image id
-            id = String(Number(part.fieldname.replace(RecipeStringTypes.STEP_IMAGE, '')) - 1);
+            id = String(
+              Number(part.fieldname.replace(RecipeStringTypes.STEP_IMAGE, '')) -
+                1
+            );
             // Check id
             if (Number(id) < 0) return false;
             else if (!recipeData.steps || !recipeData.steps[id]) {
@@ -241,7 +244,10 @@ export class RecipeService {
           let id = '1';
           if (isStepImage) {
             // Get image id
-            id = String(Number(part.fieldname.replace(RecipeStringTypes.STEP_IMAGE, '')) - 1);
+            id = String(
+              Number(part.fieldname.replace(RecipeStringTypes.STEP_IMAGE, '')) -
+                1
+            );
             // Check id
             if (Number(id) < 0) return false;
             else if (!recipeData.steps || !recipeData.steps[id]) {
@@ -380,10 +386,10 @@ export class RecipeService {
     // Get the page of child comments
     const childComments = await this.recipeCommentsRepository.find({
       where: { mainComment: mainComment },
-      relations: [RecipeStringTypes.MAINCOMMENT, RecipeStringTypes.USER],
+      relations: [RecipeStringTypes.MAIN_COMMENT, RecipeStringTypes.USER],
       order: { date: 'ASC' },
-      skip: page ? (page - 1) * 10 : 0,
-      take: 10,
+      skip: page ? (page - 1) * 3 : 0,
+      take: 3,
     });
     mainComment.childComments = childComments;
     return mainComment;
