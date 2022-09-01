@@ -11,24 +11,24 @@
       span.rating-star:nth-child(#{$i})::before
         content: "☆"
 
-div.rating.rating-0
+div.rate.rating-0
   @include rating(0)
-div.rating.rating-1
+div.rate.rating-1
   @include rating(1)
-div.rating.rating-2
+div.rate.rating-2
   @include rating(2)
-div.rating.rating-3
+div.rate.rating-3
   @include rating(3)
-div.rating.rating-4
+div.rate.rating-4
   @include rating(4)
-div.rating.rating-5
+div.rate.rating-5
   @include rating(5)
 
-span.rating-star
+div.rate span.rating-star
   transition: all 0.2s ease-in-out
   position: relative
   top: 0
 
-span.rating-star:hover
-  cursor: pointer
-  top: -5px
+  &:hover
+    cursor: pointer
+    top: -5px

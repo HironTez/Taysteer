@@ -8,13 +8,13 @@ export const Rate: React.FC<{
 }> = ({ rating, setRating }) => {
 
   const changeDisplayedRating = (from: number, to: number) => {
-    const elem = $('.rating');
+    const elem = $('.rate');
     elem.removeClass(`rating-${from}`);
     elem.addClass(`rating-${to}`);
   };
 
   return (
-    <div className={`rating rating-${rating}`}>
+    <div className={`rate rating-${rating}`}>
       {range(1, 5).map((i) => (
         <span
           key={i}
