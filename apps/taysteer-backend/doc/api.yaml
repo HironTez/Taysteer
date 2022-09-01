@@ -146,6 +146,8 @@ components:
           type: string
         updated:
           type: boolean
+        countOfChildComments:
+          type: number
         childComments:
           type: array
           items:

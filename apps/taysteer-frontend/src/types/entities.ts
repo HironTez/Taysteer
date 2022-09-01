@@ -50,3 +50,14 @@ export interface ProfileDetailedT {
   recipes: Array<RecipeT>;
   countOfRecipes: number;
 }
+
+export interface RecipeCommentT {
+  id: number;
+  text: string;
+  user: UserT;
+  date: Date;
+  updated: boolean;
+  countOfChildComments: number;
+  childComments: Array<RecipeCommentT>;
+  page: number;
+}

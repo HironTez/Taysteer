@@ -32,6 +32,6 @@ export enum RecipeStringTypes {
   RATERS = 'raters',
   RECIPE = 'recipe',
   COMMENTS = 'comments',
-  CHILDCOMMENTS = 'childComments',
-  MAINCOMMENT = 'mainComment'
+  CHILD_COMMENTS = 'childComments',
+  MAIN_COMMENT = 'mainComment'
 }
