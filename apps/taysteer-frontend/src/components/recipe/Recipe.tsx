@@ -6,7 +6,11 @@ import { useActions } from '../../hooks/useAction';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import './Recipe.sass';
 import { Rating } from '../rating/Rating';
-import { allowVerticalScroll, scrollToElem, popup } from '../../scripts/own.module';
+import {
+  allowVerticalScroll,
+  scrollToElem,
+  popup,
+} from '../../scripts/own.module';
 import $ from 'jquery';
 import editIcon from '../../assets/images/navigation/edit-icon.svg';
 import { Rate } from '../rate/Rate';
@@ -31,10 +35,8 @@ export const Recipe: React.FC = () => {
   // Rate a recipe
   const [myRating, setMyRating] = useState(0);
 
-  const {
-    loading: recipeRatingLoading,
-    error: recipeRatingError,
-  } = useTypedSelector((state) => state.rateRecipe);
+  const { loading: recipeRatingLoading, error: recipeRatingError } =
+    useTypedSelector((state) => state.rateRecipe);
 
   const { fetchRateRecipe } = useActions();
 
@@ -45,7 +47,7 @@ export const Recipe: React.FC = () => {
       setMyRating(0);
       popup(recipeRatingError, 'error');
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [myRating, recipeRatingError]);
 
   if (recipe && !loading && !error) {
@@ -127,14 +129,18 @@ export const Recipe: React.FC = () => {
           </ol>
         </div>
 
-        {/* {recipe.user.id === account?.id && } */}
-        <div className="rate-recipe">
-          Rate this recipe:
-          <Rate rating={myRating} setRating={setMyRating} />
-        </div>
+        {recipe.user.id !== account?.id && (
+          <div className="rate-recipe">
+            Rate this recipe:
+            <Rate rating={myRating} setRating={setMyRating} />
+          </div>
+        )}
 
         <div className="comments">
-          <RecipeComments recipeId={recipe.id} countOfComments={recipe.countOfComments}/>
+          <RecipeComments
+            recipeId={recipe.id}
+            countOfComments={recipe.countOfComments}
+          />
         </div>
       </div>
     );
