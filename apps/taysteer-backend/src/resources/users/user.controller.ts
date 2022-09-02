@@ -39,10 +39,9 @@ export class UsersController {
     @Query('detailed') detailed = 'false'
   ) {
     const user = await this.usersService.getUserById(req.user.id);
-    const response =
-      detailed === 'true'
-        ? await User.toResponseDetailed(user)
-        : await User.toResponse(user);
+    const response = detailed === 'true'
+      ? await User.toResponseDetailed(user)
+      : await User.toResponse(user);
     return res.status(HttpStatus.OK).send(response);
   }
 

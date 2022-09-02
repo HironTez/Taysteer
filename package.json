@@ -3,12 +3,15 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "nx serve",
+    "start": "nx run taysteer-backend:serve",
     "build": "nx build",
     "test": "npx nx run-many --all --target=test --parallel",
     "lint": "nx workspace-lint && npx nx run-many --all --target=lint --parallel",
     "start:frontend": "nx run taysteer-frontend:serve --host=0.0.0.0",
     "start:backend": "nx run taysteer-backend:serve"
+  },
+  "engines": {
+    "node": "v16.16.0"
   },
   "private": true,
   "dependencies": {
