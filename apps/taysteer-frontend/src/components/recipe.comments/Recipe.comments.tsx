@@ -85,7 +85,9 @@ export const RecipeComments: React.FC<{
               );
             }}
           >
-            View answers 🠇
+            {comment.childComments?.length ?? 0
+              ? 'View more 🠇'
+              : 'View answers 🠇'}
           </button>
         )}
       </div>
