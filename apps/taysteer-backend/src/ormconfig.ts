@@ -25,5 +25,8 @@ export const connectionOptions = {
   autoReconnect: true,
   reconnectTries: 100,
   reconnectionInterval: 2000,
+  ssl: {
+    rejectUnauthorized: false,
+  },
   entities: [User, Recipe, RecipeRating, Comment],
 } as ConnectionOptions;
