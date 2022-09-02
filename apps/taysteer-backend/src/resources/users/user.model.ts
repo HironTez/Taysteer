@@ -13,7 +13,6 @@ import {
   OneToMany,
   getRepository,
 } from 'typeorm';
-import { UserRating } from './user.rating.model';
 
 @Entity('User')
 export class User extends BaseEntity {
@@ -38,15 +37,6 @@ export class User extends BaseEntity {
   @Column('int', { width: 10 })
   rating: number;
 
-  @Column('int')
-  ratingsCount: number;
-
-  @Column('int')
-  ratingsSum: number;
-
-  @OneToMany(() => UserRating, (rater) => rater.user)
-  raters: UserRating[];
-
   @OneToMany(() => Recipe, (recipe) => recipe.user)
   recipes: Recipe[];
 
@@ -56,7 +46,6 @@ export class User extends BaseEntity {
     password = '',
     description = '',
     image = '',
-    update = false,
   } = {}) {
     super();
     this.name = name;
@@ -64,37 +53,45 @@ export class User extends BaseEntity {
     this.password = password;
     this.description = description;
     this.image = image;
-    if (!update) {
-      this.rating = 0;
-      this.ratingsCount = 0;
-      this.ratingsSum = 0;
-    }
+    this.rating = 0;
   }
 
-  static toResponse(user: User): UserToResponseT {
-    const { id, name, login, image, rating } = user;
+  static async calculateRating(user: User): Promise<number> {
+    return (
+      await getRepository(Recipe).find({
+        relations: [UserStringTypes.USER],
+        where: { user: user },
+      })
+    ).filter((recipe) => {
+      return recipe.rating > 0;
+    }).reduce((accumulated, recipe, index) => {
+      return (accumulated * index + recipe.rating) / (index + 1);
+    }, 0);
+  }
+
+  static async toResponse(user: User): Promise<UserToResponseT> {
+    const rating = await User.calculateRating(user);
+    const { id, name, login, image } = user;
     return { id, name, login, image, rating } as User;
   }
 
-  static async toResponseDetailed(user: User): Promise<UserToResponseDetailedT> {
-    const {
-      id,
-      name,
-      login,
-      image,
-      rating,
-      ratingsCount,
-      description,
-    } = user;
+  static async toResponseDetailed(
+    user: User
+  ): Promise<UserToResponseDetailedT> {
+    const rating = await User.calculateRating(user);
+    const countOfRecipes = await getRepository(Recipe).count({
+      relations: [UserStringTypes.USER],
+      where: { user: user },
+    });
+    const { id, name, login, image, description } = user;
     return {
       id,
       name,
       login,
       image,
       rating,
-      ratingsCount,
       description,
-      countOfRecipes: await getRepository(Recipe).count({relations: [UserStringTypes.USER], where: {user: user}})
+      countOfRecipes,
     };
   }
 

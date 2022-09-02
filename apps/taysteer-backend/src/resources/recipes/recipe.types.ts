@@ -1,4 +1,4 @@
-import { UserToResponseT } from "../users/user.types";
+import { UserToResponseT } from '../users/user.types';
 
 export interface RecipeToResponseT {
   id: string;
@@ -15,9 +15,9 @@ export interface RecipeToResponseDetailedT {
   description: string;
   rating: number;
   ratingsCount: number;
-  user: UserToResponseT;
+  user: Promise<UserToResponseT>;
   ingredients: Array<RecipeIngredientT>;
-  steps: Array<RecipeStepT>,
+  steps: { [key: number]: RecipeStepT };
   countOfComments: number;
 }
 
@@ -36,7 +36,7 @@ export interface RecipeStepT {
 export interface CommentToResponseT {
   id: number;
   text: string;
-  user: UserToResponseT;
+  user: Promise<UserToResponseT>;
   date: Date;
   updated: boolean;
   countOfChildComments: number;
@@ -45,8 +45,9 @@ export interface CommentToResponseT {
 export interface CommentToResponseDetailedT {
   id: number;
   text: string;
-  user: UserToResponseT;
+  user: Promise<UserToResponseT>;
   date: Date;
   updated: boolean;
+  countOfChildComments: number;
   childComments: Array<CommentToResponseT> | null;
 }

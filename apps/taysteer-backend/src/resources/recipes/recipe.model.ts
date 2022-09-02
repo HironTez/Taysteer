@@ -6,7 +6,7 @@ import {
   BaseEntity,
   OneToMany,
   ManyToOne,
-  getRepository
+  getRepository,
 } from 'typeorm';
 import { User } from '../users/user.model';
 import { Comment } from './recipe.comment.model';
@@ -17,6 +17,7 @@ import {
   RecipeToResponseT,
   RecipeToResponseDetailedT,
 } from './recipe.types';
+import { objectPromise } from '../../utils/promise.loader';
 
 @Entity('Recipe')
 export class Recipe extends BaseEntity {
@@ -36,7 +37,7 @@ export class Recipe extends BaseEntity {
   ingredients: Array<RecipeIngredientT>;
 
   @Column('json')
-  steps: Array<RecipeStepT>;
+  steps: { [key: number]: RecipeStepT };
 
   @Column('int', { width: 10 })
   rating: number;
@@ -61,7 +62,7 @@ export class Recipe extends BaseEntity {
     image = '',
     description = '',
     ingredients = [],
-    steps = [],
+    steps = {},
     user = new User(),
     update = false,
   } = {}) {
@@ -84,7 +85,9 @@ export class Recipe extends BaseEntity {
     return { id, title, image, description, rating };
   }
 
-  static async toResponseDetailed(recipe: Recipe): Promise<RecipeToResponseDetailedT> {
+  static async toResponseDetailed(
+    recipe: Recipe
+  ): Promise<RecipeToResponseDetailedT> {
     const {
       id,
       title,
@@ -96,7 +99,7 @@ export class Recipe extends BaseEntity {
       ingredients,
       steps,
     } = recipe;
-    return {
+    return objectPromise({
       id,
       title,
       image,
@@ -106,7 +109,10 @@ export class Recipe extends BaseEntity {
       user: User.toResponse(user),
       ingredients,
       steps,
-      countOfComments: await getRepository(Comment).count({relations: [RecipeStringTypes.RECIPE], where: {recipe: recipe}}),
-    };
+      countOfComments: await getRepository(Comment).count({
+        relations: [RecipeStringTypes.RECIPE],
+        where: { recipe: recipe },
+      }),
+    });
   }
 }

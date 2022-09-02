@@ -20,7 +20,7 @@ import { CookieAuthGuard } from '../../auth/guards/cookie-auth.guard';
 import { ExtendedRequest } from '../../typification/interfaces';
 import { Response } from 'express';
 
-@Controller('recipes')
+@Controller('api/recipes')
 export class RecipeController {
   constructor(private readonly recipeService: RecipeService) {}
 
@@ -41,7 +41,7 @@ export class RecipeController {
     );
     return createdRecipe
       ? res.status(HttpStatus.CREATED).send(Recipe.toResponse(createdRecipe))
-      : res.status(HttpStatus.BAD_REQUEST);
+      : res.status(HttpStatus.BAD_REQUEST).send();
   }
 
   @Get('find')
@@ -75,7 +75,7 @@ export class RecipeController {
       req.user.id,
       recipeId
     );
-    if (!hasRecipeAccess) return res.status(HttpStatus.NOT_FOUND).send();
+    if (!hasRecipeAccess) return res.status(HttpStatus.FORBIDDEN).send();
     const updatedRecipe = await this.recipeService.updateRecipe(
       req.parts(),
       recipeId
@@ -96,7 +96,7 @@ export class RecipeController {
       req.user.id,
       recipeId
     );
-    if (!hasRecipeAccess) return res.status(HttpStatus.NOT_FOUND).send();
+    if (!hasRecipeAccess) return res.status(HttpStatus.FORBIDDEN).send();
     const deleted = await this.recipeService.deleteRecipe(recipeId);
     return deleted
       ? res.status(HttpStatus.NO_CONTENT).send()
@@ -105,7 +105,7 @@ export class RecipeController {
 
   @Post(':recipeId/rate')
   @UseGuards(CookieAuthGuard)
-  async rateUser(
+  async rateRecipe(
     @Req() req: ExtendedRequest,
     @Res() res: Response,
     @Param('recipeId') recipeId: string,
@@ -115,7 +115,7 @@ export class RecipeController {
       req.user.id,
       recipeId
     ));
-    if (!hasRecipeAccess) return res.status(HttpStatus.NOT_FOUND).send();
+    if (!hasRecipeAccess) return res.status(HttpStatus.FORBIDDEN).send();
 
     const ratedRecipe = await this.recipeService.rateRecipe(
       recipeId,
@@ -176,7 +176,9 @@ export class RecipeController {
       recipeId
     );
     return createdComment
-      ? res.status(HttpStatus.CREATED).send(await Comment.toResponse(createdComment))
+      ? res
+          .status(HttpStatus.CREATED)
+          .send(await Comment.toResponse(createdComment))
       : res.status(HttpStatus.BAD_REQUEST).send();
   }
 
@@ -192,7 +194,7 @@ export class RecipeController {
       req.user.id,
       commentId
     );
-    if (!hasRecipeAccess) return res.status(HttpStatus.NOT_FOUND).send();
+    if (!hasRecipeAccess) return res.status(HttpStatus.FORBIDDEN).send();
     const updatedComment = await this.recipeService.updateComment(
       body.text,
       commentId
@@ -213,7 +215,7 @@ export class RecipeController {
       req.user.id,
       commentId
     );
-    if (!hasRecipeAccess) return res.status(HttpStatus.NOT_FOUND).send();
+    if (!hasRecipeAccess) return res.status(HttpStatus.FORBIDDEN).send();
     const deletedComment = await this.recipeService.deleteComment(commentId);
     return deletedComment
       ? res.status(HttpStatus.NO_CONTENT).send()
@@ -234,7 +236,9 @@ export class RecipeController {
       commentId
     );
     return createdComment
-      ? res.status(HttpStatus.CREATED).send(await Comment.toResponse(createdComment))
+      ? res
+          .status(HttpStatus.CREATED)
+          .send(await Comment.toResponse(createdComment))
       : res.status(HttpStatus.BAD_REQUEST).send();
   }
 }

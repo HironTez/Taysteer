@@ -13,10 +13,9 @@ export class ReqLogMiddleware implements NestMiddleware {
         Url: ${req.url};\
         Query parameters: ${JSON.stringify(req.query)};\
         Body: ${JSON.stringify(req.body)};\
-        Status code: ${res.statusCode}`
-          .replace(/\s{2,}/g, ' ')
+        Status code: ${res.statusCode}`.replace(/\s{2,}/g, ' ')
       );
     });
     next();
-  };
-};
+  }
+}

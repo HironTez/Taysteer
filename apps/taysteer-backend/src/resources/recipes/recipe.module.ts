@@ -8,8 +8,11 @@ import { Comment } from './recipe.comment.model';
 import { Module } from '@nestjs/common';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Recipe, RecipeRating, Comment]), UserModule],
+  imports: [
+    TypeOrmModule.forFeature([Recipe, RecipeRating, Comment]),
+    UserModule,
+  ],
   providers: [RecipeService],
-  controllers: [RecipeController]
+  controllers: [RecipeController],
 })
 export class RecipeModule {}

@@ -5,7 +5,7 @@ info:
   version: 1.0.0
 
 servers:
-  - url: /
+  - url: /api
 
 components:
   schemas:
@@ -36,8 +36,6 @@ components:
         description:
           type: string
         rating:
-          type: number
-        ratingsCount:
           type: number
         recipes:
           type: array
@@ -81,9 +79,9 @@ components:
           items:
             $ref: '#/components/schemas/RecipeIngredient'
         steps:
-          type: array
+          type: object
           items:
-            $ref: '#/components/schemas/RecipeStepToResponse'
+            $ref: '#/components/schemas/RecipeSteps'
         countOfComments:
           type: number
     RecipeIngredient:
@@ -95,6 +93,13 @@ components:
           type: string
         optional:
           type: boolean
+    RecipeSteps:
+      type: object
+      properties:
+        default:
+          $ref: '#/components/schemas/RecipeStep'
+      additionalProperties:
+        $ref: '#/components/schemas/RecipeStep'
     RecipeStep:
       type: object
       properties:
@@ -141,6 +146,8 @@ components:
           type: string
         updated:
           type: boolean
+        countOfChildComments:
+          type: number
         childComments:
           type: array
           items:
@@ -188,8 +195,8 @@ paths:
                   type: string
                   description: Password
               required:
-                - user
                 - login
+                - password
       responses:
         '200':
           description: Successful login
@@ -361,6 +368,7 @@ paths:
               schema:
                 oneOf:
                   - $ref: '#/components/schemas/UserToResponseDetailed'
+                  - $ref: '#/components/schemas/UserToResponse'
         '404':
           description: User not found
   /users/{user_id}/recipes:
@@ -408,38 +416,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserToResponse'
-  /users/{user_id}/rate:
-    post:
-      tags:
-        - Users
-      parameters:
-        - name: user_id
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: rating
-          in: query
-          required: true
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 5
-      summary: Rate the user
-      description: Rates the user by ID
-      responses:
-        '200':
-          description: The user has been rated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserToResponse'
-        '400':
-          description: Bad request
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: Not found
   /users/delete_image:
     delete:
       tags:
@@ -507,9 +483,9 @@ paths:
                   items:
                     $ref: '#/components/schemas/RecipeIngredient'
                 steps:
-                  type: array
+                  type: object
                   items:
-                    $ref: '#/components/schemas/RecipeStep'
+                    $ref: '#/components/schemas/RecipeSteps'
                 stepImage1:
                   type: string
                   format: binary
@@ -518,6 +494,10 @@ paths:
                   type: string
                   format: binary
                   description: The step 2 image
+                stepImage3:
+                  type: string
+                  format: binary
+                  description: The step 3 image
               required:
                 - title
                 - description
@@ -623,9 +603,9 @@ paths:
                   items:
                     $ref: '#/components/schemas/RecipeIngredient'
                 steps:
-                  type: array
+                  type: object
                   items:
-                    $ref: '#/components/schemas/RecipeStep'
+                    $ref: '#/components/schemas/RecipeSteps'
                 stepImage1:
                   type: string
                   format: binary
@@ -634,6 +614,18 @@ paths:
                   type: string
                   format: binary
                   description: The step 2 image
+                stepImage3:
+                  type: string
+                  format: binary
+                  description: The step 3 image
+                stepImage4:
+                  type: string
+                  format: binary
+                  description: The step 4 image
+                stepImage5:
+                  type: string
+                  format: binary
+                  description: The step 5 image
               required:
                 - title
                 - description
@@ -654,8 +646,8 @@ paths:
           description: Bad request
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: Not found
+        '403':
+          description: Forbidden
     delete:
       tags:
         - Recipes
@@ -670,10 +662,12 @@ paths:
       responses:
         '204':
           description: The recipe has been deleted
+        '400':
+          description: Bad request
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: Recipe not found
+        '403':
+          description: Forbidden
   /recipes/{recipe_id}/rate:
     post:
       tags:
@@ -704,8 +698,8 @@ paths:
           description: Bad request
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: Not found
+        '403':
+          description: Forbidden
   /recipes/{recipe_id}/comments:
     post:
       tags:
@@ -732,15 +726,15 @@ paths:
               required:
                 - text
       responses:
-        201:
+        '201':
           description: The comment has been created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RecipeCommentToResponse'
-        400:
+        '400':
           description: Bad request
-        401:
+        '401':
           $ref: '#/components/responses/UnauthorizedError'
     get:
       tags:
@@ -786,15 +780,15 @@ paths:
           schema:
             type: integer
       responses:
-        200:
+        '200':
           description: Got the comment
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RecipeCommentToResponseDetailed'
-        404:
+        '404':
           description: Not found
-        401:
+        '401':
           $ref: '#/components/responses/UnauthorizedError'
     post:
       tags:
@@ -821,15 +815,15 @@ paths:
               required:
                 - text
       responses:
-        201:
+        '201':
           description: The comment has been created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RecipeCommentToResponse'
-        400:
+        '400':
           description: Bad request
-        401:
+        '401':
           $ref: '#/components/responses/UnauthorizedError'
 
     put:
@@ -857,16 +851,18 @@ paths:
               required:
                 - text
       responses:
-        201:
+        '201':
           description: The comment has been updated
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RecipeCommentToResponse'
-        400:
+        '400':
           description: Bad request
-        401:
+        '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          description: Forbidden
     delete:
       tags:
         - Recipes
@@ -879,9 +875,11 @@ paths:
           schema:
             type: number
       responses:
-        204:
+        '204':
           description: The comment has been deleted
-        400:
+        '400':
           description: Bad request
-        401:
+        '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          description: Forbidden

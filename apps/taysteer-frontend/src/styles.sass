@@ -1,0 +1,163 @@
+@import url('https://fonts.googleapis.com/css2?family=Yanone+Kaffeesatz:wght@300;400&display=swap')
+
+textarea
+  resize: none
+
+html
+  height: -webkit-fill-available
+  --main-color: #0E1111
+  --additional-color: #FFC107
+
+body
+  background-color: #ffffff
+  background-image: linear-gradient(-90deg, #ffffff 20%, #e1eaf4 100%)
+  background-repeat: repeat-y
+  overflow: hidden
+  min-height: 100vh
+  max-height: calc(var(--vh, 1vh) * 100)
+  min-height: -webkit-fill-available
+  width: 100vw
+  margin: 0
+
+html, body
+  width: 100vw
+
+*
+  font-family: 'Yanone Kaffeesatz', sans-serif
+  color: var(--main-color)
+
+::-webkit-scrollbar
+  width: 10px
+  height: 10px
+  background: transparent
+
+::-webkit-scrollbar-thumb
+  background: #a8a8a8c9
+  border-radius: 25px
+
+::-webkit-scrollbar-thumb:hover
+  background: #a8a8a8
+
+::-webkit-scrollbar-track
+  background: #f1f1f1
+  border-radius: 25px
+
+a:-webkit-any-link
+  text-decoration: none
+  color: initial
+
+div#root
+  position: absolute
+  top: 0
+  left: 0
+  width: 100vw
+
+  > *
+    display: flex
+
+  > header
+    justify-content: space-between
+    align-items: center
+
+  > main
+    justify-content: center
+
+iframe.dummy-frame
+  display: none !important
+
+// Notiffiction popup
+div.popup
+  position: fixed
+  top: 10%
+  left: 50%
+  transform: translateX(-50%)
+  -webkit-transform: translateX(-50%)
+  -moz-transform: translateX(-50%)
+  -ms-transform: translateX(-50%)
+  -o-transform: translateX(-50%)
+  min-width: min(20vW, 20vh)
+  min-width: min(20vW, calc(var(--vh, 1vh) * 20))
+  min-height: min(2vW, 2vh)
+  min-height: min(2vW, calc(var(--vh, 1vh) * 2))
+  background-color: rgba(88, 6, 193, 0.75)
+  border-radius: max(2vw, 2vh)
+  border-radius: max(2vw, calc(var(--vh, 1vh) * 2))
+  -webkit-border-radius: max(2vw, 2vh)
+  -webkit-border-radius: max(2vw, calc(var(--vh, 1vh) * 2))
+  -moz-border-radius: max(2vw, 2vh)
+  -moz-border-radius: max(2vw, calc(var(--vh, 1vh) * 2))
+  -ms-border-radius: max(2vw, 2vh)
+  -ms-border-radius: max(2vw, calc(var(--vh, 1vh) * 2))
+  -o-border-radius: max(2vw, 2vh)
+  -o-border-radius: max(2vw, calc(var(--vh, 1vh) * 2))
+  display: flex
+  justify-content: center
+  align-items: center
+  padding: 20px
+  text-align: center
+  font-size: 24px
+  z-index: 10
+  opacity: 0
+  color: snow
+
+  &.info
+    background-color: rgb(0, 188, 212, 0.75)
+
+  &.success
+    background-color: rgba(0, 201, 0, 0.75)
+
+  &.error
+    background-color: rgba(254, 42, 42, 0.75)
+
+.symbolIcon
+  max-width: 25px
+  max-height: 25px
+
+.image-uploading
+  $width: 40vw
+  $height: calc(var(--vh, 1vh) * 90)
+  $width-calculated: min($width, calc($height * 1.7))
+  $height-calculated: min($height, calc($width / 1.7))
+  width: $width-calculated
+  height: $height-calculated
+  background-color: #FCD767
+  transition: all 0.5s ease-in-out
+  border-radius: 10px
+  background-size: cover
+  background-repeat: no-repeat
+  background-position: center
+  line-height: $height-calculated
+
+  &.rounded
+    height: $width-calculated
+    border-radius: 50%
+
+    &::before
+      line-height: $width-calculated
+
+  &:hover
+    background-color: #e0bf5b
+    cursor: pointer
+
+  &::before
+    width: inherit
+    height: inherit
+    display: inline-block
+    text-align: center
+    color: snow
+    text-shadow: 0 0 0.1px #000
+    content: "Upload photo"
+    font-size: max(min(3vw, 50px), 20px)
+    line-height: inherit
+    transition: all 0.5s ease-in-out
+
+    @media (max-width: 300px)
+      font-size: 15px
+
+  &.selected::before
+    opacity: 0
+    content: ""
+
+  &.selected:hover::before
+    background-color: #00000050
+    opacity: 1

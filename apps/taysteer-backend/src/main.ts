@@ -1,6 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { SESSION_SECRET_KEY, PORT_BACKEND, SESSION_SECRET_SALT } from '../../../configs/common/config';
+import {
+  SESSION_SECRET_KEY,
+  PORT_BACKEND,
+  SESSION_SECRET_SALT,
+  PORT_FRONTEND,
+} from '../../../configs/common/config';
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -17,7 +22,10 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
     {
-      cors: true,
+      cors: {
+        origin: `http://localhost:${PORT_FRONTEND}`,
+        credentials: true,
+      },
       logger: ['error', 'warn'],
     }
   );
@@ -25,6 +33,9 @@ async function bootstrap() {
   app.register(secureSession, {
     secret: SESSION_SECRET_KEY,
     salt: SESSION_SECRET_SALT,
+    cookie: {
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+    },
   });
   app.register(fastifyPassport.initialize());
   app.register(fastifyPassport.secureSession());
@@ -35,7 +46,8 @@ async function bootstrap() {
   );
   SwaggerModule.setup('doc', app, swaggerDocument);
 
-  await app.listen(PORT_BACKEND);
-  console.log(`Service is running http://localhost:${PORT_BACKEND}`);
+  app.listen(PORT_BACKEND, '0.0.0.0', () => {
+    console.log(`Service is running at http://localhost:${PORT_BACKEND}`);
+  });
 }
 bootstrap();

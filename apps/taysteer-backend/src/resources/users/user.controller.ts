@@ -19,7 +19,7 @@ import { ExtendedRequest } from '../../typification/interfaces';
 import { UserStringTypes } from './user.service.types';
 import { CookieAuthGuard } from '../../auth/guards/cookie-auth.guard';
 
-@Controller('users')
+@Controller('api/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -39,9 +39,10 @@ export class UsersController {
     @Query('detailed') detailed = 'false'
   ) {
     const user = await this.usersService.getUserById(req.user.id);
-    const response = detailed === 'true'
-      ? await User.toResponseDetailed(user)
-      : User.toResponse(user);
+    const response =
+      detailed === 'true'
+        ? await User.toResponseDetailed(user)
+        : await User.toResponse(user);
     return res.status(HttpStatus.OK).send(response);
   }
 
@@ -54,7 +55,7 @@ export class UsersController {
       return res.status(HttpStatus.CONFLICT).send(); // Response if user already exist
 
     return createdUser && typeof createdUser != 'string'
-      ? res.status(HttpStatus.CREATED).send(User.toResponse(createdUser))
+      ? res.status(HttpStatus.CREATED).send(await User.toResponse(createdUser))
       : res.status(HttpStatus.BAD_REQUEST).send();
   }
 
@@ -79,11 +80,11 @@ export class UsersController {
       req.parts()
     );
 
-    if (updatedUser == UserStringTypes.CONFLICT)
+    if (updatedUser === UserStringTypes.CONFLICT)
       return res.status(HttpStatus.CONFLICT).send(); // Response if user with new login already exist
 
     return updatedUser && typeof updatedUser != 'string'
-      ? res.status(HttpStatus.OK).send(User.toResponse(updatedUser))
+      ? res.status(HttpStatus.OK).send(await User.toResponse(updatedUser))
       : res.status(HttpStatus.BAD_REQUEST).send();
   }
 
@@ -112,34 +113,10 @@ export class UsersController {
   @Get('rating')
   async getUsersByRating(@Res() res: Response, @Query('page') page: number) {
     const users = await this.usersService.getUsersByRating(page);
-    const usersToResponse = users.map((user) => User.toResponse(user));
-    return res.status(HttpStatus.OK).send(usersToResponse);
-  }
-
-  @Post(':id/rate')
-  @UseGuards(CookieAuthGuard)
-  async rateUser(
-    @Req() req: ExtendedRequest,
-    @Res() res: Response,
-    @Param('id') id: string,
-    @Query('rating') rating = 0
-  ) {
-    const hasAccess = await this.usersService.checkAccess(req.user, id, false);
-    if (!hasAccess) return res.status(HttpStatus.FORBIDDEN).send();
-
-    const userExists = await this.usersService.getUserById(req.user.id);
-
-    const ratedUser = await this.usersService.rateUser(
-      id,
-      req.user.id,
-      Number(rating)
+    const usersToResponse = users.map(
+      async (user) => await User.toResponse(user)
     );
-    const userToResponse = ratedUser ? User.toResponse(ratedUser) : null;
-    return ratedUser
-      ? res.status(HttpStatus.OK).send(userToResponse)
-      : userExists
-      ? res.status(HttpStatus.BAD_REQUEST).send()
-      : res.status(HttpStatus.NOT_FOUND).send();
+    return res.status(HttpStatus.OK).send(await Promise.all(usersToResponse));
   }
 
   @Delete('delete_image')
@@ -159,13 +136,14 @@ export class UsersController {
       req.user.id
     );
     return userWithDeletedImage
-      ? res.status(HttpStatus.OK).send(User.toResponse(userWithDeletedImage))
+      ? res
+          .status(HttpStatus.OK)
+          .send(await User.toResponse(userWithDeletedImage))
       : res.status(HttpStatus.BAD_REQUEST).send();
   }
 
   @Get(':id/recipes')
   async getUserRecipes(
-    @Req() req: ExtendedRequest,
     @Res() res: Response,
     @Param('id') id: string,
     @Query('page') page: number

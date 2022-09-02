@@ -1,0 +1,43 @@
+.navbar
+  font-size: 36px
+
+  .nav-item
+    list-style-type: none
+    font-weight: 400
+    display: inline-block
+    margin-right: 15px
+
+    .nav-link
+      & > *
+        transition: 300ms
+
+      .nav-text
+        color: gray
+
+        &:hover
+          color: #0E1111
+
+      .nav-icon
+        display: none
+        width: 40px
+        height: 40px
+        filter: invert(.5)
+
+        &:hover
+          filter: none
+
+      @media (max-width: 600px)
+        .nav-text
+          display: none
+
+        .nav-icon
+          display: block
+
+    .active > .nav-text
+      color: #0E1111
+
+    .active > .nav-icon
+      filter: none
+
+  @media (max-width: 290px)
+    font-size: 34px

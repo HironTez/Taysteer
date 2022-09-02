@@ -1,0 +1,26 @@
+div.page-container
+  display: inherit
+
+  img.background-image
+    // width: 50vw
+    object-fit: cover
+    border-radius: 50px
+    position: absolute
+    top: 50vh
+    top: calc(var(--vh, 1vh) * 50)
+    right: 70%
+    max-width: min(70vw, 850px)
+    max-height: 85vh
+    max-height: calc(var(--vh, 1vh) * 85)
+    z-index: -1
+    transform: translateY(-50%)
+
+    @media (max-width: 1000px)
+      display: none
+
+  .recipes
+    max-width: 70vw
+
+    @media (min-width: 1000px)
+      position: absolute
+      left: 30vw

@@ -1,0 +1,135 @@
+.recipe-min
+  $height: max(min(calc(50px + (200 - 50) * ((100vw - 200px) / (1440 - 320))), 150px), 60px)
+  $width: calc($height * 4)
+  $padding: 10px
+  $margin: min(calc(10px + (30 - 10) * ((100vw - 320px) / (1440 - 320))), 5px)
+  width: $width
+  height: $height
+  overflow: hidden
+  backdrop-filter: opacity(0)
+  -webkit-backdrop-filter: opacity(0)
+  border-radius: 10px
+  margin: $margin
+  padding: $padding
+  transition: 0.2s
+  display: grid
+  grid-template-columns: 25% auto 80px
+  grid-template-rows: 20% auto
+  grid-template-areas: "image title rating" "image description readmore"
+
+  &:hover
+    background-color: #e2e2e2
+    cursor: pointer
+
+  *
+    position: absolute
+
+  img.image
+    object-fit: cover
+    margin-right: calc(2px + (5 - 2) * ((100vw - 320px) / (1440 - 320)))
+    border-radius: 50%
+    height: $height
+    width: $height
+    grid-area: image
+
+  div.title
+    left: $padding
+    width: calc(100% - $padding - 2px)
+    overflow: hidden
+    text-overflow: ellipsis
+    font-size: 25px
+    font-weight: 400
+    white-space: nowrap
+    align-self: center
+    grid-area: title
+
+  div.rating
+    font-size: 20px
+    justify-self: center
+    align-self: center
+    grid-area: rating
+
+    span.rating-star
+      position: relative
+
+  div.description
+    left: $padding
+    top: $padding
+    width: calc(100% - $padding)
+    max-height: calc(100% - $padding)
+    font-size: 16px
+    font-weight: 300
+    overflow: hidden
+    text-overflow: ellipsis
+    display: -webkit-box
+    -webkit-box-orient: vertical
+    -webkit-line-clamp: 6 // Number of lines to show
+    grid-area: description
+
+    @media (max-width: 1000px)
+      -webkit-line-clamp: 5
+    @media (max-width: 860px)
+      -webkit-line-clamp: 4
+    @media (max-width: 720px)
+      -webkit-line-clamp: 3
+    @media (max-width: 590px)
+      -webkit-line-clamp: 2
+
+  div.readMore
+    justify-self: center
+    align-self: end
+    grid-area: readmore
+
+.recipes
+  max-width: inherit
+
+  #recipes-container
+    border-radius: 10px
+
+    &::-webkit-scrollbar-track
+      margin: 10px
+
+    .infinite-scroll-component
+      > div:not(.recipe-min)
+        grid-row-end: span 3
+        margin: 10px
+
+  #recipes-container.horizontal-scroll.active
+    overflow-x: auto
+    overflow-y: hidden
+    max-width: inherit
+
+    .infinite-scroll-component
+      width: max-content
+      display: grid
+      grid-auto-flow: column
+      grid-template-rows: auto auto auto
+
+  #recipes-container.horizontal-scroll:not(.active)
+    overflow-x: hidden
+    overflow-y: auto
+    max-height: 85vh
+    max-height: calc(var(--vh, 1vh) * 85)
+    width: min-content
+    position: relative
+    left: 50%
+    transform: translate(-50%)
+
+    .infinite-scroll-component
+      > div:not(.recipe-min)
+        margin-left: auto
+        margin-right: auto
+
+.shadow
+  position: absolute
+  z-index: 3
+
+  &.top
+    box-shadow: inset 0 7px 9px -7px rgba(0,0,0,0.4)
+    width: 100%
+    height: 10px
+
+  &.left
+    box-shadow: inset 7px 0 9px -7px rgba(0,0,0,0.4)
+    width: 10px
+    height: 100%

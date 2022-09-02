@@ -19,7 +19,7 @@
           "apps/taysteer-frontend/src/favicon.ico",
           "apps/taysteer-frontend/src/assets"
         ],
-        "styles": ["apps/taysteer-frontend/src/styles.scss"],
+        "styles": ["apps/taysteer-frontend/src/styles.sass"],
         "scripts": [],
         "webpackConfig": "@nrwl/react/plugins/webpack"
       },
@@ -45,7 +45,8 @@
       "options": {
         "buildTarget": "taysteer-frontend:build",
         "hmr": true,
-        "proxyConfig": "apps/taysteer-frontend/proxy.conf.json"
+        "proxyConfig": "apps/taysteer-frontend/proxy.conf.js",
+        "port": 3000
       },
       "configurations": {
         "production": {
