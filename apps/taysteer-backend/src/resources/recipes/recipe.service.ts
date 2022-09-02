@@ -332,7 +332,7 @@ export class RecipeService {
     const ratingObject =
       findingResult || this.recipeRatingsRepository.create(new RecipeRating());
     ratingObject.rater = user;
-    ratingObject.rating = rating;
+    ratingObject.rating = Math.round(rating);
 
     // Save the rater
     await this.recipeRatingsRepository.save(ratingObject);
