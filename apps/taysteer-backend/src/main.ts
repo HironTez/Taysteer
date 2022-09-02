@@ -4,6 +4,7 @@ import {
   SESSION_SECRET_KEY,
   PORT_BACKEND,
   SESSION_SECRET_SALT,
+  PORT_FRONTEND,
 } from '../../../configs/common/config';
 import {
   FastifyAdapter,
@@ -22,7 +23,7 @@ async function bootstrap() {
     new FastifyAdapter(),
     {
       cors: {
-        origin: `http://localhost:${PORT_BACKEND}`, // *
+        origin: `http://localhost:${PORT_FRONTEND}`,
         credentials: true,
       },
       logger: ['error', 'warn'],
