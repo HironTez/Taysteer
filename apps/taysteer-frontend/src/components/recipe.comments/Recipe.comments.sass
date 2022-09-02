@@ -48,10 +48,32 @@
           width: 100%
 
     .child-comments-container
-      display: flex
+      display: grid
+      grid-auto-rows: 1fr
+      grid-template-columns: auto 1fr
 
       .vertical-line
         border-left: 2px solid gray
+        height: 100%
 
       .child-comments
         padding-left: 30px
+
+    .answers
+      border-style: solid
+      border-width: 2px
+      border-radius: 15px
+      transition: 0.3s
+      font-size: 15px
+      white-space: nowrap
+      padding-right: 15px
+      padding-left: 15px
+      padding-top: 3px
+      padding-bottom: 2px
+      border-color: transparent
+      background-color: lightgray
+      margin-bottom: 10px
+      
+      &:hover
+        cursor: pointer
+        background-color: darkgray
