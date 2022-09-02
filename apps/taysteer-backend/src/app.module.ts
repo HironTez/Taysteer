@@ -11,9 +11,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { connectionOptions } from './ormconfig';
 import { UserModule } from './resources/users/user.module';
 import { AuthModule } from './auth/auth.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import path from 'path';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: path.join(__dirname, '..', 'taysteer-frontend'),
+      exclude: ['/api*']
+    }),
     TypeOrmModule.forRoot(connectionOptions),
     AuthModule,
     UserModule,
