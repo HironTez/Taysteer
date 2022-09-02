@@ -26,8 +26,9 @@ export const RecipeComments: React.FC<{
   } = useActions();
 
   useEffect(() => {
-    if ((comments?.length ?? 0) < countOfComments - 1 && page !== 1)
-      fetchRecipeComments(recipeId, page); // Fetch comments if it's a new page
+    if ((comments?.length ?? 0) < countOfComments && page !== 1) {
+      fetchRecipeComments(recipeId, page);
+    } // Fetch comments if it's a new page
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
@@ -103,12 +104,10 @@ export const RecipeComments: React.FC<{
           setRecipeCommentsPage(page + 1);
         }}
         hasMore={
-          // loading || ((comments?.length ?? 0) < countOfComments - 1 && !error)
-          true
+          loading || ((comments?.length ?? 0) < countOfComments && !error)
         }
         loader={<Loading />}
         endMessage={error ? <Error /> : null}
-        scrollableTarget="root"
       >
         {commentsToElements(comments)}
       </InfiniteScroll>

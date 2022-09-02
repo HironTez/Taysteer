@@ -77,10 +77,12 @@ export const recipeCommentsReducer = (
     case RecipeCommentsActionTypes.CLEAR_RECIPE_COMMENT_LIST:
       state.comments = [];
       return { ...state, comments: [], page: 1 };
+    case RecipeCommentsActionTypes.SET_RECIPE_COMMENTS_PAGE:
+      return { ...state, page: action.payload };
     case RecipeCommentsActionTypes.FETCH_COMMENT_ANSWERS:
       return { ...state, loading: true, error: null };
     case RecipeCommentsActionTypes.FETCH_COMMENT_ANSWERS_SUCCESS:
-      const result = {
+      return {
         ...state,
         comments: searchComment(action.payload, state.comments, (comment) => {
           return {
@@ -94,8 +96,8 @@ export const recipeCommentsReducer = (
             },
           };
         }),
+        loading: false,
       };
-      return result;
     case RecipeCommentsActionTypes.FETCH_COMMENT_ANSWERS_ERROR:
       return { ...state, loading: false, error: action.payload };
     default:
