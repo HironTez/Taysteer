@@ -60,12 +60,6 @@ export const fetchRecipeCommentAnswers = (commentId: string, page = 1) => {
         return;
       }
       const responseJson = await response.json();
-      // const commentTemplate: RecipeCommentT = {
-      //   updated: boolean;
-      //   countOfChildComments: number;
-      //   childComments: Array<RecipeCommentT>;
-      //   page: number;
-      // }
       dispatch({
         type: RecipeCommentsActionTypes.FETCH_COMMENT_ANSWERS_SUCCESS,
         payload: { ...responseJson, ...{ page: page } },
