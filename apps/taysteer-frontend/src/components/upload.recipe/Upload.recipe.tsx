@@ -300,6 +300,7 @@ export const UploadRecipe: React.FC<{
     // On success redirect to recipe page
     if (responseRecipe && !responseRecipeLoading && !responseRecipeError) {
       navigate(`/recipes/${responseRecipe.id}`);
+      window.location.reload();
       // On error show popup
     } else if (responseRecipeError) {
       popup(responseRecipeError, 'error');
