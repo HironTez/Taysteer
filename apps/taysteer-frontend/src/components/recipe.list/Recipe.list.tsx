@@ -13,14 +13,14 @@ import { Error } from '../error.animation/Error.animation';
 import { Rating } from '../rating/Rating';
 
 export const RecipeList: React.FC<{ userId?: string }> = ({ userId }) => {
-  const { recipes, loading, error, end, page } = useTypedSelector(
+  const { recipes, error, end, page } = useTypedSelector(
     (state) => state.recipes
   );
   const { fetchRecipes, setRecipePage, clearRecipeList } = useActions();
 
   useEffect(() => {
     if (!end && page !== 1) fetchRecipes(page, userId); // Fetch recipes if it's a new page
-  }, [page, userId, end, fetchRecipes]);
+  }, [page]);
 
   const location = useLocation();
 
@@ -45,7 +45,7 @@ export const RecipeList: React.FC<{ userId?: string }> = ({ userId }) => {
           next={() => {
             setRecipePage(page + 1);
           }}
-          hasMore={loading || (!end && !error)}
+          hasMore={!end}
           loader={<Loading />}
           endMessage={error ? <Error /> : null}
           scrollableTarget="recipes-container"
