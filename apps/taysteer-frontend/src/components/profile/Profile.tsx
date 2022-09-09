@@ -31,7 +31,9 @@ export const Profile: React.FC = () => {
     return (
       <div className="profile-container">
         <div className="name">{profile.name || 'User'}</div>
-        <div className="login">@{profile.login}</div>
+        <div className={`login ${profile.login === 'admin' ? 'admin' : ''}`}>
+          @{profile.login}
+        </div>
         <div className="description">{profile.description}</div>
         <img
           className="avatar"

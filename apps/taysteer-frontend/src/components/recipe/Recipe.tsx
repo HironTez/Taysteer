@@ -57,8 +57,7 @@ export const Recipe: React.FC = () => {
         <div className="title">
           <div className="text">
             {recipe.title}
-            {(recipe.user.id === account?.id ||
-              account?.login === 'admin') && (
+            {(recipe.user.id === account?.id || account?.login === 'admin') && (
               <NavLink to="./edit" className="edit-link">
                 <img src={editIcon} alt="edit" className="edit-icon" />
               </NavLink>
@@ -77,7 +76,13 @@ export const Recipe: React.FC = () => {
               />
             )}
             <div className="name">{recipe.user.name}</div>
-            <div className="username">@{recipe.user.login}</div>
+            <div
+              className={`username ${
+                recipe.user.login === 'admin' ? 'admin' : ''
+              }`}
+            >
+              @{recipe.user.login}
+            </div>
             <Rating rating={recipe.user.rating} />
           </NavLink>
           {recipe.description.length < 180 && window.innerWidth > 1150 && (
