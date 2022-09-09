@@ -1,7 +1,8 @@
 Frontend:
 - Add possibility to remove a recipe
-- Add possibility to write, edit and delete a comment from a recipe
+- Add possibility write, edit and delete a comment from a recipe
 - Add profile page editing
+- Add profile page deleting
 - Add leaderboard page
 - Add 404 page
 
