@@ -45,12 +45,14 @@ export const UploadRecipe: React.FC<{
     const reader = new FileReader();
     reader.onloadend = () => {
       $(target).css('backgroundImage', `url("${reader.result}")`);
+      $(target).css('backgroundColor', 'transparent');
       $(target).addClass('selected');
     };
     if (file) {
       reader.readAsDataURL(file);
     } else {
       $(target).css('backgroundImage', 'none');
+      $(target).css('backgroundColor', '#FCD767');
       $(target).removeClass('selected');
     }
   };

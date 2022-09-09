@@ -58,7 +58,7 @@ export const Recipe: React.FC = () => {
           <div className="text">
             {recipe.title}
             {(recipe.user.id === account?.id ||
-              recipe.user.login === 'admin') && (
+              account?.login === 'admin') && (
               <NavLink to="./edit" className="edit-link">
                 <img src={editIcon} alt="edit" className="edit-icon" />
               </NavLink>
