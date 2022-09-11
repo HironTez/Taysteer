@@ -5,11 +5,6 @@
   margin-top: calc(var(--vh, 1vh) * 5)
   line-height: 1.2
 
-  display: grid
-  grid-template-areas: "image title" "image description" "ingredients ingredients" "steps steps" "rating rating" "comments comments"
-  grid-template-columns: 40% 1fr
-  grid-template-rows: auto 1fr auto auto auto auto
-
   *
     height: min-content
 
@@ -24,103 +19,111 @@
     border-radius: 50%
     position: relative
     right: 10vw
-    grid-area: image
+    display: inline-block
+    vertical-align: top
 
-  div.title
-    font-size: 40px
-    font-weight: 400
-    margin-top: 20px
-    height: min-content
-    grid-area: title
-    max-width: min(55vw, 450px)
-    margin-left: 40px
-    margin-right: 20px
+  div.info-container
+    display: inline-flex
+    flex-direction: column
+    vertical-align: top
+    width: 50%
+    position: relative
+    left: -10vw
 
-    div.text
-      width: max-content
-      max-width: inherit
+    & > *
+      width: min(55vw, 450px)
+      max-width: min(55vw, 450px)
+
+    div.title
+      font-size: 40px
+      font-weight: 400
+      margin-top: 20px
+      height: min-content
+      margin-left: 40px
       margin-right: 20px
 
-      & > *
+      div.text
+        width: max-content
+        max-width: inherit
+        margin-right: 20px
+
+        & > *
+          display: block
+
+        .edit-link
+          width: 40px
+          height: 40px
+
+          .edit-icon
+            max-width: 40px
+            max-height: 40px
+
+        @media (max-width: 600px)
+          max-width: 100%
+          // width: auto
+
+      @media ( max-width: 1000px )
+        margin-left: 20px
+
+    div.description
+      font-weight: 200
+      font-size: 30px
+      margin-top: 20px
+      max-width: min(55vw, 450px)
+      margin-left: 40px
+      margin-right: 20px
+
+      .author
+        font-size: 25px
+        margin-top: 20px
         display: block
 
-      .edit-link
-        width: 40px
-        height: 40px
+        img.profile-picture
+          max-width: 100px
+          max-height: 100px
+          border-radius: 50%
+          object-fit: cover
+          margin-right: 10px
+          display: inline-block
 
-        .edit-icon
-          max-width: 40px
-          max-height: 40px
+        div.authors-data
+          display: inline-block
+          vertical-align: top
 
-    @media ( max-width: 1000px )
-      margin-left: 20px
+          div.name
+            margin-top: 5px
 
-  div.description
-    font-weight: 200
-    font-size: 30px
-    margin-left: 20px
-    margin-top: 20px
-    margin-bottom: 20px
-    grid-area: description
-    max-width: min(55vw, 450px)
-    margin-left: 40px
-    margin-right: 20px
+          div.username
 
-    .author
-      display: grid
-      grid-template-columns: min-content auto
-      grid-template-rows: auto auto auto
-      grid-template-areas: "author-image author-name" "author-image author-login" "author-image author-rating"
-      font-size: 25px
-      margin-top: 20px
+            &.admin
+              color: deeppink
 
-      img.profile-picture
-        grid-area: author-image
-        max-width: 100px
-        max-height: 100px
-        border-radius: 50%
-        object-fit: cover
-        margin-right: 10px
+          div.rating
+            margin-bottom: 5px
 
-      div.name
-        grid-area: author-name
+      button.scrollToNext
+        height: min-content
+        font-size: 20px
+        padding-right: 25px
+        padding-left: 25px
+        padding-top: 6px
+        padding-bottom: 5px
+        background-color: transparent
+        border-style: solid
+        border-radius: 15px
+        transition: 0.3s
+        white-space: nowrap
         display: inline-block
-        margin-top: 5px
+        border-color: var(--additional-color)
+        color: var(--additional-color)
 
-      div.username
-        grid-area: author-login
-        display: inline-block
+        &:hover
+          cursor: pointer
+          background-color: var(--additional-color)
+          color: var(--main-color)
 
-        &.admin
-          color: deeppink
-
-      div.rating
-        grid-area: author-rating
-        margin-bottom: 5px
-
-    button.scrollToNext
-      height: min-content
-      font-size: 20px
-      padding-right: 25px
-      padding-left: 25px
-      padding-top: 6px
-      padding-bottom: 5px
-      background-color: transparent
-      border-style: solid
-      border-radius: 15px
-      transition: 0.3s
-      white-space: nowrap
-      display: inline-block
-      border-color: var(--additional-color)
-      color: var(--additional-color)
-
-      &:hover
-        cursor: pointer
-        background-color: var(--additional-color)
-        color: var(--main-color)
-
-    @media ( max-width: 1000px )
-      margin-left: 20px
+      @media ( max-width: 1000px )
+        margin-left: 20px
 
   div.ingredients
     max-width: 83vw
@@ -130,7 +133,6 @@
     margin-right: auto
     margin-top: 50px
     margin-bottom: 20px
-    grid-area: ingredients
 
     div.title
       font-weight: 400
@@ -141,16 +143,16 @@
     ul.list
       margin-top: 10px
 
-    @media ( max-width: 1000px )
-      margin-top: 0
-
   div.steps
-    grid-area: steps
 
     div.title
       text-align: center
       margin-left: auto
       margin-right: auto
+      font-size: 40px
+      font-weight: 400
+      margin-top: 40px
+      height: min-content
 
     ol.list
       list-style: none
@@ -164,31 +166,35 @@
 
       li.step
         counter-increment: custom-counter
-        margin-top: 40px
         font-weight: 200
         font-size: 30px
+
+        &:not(&:first-child)
+          margin-top: 40px
 
         &::before
           position: absolute
           content: counter(custom-counter)
           font-weight: bold
-          font-size: 40px
+          font-size: 35px
           transform: translate(-80%, -20%)
-          width: 70px
-          height: 70px
+          width: 60px
+          height: 60px
           text-align: center
-          line-height: 70px
+          line-height: 60px
           border-radius: 50%
           box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.25)
 
         div.title
           font-weight: 400
-          font-size: min(max(3vw, 30px), 40vw)
+          font-size: 35px
           text-align: left
           margin-left: 40px
           margin-right: auto
           width: max-content
           max-width: 60vw
+          margin-top: 0
+          margin-bottom: 5px
 
         div.description
           margin-left: auto
@@ -230,7 +236,8 @@
           -webkit-align-items: flex-start
           align-items: flex-start
 
-          margin-top: 0
+          div.title
+            margin-left: 20px
 
           div.description
             -webkit-box-ordinal-group: 2
@@ -241,6 +248,7 @@
 
             width: 70%
             padding: 0
+            padding-top: 5px
             text-align: center
 
           img.step-image
@@ -256,7 +264,7 @@
             transform: translateX(-50%)
 
           &::before
-            transform: translate(-80%, 5%)
+            transform: translate(-80%, -15%)
             box-shadow: none
             content: counter(custom-counter) " )"
 
@@ -269,6 +277,10 @@
           img.step-image
             width: 100%
 
+        @media (max-width: 600px)
+          div.title
+            margin-left: 40px
+
       @media (max-width: 600px)
         padding-left: 0
         padding-right: 0
@@ -276,14 +288,13 @@
         margin-right: 25px
 
         li.step::before
-          transform: translate(-40%, 30%)
+          transform: translate(-40%, -10%)
           width: 50px
           height: 50px
           line-height: 50px
           font-size: 35px
 
   div.rate-recipe
-    grid-area: rating
     font-size: 40px
     margin-left: 50px
     margin-right: 50px
@@ -297,10 +308,11 @@
         display: block
         margin-left: 0
 
+  div.comments
+    div.title
+      font-size: 40px
+
   @media (max-width: 600px)
-    grid-template-areas: "image" "title" "description" "ingredients" "steps" "rating" "comments"
-    grid-template-columns: 1fr
-    grid-template-rows: auto 1fr auto auto auto auto
     margin-top: 0
 
     img.main-image
@@ -313,28 +325,30 @@
       transform: translateX(-50%)
       max-width: 800px
       max-height: 800px
-      grid-area: image
 
-    > div.title
-      width: 87vw
-      width: min-content
-      max-width: 87vw
-      min-width: 265px
-      margin-left: auto
-      margin-right: auto
-      text-align: center
+    div.info-container
+      position: relative
+      left: 0
+      width: calc(100% - 80px)
+      padding-left: 40px
+      padding-right: 40px
 
-      > div.text
-        margin: 0
+      > div.title
+        width: 100%
+        max-width: 100%
+        margin-left: auto
+        margin-right: auto
+        text-align: center
 
-    > div.description
-      width: 87vw
-      margin-left: auto
-      margin-right: auto
-      max-width: 87vw
+        > div.text
+          margin: 0
+          width: max-content
 
-    div.rate-recipe
-      text-align: center
+      > div.description
+        width: 87vw
+        margin-left: auto
+        margin-right: auto
+        max-width: 87vw
 
-  div.comments
-    grid-area: comments
+      div.rate-recipe
+        text-align: center

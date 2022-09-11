@@ -1,5 +1,5 @@
 .recipe-min
-  $height: max(min(calc(50px + (200 - 50) * ((100vw - 200px) / (1440 - 320))), 150px), 60px)
+  $height: min(max(min(calc(50px + (200 - 50) * ((100vw - 200px) / (1440 - 320))), 150px), 60px), calc((100vw - 80px) / 4))
   $width: calc($height * 4)
   $padding: 10px
   $margin: min(calc(10px + (30 - 10) * ((100vw - 320px) / (1440 - 320))), 5px)
@@ -12,74 +12,94 @@
   margin: $margin
   padding: $padding
   transition: 0.2s
-  display: grid
-  grid-template-columns: 25% auto max(80px, 8vw)
-  grid-template-rows: 20% auto
-  grid-template-areas: "image title rating" "image description readmore"
   text-align: left
+  display: block
 
   &:hover
     background-color: #e2e2e2
     cursor: pointer
 
-  *
-    position: absolute
+  & > *
+    display: inline-block
+    vertical-align: top
 
   img.image
     object-fit: cover
-    margin-right: calc(2px + (5 - 2) * ((100vw - 320px) / (1440 - 320)))
+    margin-right: 10px
     border-radius: 50%
     height: $height
     width: $height
-    grid-area: image
 
-  div.title
-    left: $padding
-    width: calc(100% - $padding - 2px)
-    overflow: hidden
-    text-overflow: ellipsis
-    font-size: 25px
-    font-weight: 400
-    white-space: nowrap
-    align-self: center
-    grid-area: title
+  div.recipe-min-section.second
+    width: calc($width - max(80px, 8vw) - $height - 10px)
 
-  div.rating
-    font-size: 20px
-    justify-self: center
-    align-self: center
-    grid-area: rating
+    div.title
+      left: $padding
+      width: calc(100% - $padding - 2px)
+      height: max(calc($height * 0.2), 25px)
+      overflow: hidden
+      text-overflow: ellipsis
+      font-size: 25px
+      font-weight: 400
+      white-space: nowrap
+      align-self: center
 
-    span.rating-star
-      position: relative
+      @media (max-width: 300px)
+        width: 100%
 
-  div.description
-    left: $padding
-    top: $padding
-    width: calc(100% - $padding)
-    max-height: calc(100% - $padding)
-    font-size: 16px
-    font-weight: 300
-    overflow: hidden
-    text-overflow: ellipsis
-    display: -webkit-box
-    -webkit-box-orient: vertical
-    -webkit-line-clamp: 6 // Number of lines to show
-    grid-area: description
+    div.description
+      left: $padding
+      top: $padding
+      width: calc(100% - $padding)
+      max-height: calc($height - max(calc($height * 0.2), 25px))
+      font-size: 16px
+      font-weight: 300
+      overflow: hidden
+      text-overflow: ellipsis
+      display: -webkit-box
+      -webkit-box-orient: vertical
+      -webkit-line-clamp: 7 // Number of lines to show
 
-    @media (max-width: 1000px)
-      -webkit-line-clamp: 5
-    @media (max-width: 860px)
-      -webkit-line-clamp: 4
-    @media (max-width: 720px)
-      -webkit-line-clamp: 3
-    @media (max-width: 590px)
-      -webkit-line-clamp: 2
+      @media (max-width: 900px)
+        -webkit-line-clamp: 6
+      @media (max-width: 700px)
+        -webkit-line-clamp: 5
+      @media (max-width: 600px)
+        -webkit-line-clamp: 4
+      @media (max-width: 500px)
+        -webkit-line-clamp: 3
+      @media (max-width: 370px)
+        -webkit-line-clamp: 2
 
-  div.readMore
-    justify-self: center
-    align-self: end
-    grid-area: readmore
+    @media (max-width: 300px)
+      width: calc($width - max(80px, 8vw) - $height)
+
+      div.description
+        width: 100%
+        
+  div.recipe-min-section.third
+    width: max(80px, 8vw)
+    text-align: center
+    height: $height
+    display: inline-block
+    flex-direction: row
+    position: relative
+
+    div.rating
+      font-size: 20px
+
+    div.readMore
+      position: absolute
+      bottom: 0
+      left: 50%
+      transform: translateX(-50%)
+      width: max-content
+
+    @media (max-width: 300px)
+      width: max(70px, 8vw)
+
+      div.rating
+        font-size: 16px
 
 .recipes
   max-width: inherit
