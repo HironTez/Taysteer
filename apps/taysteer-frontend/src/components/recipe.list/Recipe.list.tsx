@@ -13,7 +13,7 @@ import { Error } from '../error.animation/Error.animation';
 import { Rating } from '../rating/Rating';
 
 export const RecipeList: React.FC<{ userId?: string }> = ({ userId }) => {
-  const { recipes, error, end, page } = useTypedSelector(
+  const { recipes, loading, error, end, page } = useTypedSelector(
     (state) => state.recipes
   );
   const { fetchRecipes, setRecipePage, clearRecipeList } = useActions();
@@ -34,7 +34,7 @@ export const RecipeList: React.FC<{ userId?: string }> = ({ userId }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location, userId]);
 
-  return (
+  return loading ? <Loading /> : (
     <div className="recipes">
       <div
         id="recipes-container"
@@ -62,10 +62,14 @@ export const RecipeList: React.FC<{ userId?: string }> = ({ userId }) => {
                 src={recipe.image}
                 alt="recipe food preview"
               />
-              <div className="title">{recipe.title}</div>
-              <Rating rating={recipe.rating} />
-              <div className="description">{recipe.description}</div>
-              <div className="readMore">Read more</div>
+              <div className="recipe-min-section second">
+                <div className="title">{recipe.title}</div>
+                <div className="description">{recipe.description}</div>
+              </div>
+              <div className="recipe-min-section third">
+                <Rating rating={recipe.rating} />
+                <div className="readMore">Read more</div>
+              </div>
             </Link>
           ))}
         </InfiniteScroll>

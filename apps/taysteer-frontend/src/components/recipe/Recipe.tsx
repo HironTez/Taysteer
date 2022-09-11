@@ -54,50 +54,55 @@ export const Recipe: React.FC = () => {
     return (
       <div className="recipe-container">
         <img className="main-image" src={recipe.image} alt="The dish" />
-        <div className="title">
-          <div className="text">
-            {recipe.title}
-            {(recipe.user.id === account?.id || account?.login === 'admin') && (
-              <NavLink to="./edit" className="edit-link">
-                <img src={editIcon} alt="edit" className="edit-icon" />
-              </NavLink>
+        <div className="info-container">
+          <div className="title">
+            <div className="text">
+              {recipe.title}
+              {(recipe.user.id === account?.id ||
+                account?.login === 'admin') && (
+                <NavLink to="./edit" className="edit-link">
+                  <img src={editIcon} alt="edit" className="edit-icon" />
+                </NavLink>
+              )}
+            </div>
+            <Rating rating={recipe.rating} />
+          </div>
+          <div className="description">
+            {recipe.description}
+            <NavLink className="author" to={`/profile/${recipe.user.id}`}>
+              {recipe.user.image && (
+                <img
+                  src={recipe.user.image}
+                  alt="authors profile"
+                  className="profile-picture"
+                />
+              )}
+              <div className="authors-data">
+                <div className="name">{recipe.user.name}</div>
+                <div
+                  className={`username ${
+                    recipe.user.login === 'admin' ? 'admin' : ''
+                  }`}
+                >
+                  @{recipe.user.login}
+                </div>
+                <Rating rating={recipe.user.rating} />
+              </div>
+            </NavLink>
+            {recipe.description.length < 180 && window.innerWidth > 1150 && (
+              <div>
+                <br />
+                <button
+                  className="scrollToNext"
+                  onClick={() => {
+                    scrollToElem($('div.ingredients').get(0) as HTMLElement);
+                  }}
+                >
+                  Jump to recipe
+                </button>
+              </div>
             )}
           </div>
-          <Rating rating={recipe.rating} />
-        </div>
-        <div className="description">
-          {recipe.description}
-          <NavLink className="author" to={`/profile/${recipe.user.id}`}>
-            {recipe.user.image && (
-              <img
-                src={recipe.user.image}
-                alt="authors profile"
-                className="profile-picture"
-              />
-            )}
-            <div className="name">{recipe.user.name}</div>
-            <div
-              className={`username ${
-                recipe.user.login === 'admin' ? 'admin' : ''
-              }`}
-            >
-              @{recipe.user.login}
-            </div>
-            <Rating rating={recipe.user.rating} />
-          </NavLink>
-          {recipe.description.length < 180 && window.innerWidth > 1150 && (
-            <div>
-              <br />
-              <button
-                className="scrollToNext"
-                onClick={() => {
-                  scrollToElem($('div.ingredients').get(0) as HTMLElement);
-                }}
-              >
-                Jump to recipe
-              </button>
-            </div>
-          )}
         </div>
 
         <div className="ingredients">
@@ -134,7 +139,7 @@ export const Recipe: React.FC = () => {
           </ol>
         </div>
 
-        {recipe.user.id !== account?.id && (
+        {recipe.user.id !== account?.id && account && (
           <div className="rate-recipe">
             Rate this recipe:
             <Rate rating={myRating} setRating={setMyRating} />
