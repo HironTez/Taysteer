@@ -7,7 +7,7 @@ import { Error } from '../error.animation/Error.animation';
 import { Loading } from '../loading.spinner/Loading.spinner';
 import { Rating } from '../rating/Rating';
 import './Recipe.comments.sass';
-import { dateToTimeAgo } from '../../scripts/own.module';
+import { dateToTimeAgo, horizontalScrollShadow } from '../../scripts/own.module';
 import { RecipeCommentT } from '../../types/entities';
 
 export const RecipeComments: React.FC<{
@@ -38,6 +38,8 @@ export const RecipeComments: React.FC<{
   useEffect(() => {
     clearRecipeCommentsList(); // Clear recipes
     fetchRecipeComments(recipeId, 1); // Fetch new recipes
+    
+    horizontalScrollShadow();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location, recipeId]);
 
@@ -80,10 +82,11 @@ export const RecipeComments: React.FC<{
           <button
             className="answers"
             onClick={() => {
-              fetchRecipeCommentAnswers(
-                String(comment.id),
-                (comment.page ?? 0) + 1
-              );
+              if (!loading)
+                fetchRecipeCommentAnswers(
+                  String(comment.id),
+                  (comment.page ?? 0) + 1
+                );
             }}
           >
             {comment.childComments?.length ?? 0
