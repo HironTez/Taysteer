@@ -44,9 +44,6 @@
       white-space: nowrap
       align-self: center
 
-      @media (max-width: 300px)
-        width: 100%
-
     div.description
       left: $padding
       top: $padding
@@ -73,6 +70,9 @@
 
     @media (max-width: 300px)
       width: calc($width - max(80px, 8vw) - $height)
+
+      div.title
+        width: 100%
 
       div.description
         width: 100%
