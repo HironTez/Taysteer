@@ -1,9 +1,8 @@
 .recipe-comments-container
   padding-left: 50px
+  padding-right: 50px
   margin-top: 50px
-
-  .infinite-scroll-component
-    overflow: hidden !important
+  overflow-x: auto
 
   .title
     margin-left: 0 !important
@@ -11,11 +10,6 @@
   .comment-container
 
     .comment
-      display: grid
-      grid-template-columns: min-content auto
-      grid-template-rows: 1fr
-      grid-template-areas: "image content"
-      max-width: calc(100vw - 100px)
 
       .profile-picture
         max-width: 100px
@@ -23,12 +17,11 @@
         border-radius: 50%
         object-fit: cover
         display: inline-block
-        grid-area: image
 
       .content-wrapper
         padding: 10px
-        grid-area: content
         display: inline-block
+        vertical-align: top
 
         .info
           display: block
@@ -73,7 +66,7 @@
       border-color: transparent
       background-color: lightgray
       margin-bottom: 10px
-      
+
       &:hover
         cursor: pointer
         background-color: darkgray

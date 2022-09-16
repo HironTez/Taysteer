@@ -44,7 +44,7 @@ async function bootstrap() {
   const swaggerDocument = YAML.load(
     path.join(__dirname, '../../../apps/taysteer-backend/doc/api.yaml')
   );
-  SwaggerModule.setup('doc', app, swaggerDocument);
+  SwaggerModule.setup('api/doc', app, swaggerDocument);
 
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Service is running at http://localhost:${PORT}`);

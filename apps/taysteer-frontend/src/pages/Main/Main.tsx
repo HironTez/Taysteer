@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { allowVerticalScroll } from '../../scripts/own.module';
 
 export const MainPage: React.FC = () => {
-  useEffect(allowVerticalScroll);
+  useEffect(allowVerticalScroll, []);
 
   return (
     <div className="page-container">
