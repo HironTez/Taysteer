@@ -328,6 +328,28 @@ export class RecipeService {
         relations: [RecipeStringTypes.RATER, RecipeStringTypes.RECIPE],
       }
     );
+
+    const oldRatingSum = recipe.raters
+      .map((rater) => rater.rating)
+      .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
+    const oldRatingCount = recipe.raters.length;
+
+    let new_ratings_count: number, new_ratings_sum: number, new_rating: number;
+
+    // If it's the first rating
+    if (!findingResult) {
+      new_ratings_count = oldRatingCount + 1;
+      new_ratings_sum = oldRatingSum + Math.round(rating);
+      new_rating = Math.round(new_ratings_sum / new_ratings_count);
+    }
+    // If it's the update of the rating
+    else {
+      new_ratings_count = oldRatingCount;
+      new_ratings_sum =
+        oldRatingSum - findingResult.rating + Math.round(rating);
+      new_rating = Math.round(new_ratings_sum / new_ratings_count);
+    }
+
     // Create a new rater if not found
     const ratingObject =
       findingResult || this.recipeRatingsRepository.create(new RecipeRating());
@@ -337,21 +359,7 @@ export class RecipeService {
     // Save the rater
     await this.recipeRatingsRepository.save(ratingObject);
 
-    let new_ratings_count = recipe.ratingsCount,
-      new_ratings_sum = recipe.ratingsSum - recipe.rating + rating,
-      new_rating = Math.round(rating);
-
-    // If it's the first rating
-    // Calculate the rating
-    if (!findingResult) {
-      new_ratings_count = recipe.ratingsCount + 1;
-      new_ratings_sum = recipe.ratingsSum + rating;
-      recipe.raters.push(ratingObject);
-    }
-    // If it's the update of the rating
-    else {
-      new_rating = Math.round(new_ratings_sum / new_ratings_count);
-    }
+    if (!findingResult) recipe.raters.push(ratingObject);
 
     // Update the user
     return this.recipeRepository.save({
