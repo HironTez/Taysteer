@@ -6,6 +6,7 @@ import { recipeReducer } from './recipe.reducer';
 import { uploadRecipeReducer } from './upload-recipe.reducer';
 import { rateRecipeReducer } from './rate-recipe.reducer';
 import { recipeCommentsReducer } from './recipe-comments.reducer';
+import { uploadRecipeCommentReducer } from './upload.recipe.comment.reducer';
 
 export const rootReducer = combineReducers({
   recipes: recipesReducer,
@@ -15,6 +16,7 @@ export const rootReducer = combineReducers({
   uploadRecipe: uploadRecipeReducer,
   rateRecipe: rateRecipeReducer,
   recipeComments: recipeCommentsReducer,
+  uploadRecipeComment: uploadRecipeCommentReducer,
 });
 
 export type RooState = ReturnType<typeof rootReducer>;

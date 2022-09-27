@@ -58,15 +58,15 @@ export const Account: React.FC = () => {
         </Link>
       </div>
       <div className="authorization-container active">
-        <Link className="authorization sign-up" to="/register">
+        <Link className="authorization button sign-up orange" to="/register">
           Sign up
         </Link>
-        <Link className="authorization sign-in" to="/login">
+        <Link className="authorization button sign-in transparent" to="/login">
           Log in
         </Link>
       </div>
       <div className="deauthorization-container">
-        <button className="logout" onClick={logOut}>Log out</button>
+        <button className="logout red" onClick={logOut}>Log out</button>
       </div>
     </div>
   );

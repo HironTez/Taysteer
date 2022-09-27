@@ -168,10 +168,10 @@ export class RecipeController {
     @Req() req: ExtendedRequest,
     @Res() res: Response,
     @Param('recipeId') recipeId: string,
-    @Body() body: RecipeCommentDto
+    @Body() body: string
   ) {
     const createdComment = await this.recipeService.addRecipeComment(
-      body.text,
+      JSON.parse(body).text,
       req.user.id,
       recipeId
     );
@@ -188,7 +188,7 @@ export class RecipeController {
     @Req() req: ExtendedRequest,
     @Res() res: Response,
     @Param('commentId') commentId: number,
-    @Body() body: RecipeCommentDto
+    @Body() body: string
   ) {
     const hasRecipeAccess = await this.recipeService.hasCommentAccess(
       req.user.id,
@@ -196,7 +196,7 @@ export class RecipeController {
     );
     if (!hasRecipeAccess) return res.status(HttpStatus.FORBIDDEN).send();
     const updatedComment = await this.recipeService.updateComment(
-      body.text,
+      JSON.parse(body).text,
       commentId
     );
     return updatedComment
@@ -228,10 +228,10 @@ export class RecipeController {
     @Req() req: ExtendedRequest,
     @Res() res: Response,
     @Param('commentId') commentId: number,
-    @Body() body: RecipeCommentDto
+    @Body() body: string
   ) {
     const createdComment = await this.recipeService.addCommentComment(
-      body.text,
+      JSON.parse(body).text,
       req.user.id,
       commentId
     );

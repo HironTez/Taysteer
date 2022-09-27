@@ -334,20 +334,20 @@ export class RecipeService {
       .reduce((previousValue, currentValue) => previousValue + currentValue, 0);
     const oldRatingCount = recipe.raters.length;
 
-    let new_ratings_count: number, new_ratings_sum: number, new_rating: number;
+    let newRatingsCount: number, newRatingsSum: number, newRating: number;
 
     // If it's the first rating
     if (!findingResult) {
-      new_ratings_count = oldRatingCount + 1;
-      new_ratings_sum = oldRatingSum + Math.round(rating);
-      new_rating = Math.round(new_ratings_sum / new_ratings_count);
+      newRatingsCount = oldRatingCount + 1;
+      newRatingsSum = oldRatingSum + Math.round(rating);
+      newRating = Math.round(newRatingsSum / newRatingsCount);
     }
     // If it's the update of the rating
     else {
-      new_ratings_count = oldRatingCount;
-      new_ratings_sum =
+      newRatingsCount = oldRatingCount;
+      newRatingsSum =
         oldRatingSum - findingResult.rating + Math.round(rating);
-      new_rating = Math.round(new_ratings_sum / new_ratings_count);
+      newRating = Math.round(newRatingsSum / newRatingsCount);
     }
 
     // Create a new rater if not found
@@ -365,9 +365,9 @@ export class RecipeService {
     return this.recipeRepository.save({
       ...recipe,
       ...{
-        ratingsCount: new_ratings_count,
-        ratingsSum: new_ratings_sum,
-        rating: new_rating,
+        ratingsCount: newRatingsCount,
+        ratingsSum: newRatingsSum,
+        rating: newRating,
         raters: recipe.raters,
       },
     });

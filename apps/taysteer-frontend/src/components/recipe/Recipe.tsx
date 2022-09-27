@@ -93,7 +93,7 @@ export const Recipe: React.FC = () => {
               <div>
                 <br />
                 <button
-                  className="scrollToNext"
+                  className="scrollToNext orange"
                   onClick={() => {
                     scrollToElem($('div.ingredients').get(0) as HTMLElement);
                   }}

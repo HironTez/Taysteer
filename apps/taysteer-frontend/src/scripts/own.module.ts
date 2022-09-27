@@ -237,7 +237,7 @@ export const dateToTimeAgo = (date: Date): string => {
   const [sec, min, hr, day, month, year] = [
     diffDate.getSeconds(),
     diffDate.getMinutes(),
-    diffDate.getHours() - 1,
+    diffDate.getHours() - 3,
     diffDate.getDate() - 1,
     diffDate.getMonth(),
     diffDate.getFullYear() - 1970,
@@ -256,7 +256,7 @@ export const dateToTimeAgo = (date: Date): string => {
     ? toString(hr, 'hr')
     : min >= 1
     ? toString(min, 'min')
-    : day >= 1
+    : sec >= 1
     ? toString(sec, 'sec')
     : '';
 };

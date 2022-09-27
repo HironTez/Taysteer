@@ -42,9 +42,9 @@ html, body
   background: #f1f1f1
   border-radius: 25px
 
-a:-webkit-any-link
+a
   text-decoration: none
-  color: initial
+  color: default
 
 div#root
   position: absolute
@@ -161,3 +161,49 @@ div.popup
   &.selected:hover::before
     background-color: #00000050
     opacity: 1
+
+button, a.button
+  height: min-content
+  font-size: 20px
+  padding-right: 25px
+  padding-left: 25px
+  padding-top: 6px
+  padding-bottom: 5px
+  background-color: transparent
+  border-style: solid
+  border-radius: 15px
+  border-width: 2px
+  transition: 0.3s
+  white-space: nowrap
+  color: var(--main-color)
+
+  &:hover
+    cursor: pointer
+
+  &.orange
+    border-color: var(--additional-color)
+    color: var(--additional-color)
+
+    &:hover
+      background-color: var(--additional-color)
+      color: var(--main-color)
+
+  &.transparent
+    border-color: transparent
+
+    &:hover
+      background-color: lightgray
+
+  &.gray
+    border-color: transparent
+    background-color: lightgray
+
+    &:hover
+      background-color: darkgray
+
+  &.red
+    border-color: transparent
+    background-color: lightgray
+
+    &:hover
+      background-color: lightcoral
