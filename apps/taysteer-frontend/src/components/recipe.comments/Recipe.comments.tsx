@@ -7,8 +7,13 @@ import { Error } from '../error.animation/Error.animation';
 import { Loading } from '../loading.spinner/Loading.spinner';
 import { Rating } from '../rating/Rating';
 import './Recipe.comments.sass';
-import { dateToTimeAgo, horizontalScrollShadow } from '../../scripts/own.module';
+import {
+  dateToTimeAgo,
+  horizontalScrollShadow,
+  popup,
+} from '../../scripts/own.module';
 import { RecipeCommentT } from '../../types/entities';
+import $ from 'jquery';
 
 export const RecipeComments: React.FC<{
   recipeId: string;
@@ -18,11 +23,20 @@ export const RecipeComments: React.FC<{
     (state) => state.recipeComments
   );
 
+  const { account } = useTypedSelector((state) => state.account);
+
+  const {
+    resultComment,
+    loading: commentUploadingLoading,
+    error: _commentUploadingError,
+  } = useTypedSelector((state) => state.uploadRecipeComment);
+
   const {
     fetchRecipeComments,
     setRecipeCommentsPage,
     clearRecipeCommentsList,
     fetchRecipeCommentAnswers,
+    fetchUploadRecipeComment,
   } = useActions();
 
   useEffect(() => {
@@ -32,13 +46,19 @@ export const RecipeComments: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
+  useEffect(() => {
+    if (resultComment) {
+      window.location.reload();
+    }
+  }, [resultComment]);
+
   const location = useLocation();
 
   // When url changes
   useEffect(() => {
     clearRecipeCommentsList(); // Clear recipes
     fetchRecipeComments(recipeId, 1); // Fetch new recipes
-    
+
     horizontalScrollShadow();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location, recipeId]);
@@ -80,7 +100,7 @@ export const RecipeComments: React.FC<{
         {comment.countOfChildComments >
           (comment.childComments?.length ?? 0) && (
           <button
-            className="answers"
+            className="answers gray"
             onClick={() => {
               if (!loading)
                 fetchRecipeCommentAnswers(
@@ -98,9 +118,33 @@ export const RecipeComments: React.FC<{
     ));
   };
 
+  const sendingCommentHandler = () => {
+    if (!commentUploadingLoading) {
+      const text = $('.new-comment').val()?.toString() ?? '';
+      if (text.length <= 500)
+        fetchUploadRecipeComment('recipe', recipeId, text);
+      else {
+        popup('Error', 'error');
+      }
+    }
+  };
+
   return (
     <div className="recipe-comments-container">
-      <div className="title">Comments</div>
+      {account && comments?.length && <div className="title">Comments</div>}
+      {account && (
+        <div className="new-comment-container">
+          <input
+            className="new-comment"
+            type="text"
+            placeholder="Enter your comment here"
+            maxLength={500}
+          />
+          <button className="submit orange" onClick={sendingCommentHandler}>
+            Publish
+          </button>
+        </div>
+      )}
       <InfiniteScroll // Set up infinite scroll
         dataLength={comments?.length ?? 0}
         next={() => {
@@ -114,6 +158,11 @@ export const RecipeComments: React.FC<{
       >
         {commentsToElements(comments)}
       </InfiniteScroll>
+      {commentUploadingLoading && (
+        <div className="loading-container">
+          <Loading />
+        </div>
+      )}
     </div>
   );
 };

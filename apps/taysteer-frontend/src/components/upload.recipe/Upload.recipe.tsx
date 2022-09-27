@@ -63,7 +63,9 @@ export const UploadRecipe: React.FC<{
     { count: null, name: '' },
   ];
 
-  const [ingredientList, setNewIngredientTList] = useState(initialNewIngredientTs);
+  const [ingredientList, setNewIngredientTList] = useState(
+    initialNewIngredientTs
+  );
 
   const addNewIngredientT = () => {
     setNewIngredientTList([...ingredientList, { count: null, name: '' }]);
@@ -317,6 +319,7 @@ export const UploadRecipe: React.FC<{
         accept="image/*"
         name="main photo"
         onChange={handleImageInput}
+        placeholder="Select your photo..."
       ></input>
       <label className="title-container">
         Title
@@ -421,6 +424,7 @@ export const UploadRecipe: React.FC<{
                 name="step-image"
                 className="image-uploading step-image"
                 onChange={handleImageInput}
+                placeholder="select your photo..."
               />
               <button
                 className="remove-step"
