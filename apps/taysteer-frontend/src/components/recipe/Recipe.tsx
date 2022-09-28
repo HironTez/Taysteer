@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { NavLink, useLocation, useParams } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Error } from '../error.animation/Error.animation';
 import { Loading } from '../loading.spinner/Loading.spinner';
 import { useActions } from '../../hooks/useAction';
@@ -13,6 +13,7 @@ import {
 } from '../../scripts/own.module';
 import $ from 'jquery';
 import editIcon from '../../assets/images/navigation/edit-icon.svg';
+import deleteIcon from '../../assets/images/navigation/delete.svg';
 import { Rate } from '../rate/Rate';
 import { RecipeComments } from '../recipe.comments/Recipe.comments';
 
@@ -22,6 +23,7 @@ export const Recipe: React.FC = () => {
   const { recipe, loading, error } = useTypedSelector((state) => state.recipe);
   const { fetchRecipe } = useActions();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const { account } = useTypedSelector((state) => state.account);
 
@@ -50,6 +52,28 @@ export const Recipe: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [myRating, recipeRatingError]);
 
+  // Delete the recipe
+  const {
+    success: deleteRecipeSuccess,
+    loading: deleteRecipeLoading,
+    error: _deleteRecipeError,
+  } = useTypedSelector((state) => state.deleteRecipe);
+
+  const { fetchDeleteRecipe, deleteRecipeHandled } = useActions();
+
+  const deleteRecipeHandler = () => {
+    if (!deleteRecipeLoading && !deleteRecipeSuccess) {
+      fetchDeleteRecipe(recipeId);
+    }
+  };
+
+  useEffect(() => {
+    if (deleteRecipeSuccess) {
+      deleteRecipeHandled();
+      navigate('/');
+    }
+  }, [deleteRecipeSuccess, deleteRecipeLoading]);
+
   if (recipe && !loading && !error) {
     return (
       <div className="recipe-container">
@@ -60,9 +84,21 @@ export const Recipe: React.FC = () => {
               {recipe.title}
               {(recipe.user.id === account?.id ||
                 account?.login === 'admin') && (
-                <NavLink to="./edit" className="edit-link">
-                  <img src={editIcon} alt="edit" className="edit-icon" />
-                </NavLink>
+                <div>
+                  <NavLink to="./edit" className="edit-link">
+                    <img src={editIcon} alt="edit" className="edit-icon" />
+                  </NavLink>
+                  <button
+                    className="delete-button icon-button"
+                    onClick={deleteRecipeHandler}
+                  >
+                    <img
+                      src={deleteIcon}
+                      alt="delete"
+                      className="delete-icon"
+                    />
+                  </button>
+                </div>
               )}
             </div>
             <Rating rating={recipe.rating} />
@@ -152,6 +188,11 @@ export const Recipe: React.FC = () => {
             countOfComments={recipe.countOfComments}
           />
         </div>
+        {deleteRecipeLoading && (
+          <div className="loading-container">
+            <Loading />
+          </div>
+        )}
       </div>
     );
   } else if (loading) {
