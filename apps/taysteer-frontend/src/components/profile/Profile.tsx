@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { useActions } from '../../hooks/useAction';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { Loading } from '../loading.spinner/Loading.spinner';
@@ -10,6 +10,7 @@ import { Rating } from '../rating/Rating';
 import { RecipeList } from '../recipe.list/Recipe.list';
 import dishIcon from '../../assets/images/dish.svg';
 import { allowVerticalScroll } from '../../scripts/own.module';
+import deleteIcon from '../../assets/images/navigation/delete.svg';
 
 export const Profile: React.FC = () => {
   const { userId } = useParams();
@@ -17,6 +18,15 @@ export const Profile: React.FC = () => {
     (state) => state.profile
   );
   const { fetchProfile } = useActions();
+
+  const navigate = useNavigate();
+
+  const {
+    success: deleteProfileSuccess,
+    loading: deleteProfileLoading,
+    error: _deleteProfileError,
+  } = useTypedSelector((state) => state.deleteProfile);
+  const { fetchDeleteProfile, deleteProfileHandled } = useActions();
 
   const { account } = useTypedSelector((state) => state.account);
 
@@ -27,10 +37,38 @@ export const Profile: React.FC = () => {
 
   useEffect(allowVerticalScroll, []);
 
+  const deleteProfileHandler = () => {
+    if (!deleteProfileLoading && !deleteProfileSuccess && profile?.id) {
+      fetchDeleteProfile(profile.id);
+    }
+  }
+
+  useEffect(() => {
+    if (deleteProfileSuccess) {
+      deleteProfileHandled();
+      navigate('/');
+    }
+  }, [deleteProfileSuccess, deleteProfileHandled]);
+
   if (profile && !loading && !error) {
     return (
       <div className="profile-container">
-        <div className="name">{profile.name || 'User'}</div>
+        <div className="name">
+          {profile.name || 'User'}
+          {(profile.id === account?.id || account?.login === 'admin') && (
+            <div>
+              {/* <NavLink to="./edit" className="edit-link">
+                <img src={editIcon} alt="edit" className="edit-icon" />
+              </NavLink> */}
+              <button
+                className="delete-button icon-button"
+                onClick={deleteProfileHandler}
+              >
+                <img src={deleteIcon} alt="delete" className="delete-icon" />
+              </button>
+            </div>
+          )}
+        </div>
         <div className={`login ${profile.login === 'admin' ? 'admin' : ''}`}>
           @{profile.login}
         </div>

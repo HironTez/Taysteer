@@ -1,5 +1,4 @@
 Frontend:
-- Add possibility to remove a recipe
 - Add possibility write, edit and delete a comment from a recipe
 - Add profile page editing
 - Add profile page deleting

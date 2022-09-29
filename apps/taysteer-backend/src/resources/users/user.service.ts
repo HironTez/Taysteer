@@ -170,7 +170,7 @@ export class UsersService {
 
   deleteUser: DeleteUserT = async (id) => {
     const user = await this.getUserById(id);
-    deleteImage(user.image); // Delete the image
+    if (user.image) deleteImage(user.image); // Delete the image
     const deleteResult = await this.userRepository.delete(id); // Delete the user
     return deleteResult.affected; // Return a result
   };

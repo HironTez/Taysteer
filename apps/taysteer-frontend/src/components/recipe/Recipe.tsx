@@ -62,7 +62,7 @@ export const Recipe: React.FC = () => {
   const { fetchDeleteRecipe, deleteRecipeHandled } = useActions();
 
   const deleteRecipeHandler = () => {
-    if (!deleteRecipeLoading && !deleteRecipeSuccess) {
+    if (!deleteRecipeLoading && !deleteRecipeSuccess && recipeId) {
       fetchDeleteRecipe(recipeId);
     }
   };
