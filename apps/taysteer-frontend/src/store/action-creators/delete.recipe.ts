@@ -4,8 +4,7 @@ import {
   DeleteRecipeActionTypes,
 } from '../../types/delete.recipe';
 
-export const fetchDeleteRecipe = (recipe_id: string | undefined) => {
-  if (!recipe_id) return false;
+export const fetchDeleteRecipe = (recipe_id: string) => {
   return async (dispatch: Dispatch<DeleteRecipeAction>) => {
     try {
       dispatch({ type: DeleteRecipeActionTypes.FETCH_DELETE_RECIPE });
