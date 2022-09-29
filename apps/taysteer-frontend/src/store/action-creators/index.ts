@@ -7,6 +7,7 @@ import * as RateRecipeActionCreator from './rate.recipe';
 import * as RecipeCommentsActionCreator from './recipe.comments';
 import * as UploadRecipeCommentActionCreator from './upload.recipe.comment';
 import * as DeleteRecipeActionCreator from './delete.recipe';
+import * as DeleteProfileActionCreator from './delete.profile';
 
 export default {
   ...RecipeActionsCreator,
@@ -18,4 +19,5 @@ export default {
   ...RecipeCommentsActionCreator,
   ...UploadRecipeCommentActionCreator,
   ...DeleteRecipeActionCreator,
+  ...DeleteProfileActionCreator,
 };
