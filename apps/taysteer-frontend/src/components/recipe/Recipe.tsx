@@ -10,6 +10,7 @@ import {
   allowVerticalScroll,
   scrollToElem,
   popup,
+  confirmDialogElement,
 } from '../../scripts/own.module';
 import $ from 'jquery';
 import editIcon from '../../assets/images/navigation/edit-icon.svg';
@@ -63,7 +64,15 @@ export const Recipe: React.FC = () => {
 
   const deleteRecipeHandler = () => {
     if (!deleteRecipeLoading && !deleteRecipeSuccess && recipeId) {
-      fetchDeleteRecipe(recipeId);
+      confirmDialogElement(
+        () => {
+          fetchDeleteRecipe(recipeId);
+        },
+        () => {},
+        'Delete this recipe? This action cannot be undone.',
+        'Delete',
+        'Cancel'
+      );
     }
   };
 
