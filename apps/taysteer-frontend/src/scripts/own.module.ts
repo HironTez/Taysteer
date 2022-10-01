@@ -260,3 +260,37 @@ export const dateToTimeAgo = (date: Date): string => {
     ? toString(sec, 'sec')
     : '';
 };
+
+export const confirmDialogElement = (
+  callbackOnConfirm: Function,
+  callbackOnCancel: Function,
+  text: string = 'Confirm action?',
+  confirmText: string = 'Confirm',
+  cancelText: string = 'Cancel'
+) => {
+  const containerElem = $(`<div class="confirm-dialog"></div>`);
+  const backgroundElem = $(`<div class="background"></div>`);
+  const textElem = $(`<div class="text">${text}</div>`);
+  const confirmButton = $(`<button class="confirm orange">${confirmText}</button>`);
+  const cancelButton = $(`<button class="cancel gray">${cancelText}</button>`);
+
+  const deleteDialog = () => {
+    backgroundElem.remove();
+    containerElem.remove();
+  }
+  backgroundElem.on('click', deleteDialog);
+  confirmButton.on('click', () => {
+    deleteDialog();
+    callbackOnConfirm();
+  });
+  cancelButton.on('click', () => {
+    deleteDialog();
+    callbackOnCancel();
+  });
+
+  containerElem.append(textElem);
+  containerElem.append(confirmButton);
+  containerElem.append(cancelButton);
+  $('#root').append(backgroundElem);
+  $('#root').append(containerElem);
+};
