@@ -131,7 +131,7 @@ export const RecipeComments: React.FC<{
 
   return (
     <div className="recipe-comments-container">
-      {account && comments?.length && <div className="title">Comments</div>}
+      {(account || comments?.length) && <div className="title">Comments</div>}
       {account && (
         <div className="new-comment-container">
           <input
@@ -145,6 +145,7 @@ export const RecipeComments: React.FC<{
           </button>
         </div>
       )}
+      {!comments.length && <div className="no-comments">No comments yet</div>}
       <InfiniteScroll // Set up infinite scroll
         dataLength={comments?.length ?? 0}
         next={() => {

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { NavLink, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useActions } from '../../hooks/useAction';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { Loading } from '../loading.spinner/Loading.spinner';
@@ -9,7 +9,10 @@ import './Profile.sass';
 import { Rating } from '../rating/Rating';
 import { RecipeList } from '../recipe.list/Recipe.list';
 import dishIcon from '../../assets/images/dish.svg';
-import { allowVerticalScroll } from '../../scripts/own.module';
+import {
+  allowVerticalScroll,
+  confirmDialogElement,
+} from '../../scripts/own.module';
 import deleteIcon from '../../assets/images/navigation/delete.svg';
 
 export const Profile: React.FC = () => {
@@ -39,9 +42,17 @@ export const Profile: React.FC = () => {
 
   const deleteProfileHandler = () => {
     if (!deleteProfileLoading && !deleteProfileSuccess && profile?.id) {
-      fetchDeleteProfile(profile.id);
+      confirmDialogElement(
+        () => {
+          fetchDeleteProfile(profile.id);
+        },
+        () => {},
+        'Delete your profile? All recipes will also be deleted. This action cannot be undone.',
+        'Delete',
+        'Cancel'
+      );
     }
-  }
+  };
 
   useEffect(() => {
     if (deleteProfileSuccess) {
