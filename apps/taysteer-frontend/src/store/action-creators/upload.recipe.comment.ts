@@ -20,6 +20,9 @@ export const fetchUploadRecipeComment = (
         {
           method: 'POST',
           body: JSON.stringify({ text: comment }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
         }
       );
       if (response.status === 201) {
