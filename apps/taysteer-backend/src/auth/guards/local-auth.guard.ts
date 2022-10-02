@@ -3,7 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
 export class LocalAuthGuard extends AuthGuard('local') {
-  async canActivate(context: ExecutionContext) {
+  override async canActivate(context: ExecutionContext) {
     // check the email and the password
     const canActivate = await super.canActivate(context);
 

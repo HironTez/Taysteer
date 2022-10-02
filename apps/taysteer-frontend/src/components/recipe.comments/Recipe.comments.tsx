@@ -108,6 +108,7 @@ export const RecipeComments: React.FC<{
                   (comment.page ?? 0) + 1
                 );
             }}
+            type="button"
           >
             {comment.childComments?.length ?? 0
               ? 'View more 🠇'
@@ -131,7 +132,9 @@ export const RecipeComments: React.FC<{
 
   return (
     <div className="recipe-comments-container">
-      {(account || comments?.length) && <div className="title">Comments</div>}
+      {(account || Boolean(comments?.length)) && (
+        <div className="title">Comments</div>
+      )}
       {account && (
         <div className="new-comment-container">
           <input
@@ -140,12 +143,14 @@ export const RecipeComments: React.FC<{
             placeholder="Enter your comment here"
             maxLength={500}
           />
-          <button className="submit orange" onClick={sendingCommentHandler}>
+          <button className="submit orange" onClick={sendingCommentHandler} type="button">
             Publish
           </button>
         </div>
       )}
-      {!comments.length && <div className="no-comments">No comments yet</div>}
+      {account && Boolean(!comments?.length) && (
+        <div className="no-comments">No comments yet</div>
+      )}
       <InfiniteScroll // Set up infinite scroll
         dataLength={comments?.length ?? 0}
         next={() => {

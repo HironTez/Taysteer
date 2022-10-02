@@ -8,7 +8,7 @@ const uploadImage: uploadImageT = async (fileReadStream, folder) => {
   const uploadStream = cloudinary.uploader.upload_stream(
     { folder: folder },
     (error, result) => {
-      if (!error) {
+      if (!error && result) {
         promiseController.resolve(result.url); // Return a response using the promise
       } else promiseController.resolve(false);
     }
@@ -20,8 +20,11 @@ const uploadImage: uploadImageT = async (fileReadStream, folder) => {
 };
 
 const deleteImage: deleteImageT = async (link: string) => {
-  const public_id = link.match(/(?<!\/\/)(?<=\/)\w+(?=\.)/)[0];
-  const folder = link.match(/(?<=[0-9]\W).+(?=\W\w+\.\w+)/)[0];
+  // Extract data from link
+  const public_id = link.match(/(?<!\/\/)(?<=\/)\w+(?=\.)/)?.[0];
+  const folder = link.match(/(?<=[0-9]\W).+(?=\W\w+\.\w+)/)?.[0];
+  if (!public_id || !folder) return false;
+
   // Delete an old image
   const response = await cloudinary.uploader.destroy(`${folder}/${public_id}`);
 

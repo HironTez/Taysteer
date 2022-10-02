@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 import { User } from '../users/user.model';
 import { CommentToResponseT, CommentToResponseDetailedT } from './recipe.types';
-import { objectPromise } from '../../utils/promise.loader';
+import { loadObject } from '../../utils/promise.loader';
 
 @Entity('Comment')
 export class Comment extends BaseEntity {
@@ -22,21 +22,21 @@ export class Comment extends BaseEntity {
   text: string;
 
   @ManyToOne(() => Recipe, (recipe) => recipe.comments, { onDelete: 'CASCADE' })
-  recipe: Recipe;
+  recipe?: Recipe;
 
   @ManyToOne(() => User, { onDelete: 'SET NULL' })
-  user: User;
+  user?: User;
 
   @OneToMany(() => Comment, (comment) => comment.mainComment)
-  childComments: Array<Comment>;
+  childComments?: Array<Comment>;
 
   @ManyToOne(() => Comment, (comment) => comment.childComments, {
     onDelete: 'CASCADE',
   })
-  mainComment: Comment;
+  mainComment?: Comment;
 
   @CreateDateColumn()
-  date: Date;
+  date?: Date;
 
   @Column('boolean', { nullable: false, default: false })
   updated: boolean;
@@ -49,10 +49,10 @@ export class Comment extends BaseEntity {
 
   static async toResponse(comment: Comment): Promise<CommentToResponseT> {
     const { id, text, user, date, updated } = comment;
-    return objectPromise({
+    return loadObject({
       id,
       text,
-      user: User.toResponse(user),
+      user: user ? User.toResponse(user) : undefined,
       date,
       updated,
       countOfChildComments: await this.getRepository().count({
@@ -66,10 +66,10 @@ export class Comment extends BaseEntity {
     comment: Comment
   ): Promise<CommentToResponseDetailedT> {
     const { id, text, user, date, updated, childComments } = comment;
-    return objectPromise({
+    return loadObject({
       id,
       text,
-      user: User.toResponse(user),
+      user: user ? User.toResponse(user) : undefined,
       date,
       updated,
       countOfChildComments: await this.getRepository().count({

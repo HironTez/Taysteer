@@ -24,6 +24,7 @@ import {
   ADMIN_PASSWORD,
 } from '../../../../../configs/common/config';
 import { deleteImage, uploadImage } from '../../utils/image.uploader';
+import { loadObject } from '../../utils/promise.loader';
 
 @Injectable()
 export class UsersService {
@@ -42,12 +43,14 @@ export class UsersService {
     });
     if (!adminExists) {
       const admin = new User({ login: ADMIN_LOGIN, password: ADMIN_PASSWORD });
-      this.userRepository.save({
-        ...admin,
-        ...{
-          password: await bcrypt.hash(ADMIN_PASSWORD, bcrypt.genSaltSync(10)),
-        },
-      });
+      this.userRepository.save(
+        await loadObject({
+          ...admin,
+          ...{
+            password: bcrypt.hash(ADMIN_PASSWORD, bcrypt.genSaltSync(10)),
+          },
+        })
+      );
     }
   };
 
@@ -58,8 +61,8 @@ export class UsersService {
   ) => {
     const userExists = await this.getUserById(requestedId);
     const isOwner = user.id == requestedId;
-    const isAdmin = user.id == (await this.getUserByLogin(ADMIN_LOGIN)).id;
-    return userExists && (isOwner == shouldBeOwner || isAdmin);
+    const isAdmin = user.id == (await this.getUserByLogin(ADMIN_LOGIN))?.id;
+    return Boolean(userExists && (isOwner == shouldBeOwner || isAdmin));
   };
 
   validateUserData: ValidateUserDataT = async (userData, updating = false) => {
@@ -68,6 +71,13 @@ export class UsersService {
       if (!userData.password) return false; // Check if the login and password exists
     }
     if (
+      !userData.name?.length ||
+      !userData.login?.length ||
+      !userData.password?.length ||
+      !userData.description?.length
+    )
+      return false;
+    else if (
       // Check if the data is valid
       userData.name?.length > 50 ||
       userData.login?.length > 50 ||
@@ -89,7 +99,7 @@ export class UsersService {
     // Extract form data
     for await (const part of form) {
       // Insert field if it's a field
-      if (part['value']) userData[part.fieldname] = part['value'];
+      if (part['value']) userData[String(part.fieldname)] = part['value'];
       // Upload if it's a file
       else if (part.file) {
         // Upload image
@@ -102,6 +112,7 @@ export class UsersService {
       }
     }
 
+    if (!userData.login) return false;
     if (await this.getUserByLogin(userData.login))
       return UserStringTypes.CONFLICT; // Check if the user does not exist
     if (!(await this.validateUserData(userData, false))) return false; // Validate data
@@ -117,6 +128,7 @@ export class UsersService {
 
   updateUser: UpdateUserT = async (id, form) => {
     const user = await this.getUserById(id); // Get user
+    if (!user) return UserStringTypes.NOT_FOUND;
 
     const userData = new UserDataDto();
     // Extract form data
@@ -136,6 +148,7 @@ export class UsersService {
     }
 
     // Check if the user with the same login does not exist
+    if (!userData.login) return false;
     if (
       userData.login !== user.login &&
       (await this.getUserByLogin(userData.login))
@@ -170,9 +183,10 @@ export class UsersService {
 
   deleteUser: DeleteUserT = async (id) => {
     const user = await this.getUserById(id);
+    if (!user) return false;
     if (user.image) deleteImage(user.image); // Delete the image
     const deleteResult = await this.userRepository.delete(id); // Delete the user
-    return deleteResult.affected; // Return a result
+    return Boolean(deleteResult.affected); // Return a result
   };
 
   getUsersByRating: GetUsersByRatingT = async (page = 1) => {
@@ -187,6 +201,7 @@ export class UsersService {
 
   deleteUserImage: DeleteUserImageT = async (userId) => {
     const user = await this.getUserById(userId);
+    if (!user) return false;
     const deleted = await deleteImage(user.image);
     if (deleted) {
       return this.userRepository.save({ ...user, ...{ image: '' } });

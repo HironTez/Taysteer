@@ -3,8 +3,8 @@ import { FastifyRequest } from 'fastify/types/request';
 import { UserMinT } from '../../resources/users/user.types';
 
 export abstract class PassportSerializer {
-  abstract serializeUser(user: UserMinT, request: FastifyRequest);
-  abstract deserializeUser(userId: string, request: FastifyRequest);
+  abstract serializeUser(user: UserMinT, request: FastifyRequest): any;
+  abstract deserializeUser(userId: string, request: FastifyRequest): any;
 
   constructor() {
     const passportInstance = this.getPassportInstance();
