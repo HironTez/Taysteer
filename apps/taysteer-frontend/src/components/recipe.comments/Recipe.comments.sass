@@ -2,6 +2,7 @@
   padding-left: 50px
   padding-right: 50px
   margin-top: 50px
+  margin-bottom: 20px
   overflow-x: auto
 
   .title
@@ -23,10 +24,13 @@
       border-width: 2px
       white-space: nowrap
       margin-right: 5px
-      width: 40%
+      width: calc(100% - 28px - 100px)
+
+      @media (max-width: 500px)
+        width: calc(100% - 28px)
+        margin-bottom: 5px
 
   .comment-container
-
     .comment
 
       .profile-picture
@@ -86,6 +90,9 @@
     height: 100%
     display: flex
     background-color: rgba(0, 0, 0, 0.5)
+
+  .loading-spinner, .error-animated
+    margin-bottom: 20px
 
   .no-comments
     font-size: 25px
