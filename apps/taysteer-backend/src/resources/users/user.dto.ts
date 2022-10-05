@@ -5,4 +5,5 @@ export class UserDataDto {
   password?: string;
   description?: string;
   image?: string;
+  [type: string]: any;
 }

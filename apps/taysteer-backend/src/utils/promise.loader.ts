@@ -8,5 +8,5 @@ const objectZip = (keys: any, values: any) =>
     {}
   );
 
-export const objectPromise = async (obj: any) =>
+export const loadObject = async (obj: any) =>
   objectZip(Object.keys(obj), await Promise.all(Object.values(obj)));

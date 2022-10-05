@@ -17,7 +17,7 @@ import {
   RecipeToResponseT,
   RecipeToResponseDetailedT,
 } from './recipe.types';
-import { objectPromise } from '../../utils/promise.loader';
+import { loadObject } from '../../utils/promise.loader';
 
 @Entity('Recipe')
 export class Recipe extends BaseEntity {
@@ -37,31 +37,31 @@ export class Recipe extends BaseEntity {
   ingredients: Array<RecipeIngredientT>;
 
   @Column('json')
-  steps: { [key: number]: RecipeStepT };
+  steps: { [key: string]: RecipeStepT };
 
   @Column('int', { width: 10 })
-  rating: number;
+  rating: number = 0;
 
   @Column('int')
-  ratingsCount: number;
+  ratingsCount: number = 0;
 
   @Column('int')
-  ratingsSum: number;
+  ratingsSum: number = 0;
 
   @OneToMany(() => RecipeRating, (rater) => rater.recipe)
-  raters: Array<RecipeRating>;
+  raters?: Array<RecipeRating>;
 
   @ManyToOne(() => User, (user) => user.recipes)
   user: User;
 
   @OneToMany(() => Comment, (comment) => comment.recipe)
-  comments: Array<Comment>;
+  comments?: Array<Comment>;
 
   constructor({
     title = '',
     image = '',
     description = '',
-    ingredients = [],
+    ingredients = new Array(),
     steps = {},
     user = new User(),
     update = false,
@@ -99,7 +99,7 @@ export class Recipe extends BaseEntity {
       ingredients,
       steps,
     } = recipe;
-    return objectPromise({
+    return loadObject({
       id,
       title,
       image,

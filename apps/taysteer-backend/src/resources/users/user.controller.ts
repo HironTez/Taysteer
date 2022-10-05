@@ -39,6 +39,8 @@ export class UsersController {
     @Query('detailed') detailed = 'false'
   ) {
     const user = await this.usersService.getUserById(req.user.id);
+    if (!user) return res.status(HttpStatus.NOT_FOUND).send();
+
     const response =
       detailed === 'true'
         ? await User.toResponseDetailed(user)
@@ -82,6 +84,8 @@ export class UsersController {
 
     if (updatedUser === UserStringTypes.CONFLICT)
       return res.status(HttpStatus.CONFLICT).send(); // Response if user with new login already exist
+      else if (updatedUser == UserStringTypes.NOT_FOUND)
+      return res.status(HttpStatus.NOT_FOUND).send(); // If not found
 
     return updatedUser && typeof updatedUser != 'string'
       ? res.status(HttpStatus.OK).send(await User.toResponse(updatedUser))

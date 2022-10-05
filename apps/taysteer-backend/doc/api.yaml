@@ -303,6 +303,8 @@ paths:
           description: Bad request
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Not found
         '409':
           description: The user already exist
     delete:
