@@ -43,12 +43,12 @@ export class RecipeService {
 
   validateRecipeData: ValidateRecipeDataT = (recipe: RecipeDataDto) => {
     if (
-      recipe.title.length > 50 ||
-      recipe.description.length > 500 ||
+      (recipe.title ?? '').length > 50 ||
+      (recipe.description ?? '').length > 500 ||
       !recipe.image
     )
       return false;
-    for (const ingredient of recipe.ingredients) {
+    for (const ingredient of recipe.ingredients ?? []) {
       if (
         ingredient.count > 1_000_000 ||
         ingredient.count < 0 ||
@@ -56,7 +56,7 @@ export class RecipeService {
       )
         return false;
     }
-    for (const stepKey of Object.keys(recipe.steps)) {
+    for (const stepKey of Object.keys(recipe.steps ?? {})) {
       const step = recipe.steps[stepKey];
       if (
         step.title?.length > 100 ||
@@ -170,7 +170,11 @@ export class RecipeService {
             if (Number(id) < 0) return false;
             else if (!recipeData.steps || !recipeData.steps[id]) {
               if (!recipeData.steps) recipeData.steps = {};
-              recipeData.steps[id] = { title: '', description: '', image: '' };
+              recipeData.steps[id] = {
+                title: '',
+                description: '',
+                image: '',
+              };
             }
           } else if (!isMainImage) return false; // Exit if it's not supported image
 
@@ -182,7 +186,8 @@ export class RecipeService {
           // Save link
           if (uploadedResponse) {
             if (isMainImage) recipeData.image = uploadedResponse;
-            else if (isStepImage) recipeData.steps[id].image = uploadedResponse;
+            else if (isStepImage)
+              recipeData.steps[id].image = uploadedResponse;
           }
         }
       }
@@ -192,10 +197,12 @@ export class RecipeService {
 
       // Create recipe
       const recipe = this.recipeRepository.create(new Recipe(recipeData));
+      console.log(recipe)
 
       // Save recipe
       return await this.recipeRepository.save(recipe);
-    } catch {
+    } catch (e) {
+      console.log(e)
       return false;
     }
   };
@@ -252,7 +259,11 @@ export class RecipeService {
             if (Number(id) < 0) return false;
             else if (!recipeData.steps || !recipeData.steps[id]) {
               if (!recipeData.steps) recipeData.steps = {};
-              recipeData.steps[id] = { title: '', description: '', image: '' };
+              recipeData.steps[id] = {
+                title: '',
+                description: '',
+                image: '',
+              };
             }
           } else if (!isMainImage) return false; // Exit if it's not supported image
 
@@ -264,7 +275,8 @@ export class RecipeService {
           // Save link
           if (uploadedResponse) {
             if (isMainImage) recipeData.image = uploadedResponse;
-            else if (isStepImage) recipeData.steps[id].image = uploadedResponse;
+            else if (isStepImage)
+              recipeData.steps[id].image = uploadedResponse;
           }
         }
       }
@@ -274,10 +286,12 @@ export class RecipeService {
 
       // Delete old images from the server
       const images = [
-        recipe.image,
-        ...Object.keys(recipe.steps).map((key) => recipe.steps[key].image),
+        recipe?.image,
+        ...Object.keys(recipe?.steps ?? []).map(
+          (key) => recipe?.steps[key].image
+        ),
       ];
-      images.forEach((image) => deleteImage(image));
+      images.forEach((image) => (image ? deleteImage(image) : null));
 
       const newRecipe = new Recipe({ ...recipeData, ...{ update: true } });
 
@@ -297,14 +311,16 @@ export class RecipeService {
 
     // Delete images
     const images = [
-      recipe.image,
-      ...Object.keys(recipe.steps).map((key) => recipe.steps[key].image),
+      recipe?.image,
+      ...Object.keys(recipe?.steps ?? []).map(
+        (key) => recipe?.steps[key].image
+      ),
     ];
-    images.forEach((image) => deleteImage(image));
+    images.forEach((image) => (image ? deleteImage(image) : null));
 
     // Delete the recipe
     const deleteResult = await this.recipeRepository.delete(id);
-    return deleteResult.affected;
+    return Boolean(deleteResult.affected);
   };
 
   rateRecipe: RateRecipeT = async (recipeId, raterId, rating) => {
@@ -315,6 +331,7 @@ export class RecipeService {
     // Get the user with relations
     const recipe = await this.getRecipeById(recipeId);
     if (!recipe) return false;
+    if (!recipe.raters) recipe.raters = [];
 
     const user = await this.usersService.getUserById(raterId);
 
@@ -345,8 +362,7 @@ export class RecipeService {
     // If it's the update of the rating
     else {
       newRatingsCount = oldRatingCount;
-      newRatingsSum =
-        oldRatingSum - findingResult.rating + Math.round(rating);
+      newRatingsSum = oldRatingSum - findingResult.rating + Math.round(rating);
       newRating = Math.round(newRatingsSum / newRatingsCount);
     }
 
@@ -391,6 +407,7 @@ export class RecipeService {
 
   getCommentWithAnswersById: GetCommentWithAnswersByIdT = async (id, page) => {
     const mainComment = await this.getCommentById(id); // Get main comment
+    if (!mainComment) return false;
     // Get the page of child comments
     const childComments = await this.recipeCommentsRepository.find({
       where: { mainComment: mainComment },
@@ -412,8 +429,8 @@ export class RecipeService {
 
     // Get recipe and user
     const recipe = await this.getRecipeById(recipeId);
-    if (!recipe) return false;
     const user = await this.usersService.getUserById(userId);
+    if (!recipe || !user) return false;
 
     // Create the comment
     const comment = this.recipeCommentsRepository.create(
@@ -436,8 +453,8 @@ export class RecipeService {
 
     // Get recipe and user
     const mainComment = await this.getCommentById(mainCommentId);
-    if (!mainComment) return false;
     const user = await this.usersService.getUserById(userId);
+    if (!mainComment || !user) return false;
 
     // Create the comment
     const comment = this.recipeCommentsRepository.create(
@@ -466,6 +483,6 @@ export class RecipeService {
 
   deleteComment: DeleteCommentT = async (commentId) => {
     const deleteResult = await this.recipeCommentsRepository.delete(commentId); // Delete the comment
-    return deleteResult.affected; // Return a result
+    return Boolean(deleteResult.affected); // Return a result
   };
 }

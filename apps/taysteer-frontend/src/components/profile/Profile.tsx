@@ -74,6 +74,7 @@ export const Profile: React.FC = () => {
               <button
                 className="delete-button icon-button"
                 onClick={deleteProfileHandler}
+                type="button"
               >
                 <img src={deleteIcon} alt="delete" className="delete-icon" />
               </button>

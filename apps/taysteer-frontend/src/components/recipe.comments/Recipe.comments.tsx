@@ -108,6 +108,7 @@ export const RecipeComments: React.FC<{
                   (comment.page ?? 0) + 1
                 );
             }}
+            type="button"
           >
             {comment.childComments?.length ?? 0
               ? 'View more 🠇'
@@ -142,7 +143,7 @@ export const RecipeComments: React.FC<{
             placeholder="Enter your comment here"
             maxLength={500}
           />
-          <button className="submit orange" onClick={sendingCommentHandler}>
+          <button className="submit orange" onClick={sendingCommentHandler} type="button">
             Publish
           </button>
         </div>

@@ -38,7 +38,7 @@ export class User extends BaseEntity {
   rating: number;
 
   @OneToMany(() => Recipe, (recipe) => recipe.user)
-  recipes: Recipe[];
+  recipes?: Recipe[];
 
   constructor({
     name = '',

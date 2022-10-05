@@ -17,7 +17,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CookieAuthGuard } from '../../auth/guards/cookie-auth.guard';
-import { ExtendedRequest } from '../../typification/interfaces';
+import { ExtendedMultipartFile, ExtendedRequest } from '../../typification/interfaces';
 import { Response } from 'express';
 
 @Controller('api/recipes')
@@ -36,7 +36,7 @@ export class RecipeController {
   @UseGuards(CookieAuthGuard)
   async createRecipe(@Req() req: ExtendedRequest, @Res() res: Response) {
     const createdRecipe = await this.recipeService.addRecipe(
-      req.parts(),
+      req.parts() as AsyncIterableIterator<ExtendedMultipartFile>,
       req.user.id
     );
     return createdRecipe
@@ -120,7 +120,7 @@ export class RecipeController {
     const ratedRecipe = await this.recipeService.rateRecipe(
       recipeId,
       req.user.id,
-      Number(rating)
+      rating
     );
     return ratedRecipe
       ? res.status(HttpStatus.OK).send(Recipe.toResponse(ratedRecipe))
@@ -171,7 +171,7 @@ export class RecipeController {
     @Body() body: RecipeCommentDto
   ) {
     const createdComment = await this.recipeService.addRecipeComment(
-      body.text,
+      body.text ?? '',
       req.user.id,
       recipeId
     );
@@ -196,7 +196,7 @@ export class RecipeController {
     );
     if (!hasRecipeAccess) return res.status(HttpStatus.FORBIDDEN).send();
     const updatedComment = await this.recipeService.updateComment(
-      body.text,
+      body.text ?? '',
       commentId
     );
     return updatedComment
@@ -231,7 +231,7 @@ export class RecipeController {
     @Body() body: RecipeCommentDto
   ) {
     const createdComment = await this.recipeService.addCommentComment(
-      body.text,
+      body.text ?? '',
       req.user.id,
       commentId
     );
