@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useActions } from '../../hooks/useAction';
@@ -97,33 +97,76 @@ export const RecipeComments: React.FC<{
         )}
 
         {/* Button show more */}
-        {comment.countOfChildComments >
-          (comment.childComments?.length ?? 0) && (
-          <button
-            className="answers gray"
-            onClick={() => {
-              if (!loading)
-                fetchRecipeCommentAnswers(
-                  String(comment.id),
-                  (comment.page ?? 0) + 1
+        <div className="additional-buttons">
+          {comment.countOfChildComments >
+            (comment.childComments?.length ?? 0) && (
+            <button
+              className="answers gray"
+              onClick={() => {
+                if (!loading)
+                  fetchRecipeCommentAnswers(
+                    String(comment.id),
+                    (comment.page ?? 0) + 1
+                  );
+              }}
+              type="button"
+            >
+              {comment.childComments?.length ?? 0
+                ? 'View more 🠇'
+                : 'View answers 🠇'}
+            </button>
+          )}
+          {account && (
+            <button
+              className="to-answer gray"
+              onClick={(e: React.MouseEvent) => {
+                $(`#new-comment-${i}.new-comment-container.hidden`).removeClass(
+                  'hidden'
                 );
+                $(e.target).remove();
+              }}
+              type="button"
+            >
+              {'Write an answer ✎'}
+            </button>
+          )}
+        </div>
+
+        <div className="new-comment-container hidden" id={`new-comment-${i}`}>
+          <input
+            className="new-comment"
+            type="text"
+            placeholder="Enter your answer here"
+            maxLength={500}
+          />
+          <button
+            className="submit orange"
+            onClick={(e) => {
+              sendingCommentHandler(e, true, comment.id.toString());
             }}
             type="button"
           >
-            {comment.childComments?.length ?? 0
-              ? 'View more 🠇'
-              : 'View answers 🠇'}
+            Publish
           </button>
-        )}
+        </div>
       </div>
     ));
   };
 
-  const sendingCommentHandler = () => {
+  const sendingCommentHandler = (
+    event: React.FormEvent,
+    answer = false,
+    commentId?: string
+  ) => {
     if (!commentUploadingLoading) {
-      const text = $('.new-comment').val()?.toString() ?? '';
-      if (text.length <= 500)
-        fetchUploadRecipeComment('recipe', recipeId, text);
+      const text =
+        $(event.currentTarget).siblings('input').val()?.toString() ?? '';
+      if (text.length <= 500 && text.length > 0)
+        fetchUploadRecipeComment(
+          answer ? 'comment' : 'recipe',
+          answer && commentId ? commentId : recipeId,
+          text
+        );
       else {
         popup('Error', 'error');
       }
@@ -143,7 +186,11 @@ export const RecipeComments: React.FC<{
             placeholder="Enter your comment here"
             maxLength={500}
           />
-          <button className="submit orange" onClick={sendingCommentHandler} type="button">
+          <button
+            className="submit orange"
+            onClick={sendingCommentHandler}
+            type="button"
+          >
             Publish
           </button>
         </div>

@@ -197,12 +197,10 @@ export class RecipeService {
 
       // Create recipe
       const recipe = this.recipeRepository.create(new Recipe(recipeData));
-      console.log(recipe)
 
       // Save recipe
       return await this.recipeRepository.save(recipe);
-    } catch (e) {
-      console.log(e)
+    } catch {
       return false;
     }
   };
