@@ -6,7 +6,7 @@ import { recipeReducer } from './recipe.reducer';
 import { uploadRecipeReducer } from './upload-recipe.reducer';
 import { rateRecipeReducer } from './rate-recipe.reducer';
 import { recipeCommentsReducer } from './recipe-comments.reducer';
-import { uploadRecipeCommentReducer } from './upload-recipe-comment.reducer';
+import { recipeCommentReducer } from './recipe-comment.reducer';
 import { deleteRecipeReducer } from './delete-recipe.reducer';
 import { deleteProfileReducer } from './delete-profile.reducer';
 
@@ -18,7 +18,7 @@ export const rootReducer = combineReducers({
   uploadRecipe: uploadRecipeReducer,
   rateRecipe: rateRecipeReducer,
   recipeComments: recipeCommentsReducer,
-  uploadRecipeComment: uploadRecipeCommentReducer,
+  recipeComment: recipeCommentReducer,
   deleteRecipe: deleteRecipeReducer,
   deleteProfile: deleteProfileReducer,
 });
