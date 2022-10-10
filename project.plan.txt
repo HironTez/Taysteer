@@ -1,5 +1,5 @@
 Frontend:
-- Add possibility write and edit a comment from a recipe
+- Add comment editing
 - Add profile page editing
 - Add leaderboard page
 - Add 404 page
