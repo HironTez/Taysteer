@@ -8,6 +8,7 @@ import { Loading } from '../loading.spinner/Loading.spinner';
 import { Rating } from '../rating/Rating';
 import './Recipe.comments.sass';
 import {
+  confirmDialogElement,
   dateToTimeAgo,
   horizontalScrollShadow,
   popup,
@@ -26,10 +27,10 @@ export const RecipeComments: React.FC<{
   const { account } = useTypedSelector((state) => state.account);
 
   const {
-    resultComment,
-    loading: commentUploadingLoading,
-    error: _commentUploadingError,
-  } = useTypedSelector((state) => state.uploadRecipeComment);
+    result: commentResult,
+    loading: commentLoading,
+    error: _commentError,
+  } = useTypedSelector((state) => state.recipeComment);
 
   const {
     fetchRecipeComments,
@@ -37,6 +38,7 @@ export const RecipeComments: React.FC<{
     clearRecipeCommentsList,
     fetchRecipeCommentAnswers,
     fetchUploadRecipeComment,
+    fetchDeleteRecipeComment,
   } = useActions();
 
   useEffect(() => {
@@ -47,10 +49,10 @@ export const RecipeComments: React.FC<{
   }, [page]);
 
   useEffect(() => {
-    if (resultComment) {
+    if (commentResult) {
       window.location.reload();
     }
-  }, [resultComment]);
+  }, [commentResult]);
 
   const location = useLocation();
 
@@ -130,6 +132,27 @@ export const RecipeComments: React.FC<{
               {'Write an answer ✎'}
             </button>
           )}
+          {account && comment.user.id === account.id && (
+            <button
+              className="delete red"
+              onClick={() => {
+                if (!loading) {
+                  confirmDialogElement(
+                    () => {
+                      fetchDeleteRecipeComment(comment.id.toString());
+                    },
+                    () => {},
+                    'Delete this comment? This action cannot be undone.',
+                    'Delete',
+                    'Cancel'
+                  );
+                }
+              }}
+              type="button"
+            >
+              {'Delete 🗑'}
+            </button>
+          )}
         </div>
 
         <div className="new-comment-container hidden" id={`new-comment-${i}`}>
@@ -158,7 +181,7 @@ export const RecipeComments: React.FC<{
     answer = false,
     commentId?: string
   ) => {
-    if (!commentUploadingLoading) {
+    if (!commentLoading) {
       const text =
         $(event.currentTarget).siblings('input').val()?.toString() ?? '';
       if (text.length <= 500 && text.length > 0)
@@ -211,7 +234,7 @@ export const RecipeComments: React.FC<{
       >
         {commentsToElements(comments)}
       </InfiniteScroll>
-      {commentUploadingLoading && (
+      {commentLoading && (
         <div className="loading-container">
           <Loading />
         </div>
