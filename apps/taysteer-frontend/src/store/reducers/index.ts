@@ -9,6 +9,7 @@ import { recipeCommentsReducer } from './recipe-comments.reducer';
 import { recipeCommentReducer } from './recipe-comment.reducer';
 import { deleteRecipeReducer } from './delete-recipe.reducer';
 import { deleteProfileReducer } from './delete-profile.reducer';
+import { updateProfileReducer } from './update-profile.reducer';
 
 export const rootReducer = combineReducers({
   recipes: recipesReducer,
@@ -21,6 +22,7 @@ export const rootReducer = combineReducers({
   recipeComment: recipeCommentReducer,
   deleteRecipe: deleteRecipeReducer,
   deleteProfile: deleteProfileReducer,
+  updateProfile: updateProfileReducer,
 });
 
 export type RooState = ReturnType<typeof rootReducer>;

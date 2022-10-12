@@ -218,11 +218,14 @@ export class PromiseController {
   reject: (value: any) => void = () => null;
 }
 
+// Load image by url
 export const urlToObject = async (imageUrl: string) => {
   const response = await fetch(imageUrl);
-  const blob = await response.blob();
-  const file = new File([blob], 'image.jpg', { type: blob.type });
-  return file;
+  if (response.ok) {
+    const blob = await response.blob();
+    const file = new File([blob], 'image.jpg', { type: blob.type });
+    return file;
+  } else return null;
 };
 
 // Get list with range of number
@@ -262,30 +265,32 @@ export const dateToTimeAgo = (date: Date): string => {
 };
 
 export const confirmDialogElement = (
-  callbackOnConfirm: Function,
-  callbackOnCancel: Function,
-  text: string = 'Confirm action?',
-  confirmText: string = 'Confirm',
-  cancelText: string = 'Cancel'
+  callbackOnConfirm: (() => void) | null,
+  callbackOnCancel: (() => void) | null,
+  text = 'Confirm action?',
+  confirmText = 'Confirm',
+  cancelText = 'Cancel'
 ) => {
   const containerElem = $(`<div class="confirm-dialog"></div>`);
   const backgroundElem = $(`<div class="background"></div>`);
   const textElem = $(`<div class="text">${text}</div>`);
-  const confirmButton = $(`<button class="confirm orange">${confirmText}</button>`);
+  const confirmButton = $(
+    `<button class="confirm orange">${confirmText}</button>`
+  );
   const cancelButton = $(`<button class="cancel gray">${cancelText}</button>`);
 
   const deleteDialog = () => {
     backgroundElem.remove();
     containerElem.remove();
-  }
+  };
   backgroundElem.on('click', deleteDialog);
   confirmButton.on('click', () => {
     deleteDialog();
-    callbackOnConfirm();
+    if (callbackOnConfirm) callbackOnConfirm();
   });
   cancelButton.on('click', () => {
     deleteDialog();
-    callbackOnCancel();
+    if (callbackOnCancel) callbackOnCancel();
   });
 
   containerElem.append(textElem);
@@ -293,4 +298,8 @@ export const confirmDialogElement = (
   containerElem.append(cancelButton);
   $('#root').append(backgroundElem);
   $('#root').append(containerElem);
+};
+
+export const exec = (func: () => void) => {
+  func();
 };

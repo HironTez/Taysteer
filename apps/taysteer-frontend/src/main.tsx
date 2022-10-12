@@ -13,6 +13,7 @@ import { Recipe } from './components/recipe/Recipe';
 import { Profile } from './components/profile/Profile';
 import { UploadRecipe } from './components/upload.recipe/Upload.recipe';
 import { EditRecipe } from './components/edit.recipe/Edit.recipe';
+import { EditProfile } from './components/edit.profile/Edit.profile';
 
 ReactDOM.render(
   <StrictMode>
@@ -32,6 +33,7 @@ ReactDOM.render(
             <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/:userId" element={<Profile />} />
+            <Route path="/profile/:userId/edit" element={<EditProfile />} />
             <Route path="/new-recipe" element={<UploadRecipe />} />
             <Route path="/recipes/:recipeId/edit" element={<EditRecipe />} />
           </Routes>

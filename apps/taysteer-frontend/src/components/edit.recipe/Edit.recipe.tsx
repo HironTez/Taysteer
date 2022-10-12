@@ -22,7 +22,7 @@ export const EditRecipe: React.FC = () => {
       const oldRecipeData: RecipeT = {
         title: recipe.title,
         description: recipe.description,
-        image: await urlToObject(recipe.image),
+        image: (await urlToObject(recipe.image)) as File,
         ingredients: recipe.ingredients,
         steps: await Promise.all(
           Object.keys(recipe.steps).map(async (stepKey, _index) => {
@@ -30,7 +30,7 @@ export const EditRecipe: React.FC = () => {
             return {
               title: step.title,
               description: step.description,
-              image: await urlToObject(step.image),
+              image: (await urlToObject(step.image)) as File,
             };
           })
         ),
