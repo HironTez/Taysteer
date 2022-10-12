@@ -853,7 +853,7 @@ paths:
               required:
                 - text
       responses:
-        '201':
+        '200':
           description: The comment has been updated
           content:
             application/json:

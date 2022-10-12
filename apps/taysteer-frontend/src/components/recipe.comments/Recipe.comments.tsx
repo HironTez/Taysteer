@@ -88,6 +88,32 @@ export const RecipeComments: React.FC<{
           </div>
         </div>
 
+        <div className="edit-comment-container hidden" id={`edit-comment-${i}`}>
+          <input
+            className="edit-comment"
+            type="text"
+            placeholder="Enter your comment here"
+            maxLength={500}
+          />
+          <button
+            className="submit orange"
+            onClick={(e) => {
+              confirmDialogElement(
+                () => {
+                  sendingCommentHandler(e, 'edit', comment.id.toString());
+                },
+                () => {},
+                'Edit this comment?',
+                'Edit',
+                'Cancel'
+              );
+            }}
+            type="button"
+          >
+            Publish
+          </button>
+        </div>
+
         {/* Answers */}
         {Boolean(comment.childComments?.length) && (
           <div className="child-comments-container">
@@ -98,7 +124,7 @@ export const RecipeComments: React.FC<{
           </div>
         )}
 
-        {/* Button show more */}
+        {/* Buttons */}
         <div className="additional-buttons">
           {comment.countOfChildComments >
             (comment.childComments?.length ?? 0) && (
@@ -134,6 +160,30 @@ export const RecipeComments: React.FC<{
           )}
           {account && comment.user.id === account.id && (
             <button
+              className="edit gray"
+              onClick={(e) => {
+                const comment = $($('.comment').get(i)!);
+                const previousText = comment
+                  .children('.content-wrapper')
+                  .children('.text')
+                  .text();
+                const buttons = $($('.additional-buttons').get(i)!);
+                comment.addClass('hidden');
+                buttons.addClass('hidden');
+                $(
+                  `#edit-comment-${i}.edit-comment-container.hidden`
+                ).removeClass('hidden');
+                $(
+                  `#edit-comment-${i}.edit-comment-container > .edit-comment`
+                ).val(previousText);
+              }}
+              type="button"
+            >
+              {'Edit ✎'}
+            </button>
+          )}
+          {account && comment.user.id === account.id && (
+            <button
               className="delete red"
               onClick={() => {
                 if (!loading) {
@@ -165,7 +215,7 @@ export const RecipeComments: React.FC<{
           <button
             className="submit orange"
             onClick={(e) => {
-              sendingCommentHandler(e, true, comment.id.toString());
+              sendingCommentHandler(e, 'answer', comment.id.toString());
             }}
             type="button"
           >
@@ -178,16 +228,21 @@ export const RecipeComments: React.FC<{
 
   const sendingCommentHandler = (
     event: React.FormEvent,
-    answer = false,
+    action?: 'answer' | 'edit',
     commentId?: string
   ) => {
     if (!commentLoading) {
-      const text =
-        $(event.currentTarget).siblings('input').val()?.toString() ?? '';
+      const text = $(event.target).siblings('input').val()?.toString() ?? '';
       if (text.length <= 500 && text.length > 0)
         fetchUploadRecipeComment(
-          answer ? 'comment' : 'recipe',
-          answer && commentId ? commentId : recipeId,
+          action === 'edit'
+            ? 'edit'
+            : action === 'answer'
+            ? 'answerComment'
+            : 'commentRecipe',
+          (action === 'answer' || action === 'edit') && commentId
+            ? commentId
+            : recipeId,
           text
         );
       else {
