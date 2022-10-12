@@ -5,7 +5,7 @@ import {
 } from '../../types/recipe.comment';
 
 export const fetchUploadRecipeComment = (
-  answerTo: 'recipe' | 'comment',
+  action: 'commentRecipe' | 'answerComment' | 'edit' = 'commentRecipe',
   id: string,
   comment: string
 ) => {
@@ -15,18 +15,18 @@ export const fetchUploadRecipeComment = (
         type: RecipeCommentActionTypes.FETCH_RECIPE_COMMENT,
       });
       const response = await fetch(
-        answerTo === 'recipe'
+        action === 'commentRecipe'
           ? `/api/recipes/${id}/comments`
           : `/api/recipes/comments/${id}`,
         {
-          method: 'POST',
+          method: action === 'edit' ? 'PUT' : 'POST',
           body: JSON.stringify({ text: comment }),
           headers: {
             'Content-Type': 'application/json',
           },
         }
       );
-      if (response.status === 201) {
+      if (response.status === 200 || response.status === 201) {
         dispatch({
           type: RecipeCommentActionTypes.FETCH_RECIPE_COMMENT_SUCCESS,
           payload: await response.json(),
