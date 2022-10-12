@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { useActions } from '../../hooks/useAction';
 import { useTypedSelector } from '../../hooks/useTypedSelector';
 import { Loading } from '../loading.spinner/Loading.spinner';
@@ -14,6 +14,7 @@ import {
   confirmDialogElement,
 } from '../../scripts/own.module';
 import deleteIcon from '../../assets/images/navigation/delete.svg';
+import editIcon from '../../assets/images/navigation/edit-icon.svg';
 
 export const Profile: React.FC = () => {
   const { userId } = useParams();
@@ -27,6 +28,7 @@ export const Profile: React.FC = () => {
   const {
     success: deleteProfileSuccess,
     loading: deleteProfileLoading,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     error: _deleteProfileError,
   } = useTypedSelector((state) => state.deleteProfile);
   const { fetchDeleteProfile, deleteProfileHandled } = useActions();
@@ -46,7 +48,7 @@ export const Profile: React.FC = () => {
         () => {
           fetchDeleteProfile(profile.id);
         },
-        () => {},
+        null,
         'Delete your profile? All recipes will also be deleted. This action cannot be undone.',
         'Delete',
         'Cancel'
@@ -59,7 +61,7 @@ export const Profile: React.FC = () => {
       deleteProfileHandled();
       navigate('/');
     }
-  }, [deleteProfileSuccess, deleteProfileHandled]);
+  }, [deleteProfileSuccess, deleteProfileHandled, navigate]);
 
   if (profile && !loading && !error) {
     return (
@@ -68,9 +70,9 @@ export const Profile: React.FC = () => {
           {profile.name || 'User'}
           {(profile.id === account?.id || account?.login === 'admin') && (
             <div>
-              {/* <NavLink to="./edit" className="edit-link">
+              <NavLink to={`./${profile.id}/edit`} className="edit-link">
                 <img src={editIcon} alt="edit" className="edit-icon" />
-              </NavLink> */}
+              </NavLink>
               <button
                 className="delete-button icon-button"
                 onClick={deleteProfileHandler}
