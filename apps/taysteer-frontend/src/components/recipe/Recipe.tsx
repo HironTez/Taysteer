@@ -68,7 +68,7 @@ export const Recipe: React.FC = () => {
         () => {
           fetchDeleteRecipe(recipeId);
         },
-        () => {},
+        null,
         'Delete this recipe? This action cannot be undone.',
         'Delete',
         'Cancel'
@@ -81,6 +81,7 @@ export const Recipe: React.FC = () => {
       deleteRecipeHandled();
       navigate('/');
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deleteRecipeSuccess, deleteRecipeLoading]);
 
   if (recipe && !loading && !error) {
