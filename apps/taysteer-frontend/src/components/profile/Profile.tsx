@@ -105,7 +105,7 @@ export const Profile: React.FC = () => {
         </div>
       </div>
     );
-  } else if (loading) {
+  } else if (loading || deleteProfileLoading) {
     return (
       <div className="profile-container">
         <Loading />
