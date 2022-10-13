@@ -152,7 +152,7 @@ export const EditProfile: React.FC = () => {
       // Set main data
       const formData = new FormData();
       formData.append('name', profile.name);
-      formData.append('login', profile.name);
+      formData.append('login', profile.login);
       formData.append('password', profile.password);
       formData.append('description', profile.description);
       formData.append('image', profile.image ?? '');
@@ -229,7 +229,7 @@ export const EditProfile: React.FC = () => {
         />
       </label>
       <label className="password-container repeat">
-        Password
+        Password repeat
         <input
           className="password password-repeat"
           name="password-repeat"
