@@ -1,9 +1,9 @@
 export const HOST_BACKEND = process.env['HOST_BACKEND'] || 'localhost';
 export const HOST_FRONTEND = process.env['HOST_FRONTEND'] || 'localhost';
-export const PORT = process.env['PORT'] || 4000;
+export const PORT_BACKEND = process.env['PORT'] || 4000;
 export const PORT_FRONTEND = process.env['PORT_FRONTEND'] || 3000;
-export const SESSION_SECRET_KEY = process.env['SESSION_SECRET_KEY'] || 'qwertyuiop';
-export const SESSION_SECRET_SALT = process.env['SESSION_SECRET_SALT'] || 'qwertyuiop';
+export const SESSION_SECRET_KEY = process.env['SESSION_SECRET_KEY'] || 'qwertyuiop[]';
+export const SESSION_SECRET_SALT = process.env['SESSION_SECRET_SALT'] || 'qwertyuiop[]';
 export const POSTGRES_HOST = process.env['POSTGRES_HOST'];
 export const POSTGRES_PORT = Number(process.env['POSTGRES_PORT']);
 export const POSTGRES_USER = process.env['POSTGRES_USER'];
