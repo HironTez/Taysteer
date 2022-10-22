@@ -20,6 +20,7 @@ import {
   RateRecipeT,
   GetCommentsT,
   GetCommentWithAnswersByIdT,
+  HasRatingAccessT,
 } from './recipe.service.types';
 import { Recipe } from './recipe.model';
 import { Injectable } from '@nestjs/common';
@@ -97,6 +98,19 @@ export class RecipeService {
     const userIsAdmin = await this.usersService.isAdmin(userId);
 
     return Boolean(userIsOwner) || userIsAdmin;
+  };
+
+  hasRatingAccess: HasRatingAccessT = async (userId, recipeId) => {
+    const userIsOwner = await this.recipeRepository.findOne(recipeId, {
+      relations: [RecipeStringTypes.USER],
+      where: {
+        user: {
+          id: userId,
+        },
+      },
+    });
+
+    return Boolean(!userIsOwner);
   };
 
   getRecipes: GetRecipesT = (page = 1) =>
