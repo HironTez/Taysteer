@@ -25,7 +25,9 @@ export const recipesReducer = (
         loading: false,
         error: null,
         end: action.payload.length < 10,
-        recipes: state.recipes.concat(action.payload),
+        recipes: state.recipes.some((item) => action.payload.includes(item))
+          ? state.recipes.concat(action.payload)
+          : action.payload,
       };
     case RecipeActionTypes.FETCH_RECIPES_ERROR:
       return { ...state, loading: false, error: action.payload };

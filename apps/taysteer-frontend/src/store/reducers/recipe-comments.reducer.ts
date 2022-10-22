@@ -68,7 +68,9 @@ export const recipeCommentsReducer = (
     case RecipeCommentsActionTypes.FETCH_RECIPE_COMMENTS_SUCCESS:
       return {
         ...state,
-        comments: state.comments.concat(action.payload),
+        comments: state.comments.some((item) => action.payload.includes(item))
+          ? state.comments.concat(action.payload)
+          : action.payload,
         loading: false,
         error: null,
       };

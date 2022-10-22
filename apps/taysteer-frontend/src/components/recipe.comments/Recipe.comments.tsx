@@ -58,8 +58,8 @@ export const RecipeComments: React.FC<{
 
   // When url changes
   useEffect(() => {
-    clearRecipeCommentsList(); // Clear recipes
-    fetchRecipeComments(recipeId, 1); // Fetch new recipes
+    clearRecipeCommentsList(); // Clear comments
+    fetchRecipeComments(recipeId, 1); // Fetch new comments
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location, recipeId]);
 
