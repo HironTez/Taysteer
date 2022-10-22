@@ -15,6 +15,7 @@ import {
 } from '../../scripts/own.module';
 import deleteIcon from '../../assets/images/navigation/delete.svg';
 import editIcon from '../../assets/images/navigation/edit-icon.svg';
+import { ADMIN_LOGIN } from '../../../../../configs/common/config';
 
 export const Profile: React.FC = () => {
   const { userId } = useParams();
@@ -71,7 +72,7 @@ export const Profile: React.FC = () => {
       <div className="profile-container">
         <div className="name">
           {profile.name || 'User'}
-          {(profile.id === account?.id || account?.login === 'admin') && (
+          {(profile.id === account?.id || account?.login === ADMIN_LOGIN) && (
             <div>
               <NavLink to={`./${profile.id}/edit`} className="edit-link">
                 <img src={editIcon} alt="edit" className="edit-icon" />
@@ -86,7 +87,7 @@ export const Profile: React.FC = () => {
             </div>
           )}
         </div>
-        <div className={`login ${profile.login === 'admin' ? 'admin' : ''}`}>
+        <div className={`login ${profile.login === ADMIN_LOGIN ? 'admin' : ''}`}>
           @{profile.login}
         </div>
         <div className="description">{profile.description}</div>

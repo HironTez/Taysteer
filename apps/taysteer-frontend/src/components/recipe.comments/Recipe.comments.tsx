@@ -15,6 +15,7 @@ import {
 import { RecipeCommentT } from '../../types/entities';
 import $ from 'jquery';
 import profileImage from '../../assets/images/profile.default.jpg';
+import { ADMIN_LOGIN } from 'configs/common/config';
 
 export const RecipeComments: React.FC<{
   recipeId: string;
@@ -156,53 +157,55 @@ export const RecipeComments: React.FC<{
               {'Write an answer ✎'}
             </button>
           )}
-          {account && comment.user.id === account.id && (
-            <button
-              className="edit gray"
-              onClick={(e) => {
-                const comment = $($('.comment').get(i) as HTMLElement);
-                const previousText = comment
-                  .children('.content-wrapper')
-                  .children('.text')
-                  .text();
-                const buttons = $(
-                  $('.additional-buttons').get(i) as HTMLElement
-                );
-                comment.addClass('hidden');
-                buttons.addClass('hidden');
-                $(
-                  `#edit-comment-${i}.edit-comment-container.hidden`
-                ).removeClass('hidden');
-                $(
-                  `#edit-comment-${i}.edit-comment-container > .edit-comment`
-                ).val(previousText);
-              }}
-              type="button"
-            >
-              {'Edit ✎'}
-            </button>
-          )}
-          {account && comment.user.id === account.id && (
-            <button
-              className="delete red"
-              onClick={() => {
-                if (!loading) {
-                  confirmDialogElement(
-                    () => {
-                      fetchDeleteRecipeComment(comment.id.toString());
-                    },
-                    null,
-                    'Delete this comment? This action cannot be undone.',
-                    'Delete',
-                    'Cancel'
+          {account &&
+            (comment.user.id === account.id || account.login === ADMIN_LOGIN) && (
+              <button
+                className="edit gray"
+                onClick={(e) => {
+                  const comment = $($('.comment').get(i) as HTMLElement);
+                  const previousText = comment
+                    .children('.content-wrapper')
+                    .children('.text')
+                    .text();
+                  const buttons = $(
+                    $('.additional-buttons').get(i) as HTMLElement
                   );
-                }
-              }}
-              type="button"
-            >
-              {'Delete 🗑'}
-            </button>
-          )}
+                  comment.addClass('hidden');
+                  buttons.addClass('hidden');
+                  $(
+                    `#edit-comment-${i}.edit-comment-container.hidden`
+                  ).removeClass('hidden');
+                  $(
+                    `#edit-comment-${i}.edit-comment-container > .edit-comment`
+                  ).val(previousText);
+                }}
+                type="button"
+              >
+                {'Edit ✎'}
+              </button>
+            )}
+          {account &&
+            (comment.user.id === account.id || account.login === ADMIN_LOGIN) && (
+              <button
+                className="delete red"
+                onClick={() => {
+                  if (!loading) {
+                    confirmDialogElement(
+                      () => {
+                        fetchDeleteRecipeComment(comment.id.toString());
+                      },
+                      null,
+                      'Delete this comment? This action cannot be undone.',
+                      'Delete',
+                      'Cancel'
+                    );
+                  }
+                }}
+                type="button"
+              >
+                {'Delete 🗑'}
+              </button>
+            )}
         </div>
 
         <div className="new-comment-container hidden" id={`new-comment-${i}`}>
