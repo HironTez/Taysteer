@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import {
   SESSION_SECRET_KEY,
-  PORT,
+  PORT_BACKEND,
   SESSION_SECRET_SALT,
   PORT_FRONTEND,
 } from '../../../configs/common/config';
@@ -47,8 +47,8 @@ async function bootstrap() {
   );
   SwaggerModule.setup('api/doc', app, swaggerDocument);
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Service is running at http://localhost:${PORT}`);
+  app.listen(PORT_BACKEND, '0.0.0.0', () => {
+    console.log(`Service is running at http://localhost:${PORT_BACKEND}`);
   });
 }
 bootstrap();
