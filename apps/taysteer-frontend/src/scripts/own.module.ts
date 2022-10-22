@@ -2,44 +2,15 @@
 import $ from 'jquery';
 import { FormEvent } from 'react';
 
-export const horizontalScroll = () => {
-  const scrollableDivs = $('.horizontal-scroll');
-
-  const easeFunction = (remainingScrollDistance: number) => {
-    return remainingScrollDistance / 15 + 1;
-  };
-
-  uss.hrefSetup();
-
-  scrollableDivs?.on('mousewheel', (event) => {
-    const originalEvent = event.originalEvent as WheelEvent;
-    if (
-      originalEvent.deltaY !== 0 &&
-      event.currentTarget.classList.contains('active')
-    ) {
-      event.preventDefault();
-      event.stopPropagation();
-      uss.scrollXBy(originalEvent.deltaY, event.currentTarget, null, false);
-    }
-  });
-
-  scrollableDivs.each((_index, element) => {
-    uss.setXStepLengthCalculator(easeFunction, element);
-  });
-
+export const horizontalScrollDirection = () => {
   // Change the scroll direction relative to the screen width
   const processScrollDirection = () => {
-    scrollableDivs.each((_index, element) => {
-      if (Number($(window).width()) < 1000) {
-        if (element.classList.contains('active'))
-          element.classList.remove('active');
-      } else {
-        if (!element.classList.contains('active'))
-          element.classList.add('active');
-      }
-    });
+    if (Number($(window).width()) < 1000) {
+      $('.horizontal-scroll.active').removeClass('active');
+    } else {
+      $('.horizontal-scroll:not(.active)').addClass('active');
+    }
   };
-  processScrollDirection();
 
   window.onresize = processScrollDirection;
 };
@@ -141,58 +112,9 @@ const serializeForm = (form: HTMLFormElement): object => {
     }, {});
 };
 
-// Add shadow to the scroll elements
-export const horizontalScrollShadow = () => {
-  // Get scrollable elements
-  const scrollableDivs = $('.horizontal-scroll-shadow');
-  // Add shadow elements
-  scrollableDivs.each((_index, element) => {
-    if (!$(element).children('.shadow').length) {
-      const shadow = $(`<div class="shadow"></div>`);
-
-      shadow.css({
-        maxHeight: element.clientHeight,
-        maxWidth: element.clientWidth,
-      });
-      $(element).prepend(shadow);
-    }
-  });
-  scrollableDivs.on('DOMNodeInserted', (event) => {
-    $(event.currentTarget).children('.shadow').css({
-      maxHeight: event.currentTarget.clientHeight,
-      maxWidth: event.currentTarget.clientWidth,
-    });
-  });
-  // Change shadow on scroll
-  $(scrollableDivs).on('scroll', (event) => {
-    const scrollTop = event.currentTarget.scrollTop;
-    const scrollLeft = event.currentTarget.scrollLeft;
-    const direction = scrollTop && !scrollLeft ? 'vertical' : 'horizontal';
-    const shadowTop =
-      direction === 'vertical' ? (scrollTop > 50 ? 50 : scrollTop / 50) : 0;
-    const shadowLeft =
-      direction === 'horizontal' ? (scrollLeft > 50 ? 50 : scrollLeft / 50) : 0;
-    const shadowElement = $(event.currentTarget).children('.shadow');
-    if (shadowTop) {
-      shadowElement.addClass('top');
-    } else {
-      shadowElement.removeClass('top');
-    }
-    if (shadowLeft) {
-      shadowElement.addClass('left');
-    } else {
-      shadowElement.removeClass('left');
-    }
-    shadowElement.css({ opacity: shadowTop || shadowLeft });
-  });
-};
-
 // Allow vertical scrolling for react page
-export const allowVerticalScroll = () => {
-  document.body.style.overflowY = 'auto';
-  return () => {
-    document.body.style.overflowY = 'hidden';
-  };
+export const allowVerticalScroll = (allow = true) => {
+  document.body.style.overflowY = allow ? 'auto' : 'hidden';
 };
 
 // Scroll to element

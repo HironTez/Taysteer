@@ -5,8 +5,7 @@ import './Recipe.list.sass';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  horizontalScroll,
-  horizontalScrollShadow,
+  horizontalScrollDirection,
 } from '../../scripts/own.module';
 import { Loading } from '../loading.spinner/Loading.spinner';
 import { Error } from '../error.animation/Error.animation';
@@ -20,6 +19,7 @@ export const RecipeList: React.FC<{ userId?: string }> = ({ userId }) => {
 
   useEffect(() => {
     if (!end && page !== 1) fetchRecipes(page, userId); // Fetch recipes if it's a new page
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   const location = useLocation();
@@ -29,16 +29,28 @@ export const RecipeList: React.FC<{ userId?: string }> = ({ userId }) => {
     clearRecipeList(); // Clear recipes
     fetchRecipes(1, userId); // Fetch new recipes
     // Re-run scripts
-    horizontalScroll();
-    horizontalScrollShadow();
+    horizontalScrollDirection();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location, userId]);
 
-  return loading ? <Loading /> : (
+  return loading ? (
+    <Loading />
+  ) : (
     <div className="recipes">
       <div
         id="recipes-container"
-        className="horizontal-scroll horizontal-scroll-shadow"
+        className={`horizontal-scroll horizontal-scroll-shadow ${
+          window.innerWidth >= 1000 ? 'active' : ''
+        }`}
+        onWheel={(event) => {
+          if (
+            event.deltaY !== 0 &&
+            event.currentTarget.classList.contains('active')
+          ) {
+            event.stopPropagation();
+            uss.scrollXBy(event.deltaY, event.currentTarget, null, false);
+          }
+        }}
       >
         <InfiniteScroll // Set up infinite scroll
           dataLength={recipes.length}
