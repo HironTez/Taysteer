@@ -70,13 +70,11 @@ export class UsersService {
   };
 
   validateUserData: ValidateUserDataT = async (userData, updating = false) => {
-    if (!updating) {
-      // If it's a data for creating a new user
-      if (!userData.password) return false; // Check if the login and password exists
-    }
-    if (!userData.login || !userData.password) return false;
+    if (!userData.login || !userData.password) return false; // Check if login and password are provided
     if (userData.login?.length > 50 || userData.password?.length > 50)
-      return false;
+      return false; // Check if they are not too long
+    if (!/^[a-zA-Z0-9]+$/.test(userData.login)) return false; // Check if login doesn't contain special characters
+    // If it's editing, check another data
     if (updating && (!userData.name || !userData.description)) return false;
     if (
       updating &&
@@ -113,8 +111,12 @@ export class UsersService {
     }
 
     if (!userData.login) return false;
-    if (await this.getUserByLogin(userData.login))
-      return UserStringTypes.CONFLICT; // Check if the user does not exist
+    if (
+      // Check if the there is no user with the same login and if login doesn't contain 'admin'
+      (await this.getUserByLogin(userData.login)) ||
+      userData.login.toLowerCase().includes('admin')
+    )
+      return UserStringTypes.CONFLICT;
     if (!(await this.validateUserData(userData, false))) return false; // Validate data
 
     const user = this.userRepository.create(new User(userData)); // Create user object
