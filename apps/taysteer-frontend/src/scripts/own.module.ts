@@ -15,12 +15,12 @@ export const horizontalScrollDirection = () => {
   window.onresize = processScrollDirection;
 };
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export const debounce = (fn: Function, ms = 300) => {
-  let timeoutId: ReturnType<typeof setTimeout>;
+// Debounce function
+export const debounce = (fn: (...args: any[]) => void, ms = 300) => {
+  let timeoutId: ReturnType<typeof setTimeout>; // Initialize timeout variable
   return function (this: any, ...args: any[]) {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => fn.apply(this, args), ms);
+    clearTimeout(timeoutId); // Clear timer
+    timeoutId = setTimeout(() => fn.apply(this, args), ms); // Set timer
   };
 };
 
@@ -33,11 +33,16 @@ export const submitForm = (
     enctype?: 'multipart/form-data' | 'application/json';
   } = { method: 'get', enctype: 'application/json' },
   onSuccess?: (response: any) => void,
-  onError?: (error: JQuery.jqXHR<any>) => void
+  onError?: (error: JQuery.jqXHR<any>) => void,
+  setLoading?: (loading: boolean) => void,
+  setError?: (error: string | null) => void
 ) => {
   event.preventDefault(); // Prevent from submitting form directly
   const form = event.currentTarget as HTMLFormElement;
   const formData = new FormData(form);
+
+  if (setLoading) setLoading(true); // Set loading to true
+  if (setError) setError(null); // Empty error
 
   $.ajax({
     ...{
@@ -59,6 +64,7 @@ export const submitForm = (
       redirect(redirectURL);
       form.reset(); // Reset the form
 
+      if (setLoading) setLoading(false);
       if (onSuccess) onSuccess(response); // Callback
     })
     .fail((error) => {
@@ -67,6 +73,8 @@ export const submitForm = (
         popup('Something went wrong. Try again.', 'error');
       }
 
+      if (setLoading) setLoading(false);
+      if (setError) setError(error.statusText);
       if (onError) onError(error); // Error callback
     });
 };
