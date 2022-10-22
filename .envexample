@@ -1,20 +1,24 @@
 HOST_BACKEND=localhost
 HOST_FRONTEND=localhost
-PORT=4000
+PORT=4000 # Port backend
 PORT_FRONTEND=3000
 
+# Generate random strings and place them here
 SESSION_SECRET_KEY=qwertyuiopasdfghjklzxcvbnm123456
 SESSION_SECRET_SALT=qwertyuiopasdfgh
 
+# Enter your postgres credentials
 POSTGRES_HOST=localhost
 POSTGRES_PORT=5432
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 POSTGRES_DB=postgres
 
+# Enter your Cloudinary credentials
 CLOUDINARY_CLOUD_NAME=qwerty
 CLOUDINARY_API_KEY=1234567890
 CLOUDINARY_API_SECRET=dtrfvhbgjhnkjmlhbnjkm
 
+# Enter admin's default credentials
 ADMIN_LOGIN=admin
 ADMIN_PASSWORD=admin
