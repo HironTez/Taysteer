@@ -70,19 +70,15 @@ export class UsersService {
       // If it's a data for creating a new user
       if (!userData.password) return false; // Check if the login and password exists
     }
-    if (
-      !userData.name?.length ||
-      !userData.login?.length ||
-      !userData.password?.length ||
-      !userData.description?.length
-    )
+    if (!userData.login || !userData.password) return false;
+    if (userData.login?.length > 50 || userData.password?.length > 50)
       return false;
-    else if (
-      // Check if the data is valid
-      userData.name?.length > 50 ||
-      userData.login?.length > 50 ||
-      userData.password?.length > 50 ||
-      userData.description?.length > 500
+    if (updating && (!userData.name || !userData.description)) return false;
+    if (
+      updating &&
+      userData.name &&
+      userData.description &&
+      (userData.name?.length > 50 || userData.description?.length > 500)
     )
       return false;
     return true;
