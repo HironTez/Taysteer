@@ -10,7 +10,6 @@ import './Recipe.comments.sass';
 import {
   confirmDialogElement,
   dateToTimeAgo,
-  horizontalScrollShadow,
   popup,
 } from '../../scripts/own.module';
 import { RecipeCommentT } from '../../types/entities';
@@ -60,8 +59,6 @@ export const RecipeComments: React.FC<{
   useEffect(() => {
     clearRecipeCommentsList(); // Clear recipes
     fetchRecipeComments(recipeId, 1); // Fetch new recipes
-
-    horizontalScrollShadow();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location, recipeId]);
 
@@ -102,7 +99,7 @@ export const RecipeComments: React.FC<{
                 () => {
                   sendingCommentHandler(e, 'edit', comment.id.toString());
                 },
-                () => {},
+                null,
                 'Edit this comment?',
                 'Edit',
                 'Cancel'
@@ -162,12 +159,14 @@ export const RecipeComments: React.FC<{
             <button
               className="edit gray"
               onClick={(e) => {
-                const comment = $($('.comment').get(i)!);
+                const comment = $($('.comment').get(i) as HTMLElement);
                 const previousText = comment
                   .children('.content-wrapper')
                   .children('.text')
                   .text();
-                const buttons = $($('.additional-buttons').get(i)!);
+                const buttons = $(
+                  $('.additional-buttons').get(i) as HTMLElement
+                );
                 comment.addClass('hidden');
                 buttons.addClass('hidden');
                 $(
@@ -191,7 +190,7 @@ export const RecipeComments: React.FC<{
                     () => {
                       fetchDeleteRecipeComment(comment.id.toString());
                     },
-                    () => {},
+                    null,
                     'Delete this comment? This action cannot be undone.',
                     'Delete',
                     'Cancel'

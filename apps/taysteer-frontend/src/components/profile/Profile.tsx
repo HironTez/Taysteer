@@ -40,7 +40,10 @@ export const Profile: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, userId]);
 
-  useEffect(allowVerticalScroll, []);
+  useEffect(() => {
+    if (window.innerWidth >= 1000) allowVerticalScroll(false);
+    else allowVerticalScroll(true);
+  }, []);
 
   const deleteProfileHandler = () => {
     if (!deleteProfileLoading && !deleteProfileSuccess && profile?.id) {
