@@ -16,7 +16,10 @@ export const Login: React.FC = () => {
         method: 'post',
         enctype: 'application/json',
       },
-      undefined,
+      // On success
+      () => {
+        popup('This website is using cookies to keep you signed in', 'info', 10000);
+      },
       // On error
       (error) => {
         // If wrong login or password
