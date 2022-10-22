@@ -14,6 +14,7 @@ import { Profile } from './components/profile/Profile';
 import { UploadRecipe } from './components/upload.recipe/Upload.recipe';
 import { EditRecipe } from './components/edit.recipe/Edit.recipe';
 import { EditProfile } from './components/edit.profile/Edit.profile';
+import { ComingSoon } from './components/coming.soon/Coming.soon';
 
 ReactDOM.render(
   <StrictMode>
@@ -36,6 +37,8 @@ ReactDOM.render(
             <Route path="/profile/:userId/edit" element={<EditProfile />} />
             <Route path="/new-recipe" element={<UploadRecipe />} />
             <Route path="/recipes/:recipeId/edit" element={<EditRecipe />} />
+            <Route path="/leaderboard" element={<ComingSoon />} />
+            {/* <Route path="*" element={<NotFound />} /> */}
           </Routes>
         </main>
       </Router>
