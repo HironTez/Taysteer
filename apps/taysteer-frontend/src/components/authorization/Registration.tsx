@@ -25,15 +25,24 @@ export const Registration: React.FC = () => {
   );
 
   const handleForm = () => {
-    const passwordEl = document.querySelector(
+    const loginElement = document.querySelector(
+      'input[name="login"]'
+    ) as HTMLInputElement;
+    const passwordElement = document.querySelector(
       'input[name="password"]'
     ) as HTMLInputElement;
-    const confirmPasswordEl = document.querySelector(
+    const confirmPasswordElement = document.querySelector(
       'input[name="confirm-password"]'
     ) as HTMLInputElement;
-    if (passwordEl.value !== confirmPasswordEl.value) {
-      confirmPasswordEl.classList.add('error');
-      confirmPasswordEl.setCustomValidity('Passwords do not match');
+    // Check if login doesn't contain special characters
+    if (!/^[a-zA-Z0-9]+$/.test(loginElement.value)) {
+      loginElement.classList.add('error');
+      loginElement.setCustomValidity('Special characters are not allowed');
+    };
+    // Check if passwords match
+    if (passwordElement.value !== confirmPasswordElement.value) {
+      confirmPasswordElement.classList.add('error');
+      confirmPasswordElement.setCustomValidity('Passwords do not match');
     }
   };
 
@@ -49,7 +58,7 @@ export const Registration: React.FC = () => {
       // On error
       (error) => {
         if (error.status === 409) {
-          popup('User with the same login already exists', 'error'); // Show error
+          popup('This login is already taken', 'error'); // Show error
           $('input[name="login"]').addClass('error'); // Change input color
           // Add custom validity
           $('input[name="login"]').each((_i, element) => {

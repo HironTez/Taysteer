@@ -111,11 +111,11 @@ export class RecipeController {
     @Param('recipeId') recipeId: string,
     @Query('rating') rating = 0
   ) {
-    const hasRecipeAccess = !(await this.recipeService.hasRecipeAccess(
+    const hasRatingAccess = await this.recipeService.hasRatingAccess(
       req.user.id,
       recipeId
-    ));
-    if (!hasRecipeAccess) return res.status(HttpStatus.FORBIDDEN).send();
+    );
+    if (!hasRatingAccess) return res.status(HttpStatus.FORBIDDEN).send();
 
     const ratedRecipe = await this.recipeService.rateRecipe(
       recipeId,
