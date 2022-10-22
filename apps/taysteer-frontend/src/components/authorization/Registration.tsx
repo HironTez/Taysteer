@@ -17,7 +17,8 @@ export const Registration: React.FC = () => {
   };
 
   const debounceHandler = useMemo(
-      () => debounce(() => {
+    () =>
+      debounce(() => {
         handleForm();
       }, 1000),
     []
@@ -30,9 +31,7 @@ export const Registration: React.FC = () => {
     const confirmPasswordEl = document.querySelector(
       'input[name="confirm-password"]'
     ) as HTMLInputElement;
-    if (
-      passwordEl.value !== confirmPasswordEl.value
-    ) {
+    if (passwordEl.value !== confirmPasswordEl.value) {
       confirmPasswordEl.classList.add('error');
       confirmPasswordEl.setCustomValidity('Passwords do not match');
     }
@@ -50,7 +49,7 @@ export const Registration: React.FC = () => {
       // On error
       (error) => {
         if (error.status === 409) {
-          popup('User with this login already exists', 'error'); // Show error
+          popup('User with the same login already exists', 'error'); // Show error
           $('input[name="login"]').addClass('error'); // Change input color
           // Add custom validity
           $('input[name="login"]').each((_i, element) => {
@@ -58,13 +57,13 @@ export const Registration: React.FC = () => {
               'Login already exists'
             );
           });
-        } else if (error.status === 500) {
+        } else if (error.status >= 500) {
           popup('Server error', 'error');
         } else {
-          popup('Error', 'error');
+          popup('Something went wrong. Try again later.', 'error');
         }
       },
-      setLoading,
+      setLoading
     );
   };
 
