@@ -13,6 +13,7 @@ import {
   UserStringTypes,
   DeleteUserImageT,
   GetUserRecipesT,
+  IsAdminT,
 } from './user.service.types';
 import { User } from './user.model';
 import { Injectable } from '@nestjs/common';
@@ -54,6 +55,9 @@ export class UsersService {
     }
   };
 
+  isAdmin: IsAdminT = async (userId) =>
+    (await this.getUserByLogin(ADMIN_LOGIN))?.id === userId;
+
   checkAccess: CheckAccessT = async (
     user,
     requestedId,
@@ -61,7 +65,7 @@ export class UsersService {
   ) => {
     const userExists = await this.getUserById(requestedId);
     const isOwner = user.id == requestedId;
-    const isAdmin = user.id == (await this.getUserByLogin(ADMIN_LOGIN))?.id;
+    const isAdmin = await this.isAdmin(user.id);
     return Boolean(userExists && (isOwner == shouldBeOwner || isAdmin));
   };
 

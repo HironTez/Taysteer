@@ -17,6 +17,7 @@ import editIcon from '../../assets/images/navigation/edit-icon.svg';
 import deleteIcon from '../../assets/images/navigation/delete.svg';
 import { Rate } from '../rate/Rate';
 import { RecipeComments } from '../recipe.comments/Recipe.comments';
+import { ADMIN_LOGIN } from 'configs/common/config';
 
 export const Recipe: React.FC = () => {
   // Get the recipe
@@ -93,7 +94,7 @@ export const Recipe: React.FC = () => {
             <div className="text">
               {recipe.title}
               {(recipe.user.id === account?.id ||
-                account?.login === 'admin') && (
+                account?.login === ADMIN_LOGIN) && (
                 <div>
                   <NavLink to="./edit" className="edit-link">
                     <img src={editIcon} alt="edit" className="edit-icon" />
@@ -127,7 +128,7 @@ export const Recipe: React.FC = () => {
                 <div className="name">{recipe.user.name}</div>
                 <div
                   className={`username ${
-                    recipe.user.login === 'admin' ? 'admin' : ''
+                    recipe.user.login === ADMIN_LOGIN ? 'admin' : ''
                   }`}
                 >
                   @{recipe.user.login}

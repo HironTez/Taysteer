@@ -80,7 +80,9 @@ export class RecipeService {
         },
       },
     });
-    return Boolean(userIsOwner);
+    const userIsAdmin = await this.usersService.isAdmin(userId);
+
+    return Boolean(userIsOwner) || userIsAdmin;
   };
 
   hasCommentAccess: HasCommentAccessT = async (userId, commentId) => {
@@ -92,7 +94,9 @@ export class RecipeService {
         },
       },
     });
-    return Boolean(userIsOwner);
+    const userIsAdmin = await this.usersService.isAdmin(userId);
+
+    return Boolean(userIsOwner) || userIsAdmin;
   };
 
   getRecipes: GetRecipesT = (page = 1) =>
@@ -186,8 +190,7 @@ export class RecipeService {
           // Save link
           if (uploadedResponse) {
             if (isMainImage) recipeData.image = uploadedResponse;
-            else if (isStepImage)
-              recipeData.steps[id].image = uploadedResponse;
+            else if (isStepImage) recipeData.steps[id].image = uploadedResponse;
           }
         }
       }
@@ -273,8 +276,7 @@ export class RecipeService {
           // Save link
           if (uploadedResponse) {
             if (isMainImage) recipeData.image = uploadedResponse;
-            else if (isStepImage)
-              recipeData.steps[id].image = uploadedResponse;
+            else if (isStepImage) recipeData.steps[id].image = uploadedResponse;
           }
         }
       }

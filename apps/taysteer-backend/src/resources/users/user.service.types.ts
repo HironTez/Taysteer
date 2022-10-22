@@ -5,6 +5,7 @@ import { User } from './user.model';
 import { ExtendedMultipartFile } from '../../typification/interfaces';
 
 export type CreateAdminT = () => void;
+export type IsAdminT = (userId: string) => Promise<boolean>;
 export type CheckAccessT = (user: UserMinT, requestedId: string, shouldBeOwner: boolean) => Promise<boolean>;
 export type ValidateUserDataT = (userData: UserDataDto | User, updating: boolean) => Promise<boolean>;
 export type GetByIdT = (id: string) => Promise<User | undefined>;
