@@ -68,11 +68,6 @@ export const submitForm = (
       if (onSuccess) onSuccess(response); // Callback
     })
     .fail((error) => {
-      // Show the error
-      if (error.status >= 500) {
-        popup('Something went wrong. Try again.', 'error');
-      }
-
       if (setLoading) setLoading(false);
       if (setError) setError(error.statusText);
       if (onError) onError(error); // Error callback
