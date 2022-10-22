@@ -14,6 +14,7 @@ import {
 } from '../../scripts/own.module';
 import { RecipeCommentT } from '../../types/entities';
 import $ from 'jquery';
+import profileImage from '../../assets/images/profile.default.jpg';
 
 export const RecipeComments: React.FC<{
   recipeId: string;
@@ -69,14 +70,14 @@ export const RecipeComments: React.FC<{
           <NavLink to={`/profile/${comment.user.id}`}>
             <img
               className="profile-picture"
-              src={comment.user.image}
+              src={comment.user.image || profileImage}
               alt="commentator's profile"
             ></img>
           </NavLink>
 
           <div className="content-wrapper">
             <div className="info">
-              <div className="name">{comment.user.name}</div>
+              <div className="name">{comment.user.name || 'User'}</div>
               <Rating rating={comment.user.rating} />
               <div className="date">{dateToTimeAgo(comment.date)}</div>
               {comment.updated && <div className="edited">(edited)</div>}
