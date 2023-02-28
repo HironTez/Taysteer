@@ -1,18 +1,16 @@
 HOST_BACKEND=localhost
 HOST_FRONTEND=localhost
-PORT=4000 # Port backend
+# Port backend
+PORT=4000
 PORT_FRONTEND=3000
 
 # Generate random strings and place them here
 SESSION_SECRET_KEY=qwertyuiopasdfghjklzxcvbnm123456
+# Salt length: 16
 SESSION_SECRET_SALT=qwertyuiopasdfgh
 
 # Enter your postgres credentials
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-POSTGRES_DB=postgres
+POSTGRES_URL=postgres://username:password@host/database
 
 # Enter your Cloudinary credentials
 CLOUDINARY_CLOUD_NAME=qwerty
