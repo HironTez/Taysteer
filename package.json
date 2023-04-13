@@ -67,7 +67,7 @@
     "terser": "^5.14.2",
     "tslib": "^2.0.0",
     "typeorm": "^0.2.45",
-    "vm2": "^3.9.11",
+    "vm2": "^3.9.16",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
