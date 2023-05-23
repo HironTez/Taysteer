@@ -1,4 +1,4 @@
-.env
+./.env
 
 # Generic
 node_modules

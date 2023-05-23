@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "Nest.js",
+  "display": "ts-lib",
   "extends": "./base.json",
   "compilerOptions": {
     "module": "ESNext",
@@ -14,5 +14,5 @@
     "baseUrl": "./"
   },
   "include": ["src", "next-env.d.ts"],
-  "exclude": ["node_modules", "**/*.spec.ts"]
+  "exclude": ["node_modules"]
 }

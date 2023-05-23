@@ -20,5 +20,6 @@
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "bundler",
     "types": ["testing-library__jest-dom"]
-  }
+  },
+  "exclude": ["node_modules"]
 }
