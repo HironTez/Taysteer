@@ -1,7 +1,3 @@
-import {config} from "dotenv";
-config();
+import env from './env';
 
-export default {
-  PORT_BACKEND: Number(process.env.PORT_BACKEND ?? 4000),
-  PORT: Number(process.env.PORT ?? 3000),
-};
+export { env };
