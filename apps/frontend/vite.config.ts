@@ -14,7 +14,7 @@ export default defineConfig(({ command, mode }) => {
     ],
     server: {
       open: true,
-      port: Number(env.PORT) || undefined,
+      port: Number(env.PORT_FRONTEND) || undefined,
     },
     build: {
       outDir: "dist",
