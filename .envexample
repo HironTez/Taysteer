@@ -1,2 +1,4 @@
 PORT_BACKEND=4000
 PORT_FRONTEND=3000
+
+DATABASE_URL="mongodb+srv://root:randompassword@cluster0.ab1cd.mongodb.net/mydb?retryWrites=true&w=majority"
