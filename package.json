@@ -2,21 +2,22 @@
   "name": "taysteer",
   "version": "1.0.0",
   "description": "",
-  "packageManager": "pnpm@7.15.0",
+  "keywords": [],
+  "license": "MIT",
+  "author": "",
   "scripts": {
-    "dev": "turbo run dev",
     "build": "turbo run build",
+    "cypress": "turbo run cypress",
+    "dev": "turbo run dev",
+    "format": "prettier --write .",
     "lint": "turbo run lint",
     "preview": "turbo run preview",
     "start": "turbo run start",
-    "format": "prettier --write .",
     "test": "turbo run test"
   },
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "turbo": "^1.9.3"
-  }
+    "turbo": "^1.9.8"
+  },
+  "packageManager": "pnpm@7.15.0"
 }

@@ -12,6 +12,7 @@
     },
     "preview": {},
     "start": {},
-    "test": {}
+    "test": {},
+    "cypress": {}
   }
 }
