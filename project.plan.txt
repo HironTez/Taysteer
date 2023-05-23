@@ -1,6 +1,0 @@
-Frontend:
-- Add leaderboard page
-- Add 404 page
-- Fix styles (return horizontal scroll, fix new recipe page on mobile)
-
-- ? Hidden navbar on small devices

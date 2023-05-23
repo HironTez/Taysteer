@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Nest.js",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2017",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "plugins": [
+      {
+        "transform": "@nestia/core/lib/transform",
+        "validate": "assert",
+        "stringify": "assert"
+      },
+      {
+        "transform": "typia/lib/transform"
+      }
+    ]
+  },
+  "include": ["src", "next-env.d.ts"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}
