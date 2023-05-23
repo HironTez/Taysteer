@@ -1,16 +1,30 @@
 {
   "name": "frontend",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "start": "vite",
     "build": "tsc && vite build",
+    "dev": "vite",
+    "lint": "eslint . --ext ts,tsx --fix --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
+    "start": "vite",
     "test": "vitest",
-    "type-check": "tsc",
-    "lint": "eslint . --ext ts,tsx --fix --report-unused-disable-directives --max-warnings 0"
+    "type-check": "tsc"
+  },
+  "prettier": "prettier-config-nick",
+  "eslintConfig": {
+    "plugins": [
+      "prettier"
+    ],
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ],
+    "rules": {
+      "prettier/prettier": "error",
+      "react/jsx-no-target-blank": "off"
+    }
   },
   "dependencies": {
     "@mui/material": "^5.12.2",
@@ -31,6 +45,7 @@
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
     "@types/testing-library__jest-dom": "^5.14.5",
+    "config": "workspace:*",
     "cypress": "^12.12.0",
     "eslint": "^8.38.0",
     "eslint-config-prettier": "^8.3.0",
@@ -40,24 +55,9 @@
     "eslint-plugin-react-refresh": "^0.3.4",
     "jsdom": "^21.1.0",
     "sucrase": "^3.32.0",
+    "tsconfig": "workspace:*",
     "typescript": "^5.0.2",
     "vite": "^4.0.0",
-    "vitest": "^0.30.1",
-    "config": "workspace:*",
-    "tsconfig": "workspace:*"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ],
-    "plugins": [
-      "prettier"
-    ],
-    "rules": {
-      "prettier/prettier": "error",
-      "react/jsx-no-target-blank": "off"
-    }
-  },
-  "prettier": "prettier-config-nick"
+    "vitest": "^0.30.1"
+  }
 }
