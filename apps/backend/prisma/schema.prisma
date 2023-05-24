@@ -11,10 +11,76 @@ datasource db {
 }
 
 model User {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id            String         @id @default(uuid()) @map("_id") @db.ObjectId
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  role          Role           @default(USER)
+  status        Status         @default(ACTIVE)
+  email         String
+  password      String
+  login         String         @unique
+  name          String?
+  description   String?
+  image         String?
+  recipes       Recipe[]
+  comments      Comment[]
+  recipeRatings RecipeRating[]
+}
+
+enum Role {
+  ADMIN @map("admin")
+  USER  @map("user")
+
+  @@map("_Role")
+}
+
+enum Status {
+  ACTIVE @map("admin")
+  BANNED @map("banned")
+
+  @@map("_Status")
+}
+
+model Recipe {
+  id          String             @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  authorId    String             @db.ObjectId
+  author      User?              @relation(fields: [authorId], references: [id])
+  ingredients RecipeIngredient[]
+  steps       RecipeStep[]
+  comments    Comment[]
+  ratings     RecipeRating[]
+}
+
+type RecipeIngredient {
+  count    String
+  name     String
+  optional Boolean @default(false)
+}
+
+type RecipeStep {
+  title       String
+  description String
+  image       String
+}
+
+model RecipeRating {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  value    Int
+  userId   String @db.ObjectId
+  user     User?  @relation(fields: [userId], references: [id])
+  recipeId String @db.ObjectId
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   createdAt DateTime @default(now())
-  email     String
-  password  String
-  login     String?
-  name      String?
+  updatedAt DateTime @updatedAt
+  content   String
+  authorId  String   @db.ObjectId
+  author    User?    @relation(fields: [authorId], references: [id])
+  recipeId  String   @db.ObjectId
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 }
