@@ -6,6 +6,7 @@
     "build": "swc --out-dir dist src",
     "dev": "nodemon -e ts -w ./src -x \"npm run build && npm run preview\"",
     "lint": "eslint src test --ext ts --fix --report-unused-disable-directives --max-warnings 0",
+    "prepare": "prisma generate",
     "preview": "node dist/main",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",

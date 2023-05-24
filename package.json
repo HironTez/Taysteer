@@ -11,6 +11,7 @@
     "dev": "turbo run dev",
     "format": "prettier --write .",
     "lint": "turbo run lint",
+    "prepare": "turbo run prepare",
     "preview": "turbo run preview",
     "start": "turbo run start",
     "test": "turbo run test"
