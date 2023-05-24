@@ -1,47 +1,53 @@
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import {
+  FastifyAdapter,
+  NestFastifyApplication,
+} from '@nestjs/platform-fastify';
+import { PORT_BACKEND, SESSION_SECRET_KEY, SESSION_SECRET_SALT } from 'config';
 
 import { AppModule } from './app.module';
 import { NestFactory } from '@nestjs/core';
-import { PrismaClient } from '@prisma/client';
-import { env } from 'config';
-
-const prisma = new PrismaClient();
-
-async function main() {
-  const user = await prisma.user.create({
-    data: {
-      email: 'test@example.com',
-      password: 'testpassword',
-    },
-  });
-  console.log(user);
-}
+import { SwaggerModule } from '@nestjs/swagger';
+import YAML from 'yamljs';
+import fastifyPassport from '@fastify/passport';
+import path from 'path';
+import secureSession from '@fastify/secure-session';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  // Create app
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter(),
+  );
 
-  const documentConfig = new DocumentBuilder()
-    .setTitle('API')
-    .setDescription('The API description')
-    .setVersion('1.0')
-    .addTag('api')
-    .build();
+  // Check required environment variables
+  if (!SESSION_SECRET_KEY)
+    throw new ReferenceError(
+      'No session secret key found. Please update the SESSION_SECRET_KEY environment variable.',
+    );
+  if (!SESSION_SECRET_SALT)
+    throw new ReferenceError(
+      'No session secret salt found. Please update the SESSION_SECRET_SALT environment variable.',
+    );
 
-  const document = SwaggerModule.createDocument(app, documentConfig);
-  SwaggerModule.setup('', app, document);
-
-  await app.listen(env.PORT_BACKEND).then(async () => {
-    main()
-      .then(async () => {
-        await prisma.$disconnect();
-      })
-      .catch(async (e) => {
-        console.error(e);
-        await prisma.$disconnect();
-        process.exit(1);
-      });
-
-    console.log(`Listening on http://localhost:${env.PORT_BACKEND}`);
+  // Set up sessions
+  app.register(secureSession, {
+    secret: SESSION_SECRET_KEY,
+    salt: SESSION_SECRET_SALT,
+    cookie: {
+      // path: '*',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+    },
   });
+  app.register(fastifyPassport.initialize());
+  app.register(fastifyPassport.secureSession());
+
+  const swaggerDocument = YAML.load(
+    path.join(__dirname, '../doc/api.yaml')
+  );
+  SwaggerModule.setup('', app, swaggerDocument);
+
+  // Start application
+  await app.listen(PORT_BACKEND);
+  console.log(`Listening on http://localhost:${PORT_BACKEND}`);
 }
 bootstrap();
