@@ -4,6 +4,7 @@ import {
 } from '@nestjs/platform-fastify';
 import { PORT_BACKEND, SESSION_SECRET_KEY, SESSION_SECRET_SALT } from 'config';
 
+import { AllExceptionsFilter } from './middleware/exceptions.filter';
 import { AppModule } from './app.module';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
@@ -40,6 +41,9 @@ async function bootstrap() {
   });
   app.register(fastifyPassport.initialize());
   app.register(fastifyPassport.secureSession());
+
+  // Set up global error handle
+  app.useGlobalFilters(new AllExceptionsFilter());
 
   const swaggerDocument = YAML.load(
     path.join(__dirname, '../doc/api.yaml')
