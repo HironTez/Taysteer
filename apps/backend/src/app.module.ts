@@ -11,8 +11,8 @@ import { ReqLogMiddleware } from './middleware/req.log.middleware';
 
 @Module({
   imports: [AuthModule],
-  controllers: [],
   providers: [PrismaService],
+  controllers: [],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -12,7 +12,7 @@ import { PrismaService } from '../db/prisma.service';
       session: true,
     }),
   ],
-  controllers: [AuthController],
   providers: [AuthService, LocalStrategy, LocalSerializer, PrismaService],
+  controllers: [AuthController],
 })
 export class AuthModule {}
