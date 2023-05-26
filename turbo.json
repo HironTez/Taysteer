@@ -10,10 +10,8 @@
       "cache": false,
       "persistent": true
     },
-    "preview": {},
     "start": {},
     "test": {},
-    "cypress": {},
-    "postinstall": {}
+    "cypress": {}
   }
 }

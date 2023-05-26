@@ -1,4 +1,0 @@
-{
-  "extends": "tsconfig/nestjs.json",
-  "include": ["src", "test"]
-}

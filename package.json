@@ -10,9 +10,7 @@
     "cypress": "turbo run cypress",
     "dev": "turbo run dev",
     "format": "prettier --write .",
-    "postinstall": "turbo run postinstall",
     "lint": "turbo run lint",
-    "preview": "turbo run preview",
     "start": "turbo run start",
     "test": "turbo run test"
   },
