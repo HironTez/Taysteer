@@ -17,7 +17,7 @@ model User {
   role        Role     @default(USER)
   status      Status   @default(ACTIVE)
   email       String
-  password    String
+  passwordHash    String
   username    String   @unique
   name        String?
   description String?
