@@ -4,6 +4,7 @@ import { prisma } from "@/db";
 
 export async function POST(req: Request) {
   const { email, password } = await req.json();
+  
   // Check if email isn't registered
   const exists = await prisma.user.findUnique({
     where: {
@@ -15,8 +16,8 @@ export async function POST(req: Request) {
 
   // Generate an unique username
   let username = "";
-  while (username && (await prisma.user.findUnique({ where: { username } })))
-    username = `user${Math.random() * 1000000000}`;
+  while (!username || (await prisma.user.findUnique({ where: { username } })))
+    username = `user${Math.floor(Math.random() * 1000000000)}`;
 
   // Create the user
   const user = await prisma.user.create({
