@@ -2,6 +2,7 @@ import NextAuth, { type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/db";
 import bcrypt from "bcrypt";
+import { Status } from "@prisma/client";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -23,6 +24,10 @@ export const authOptions: NextAuthOptions = {
         // if user doesn't exist or password doesn't match
         if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
           throw new Error("Invalid login or password");
+        }
+        // If user is banned
+        if (user.status === Status.BANNED) {
+          throw new Error("Account banned");
         }
         return user;
       },
