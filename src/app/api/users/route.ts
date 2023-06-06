@@ -1,5 +1,6 @@
 import { GetUsersDTO } from "./users.dto";
 import { NextResponse } from "next/server";
+import { excludePassword } from "./tools";
 import { prisma } from "@/db";
 
 /**
@@ -17,9 +18,13 @@ export async function GET(
 
   // Get data from database
   const users = await prisma.user.findMany({ take: take, skip: page * take });
+  const usersWithoutPasswords = users.map(excludePassword);
   const numberOfUsers = await prisma.user.count();
 
   const hasMore = (page + 1) * take < numberOfUsers;
 
-  return NextResponse.json({ users, pagination: { hasMore } });
+  return NextResponse.json({
+    users: usersWithoutPasswords,
+    pagination: { hasMore },
+  });
 }

@@ -3,7 +3,7 @@ import { User } from "@prisma/client";
 type Pagination = { hasMore: boolean };
 
 interface GetUsers {
-  users: User[]
+  users: Omit<User, 'passwordHash'>[]
   pagination: Pagination
 }
 
