@@ -1,4 +1,4 @@
-import { GetUsersDTO } from "./users.dto";
+import { GetUsersDto } from "./users.dto";
 import { NextResponse } from "next/server";
 import { excludePassword } from "./tools";
 import { prisma } from "@/db";
@@ -10,7 +10,7 @@ import { prisma } from "@/db";
  */
 export async function GET(
   request: Request
-): Promise<NextResponse<GetUsersDTO>> {
+): Promise<NextResponse<GetUsersDto>> {
   // Get query parameters
   const { searchParams } = new URL(request.url);
   const page = Number(searchParams.get("page")) || 0;

@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { UserDto } from "./users.dto";
 import { getUsers } from "./query";
-import { User } from "@prisma/client";
+import { useState } from "react";
 
 export const useUsers = () => {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserDto[]>([]);
   const [page, setPage] = useState(-1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
