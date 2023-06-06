@@ -62,7 +62,7 @@ export default function Form({ type }: { type: "login" | "register" }) {
           id="login"
           name="login"
           type="login"
-          placeholder="panic@thedis.co"
+          placeholder="Email or username"
           autoComplete="login"
           required
         />
