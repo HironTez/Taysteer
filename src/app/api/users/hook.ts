@@ -11,11 +11,11 @@ export const useUsers = () => {
 
   const loadMore = autoLoading(
     () =>
-      getUsers(page + 1, 1).then((data) => {
-        if (data?.users?.length) {
-          setUsers(users.concat(data.users));
+      getUsers(page + 1, 1).then((response) => {
+        if (response?.data?.users.length) {
+          setUsers(users.concat(response.data.users));
           setPage(page + 1);
-          setHasMore(data.pagination.hasMore);
+          setHasMore(response.data.pagination.hasMore);
         }
       }),
     setLoading
