@@ -1,9 +1,16 @@
-export interface HttpErrorT {
-  message: string;
-  status: number;
+import { ReasonPhrases, StatusCodes } from "http-status-codes";
+
+interface HttpErrorT<Status extends StatusCodes> {
+  message: ReasonPhrases;
+  status: Status;
 }
 
-export type GetDto<T> = {
-  data?: T;
-  error?: HttpErrorT;
-} | null;
+export type ResponseDto<DataT> = {
+  ok: boolean;
+  data: DataT;
+  error: undefined;
+} | {
+  ok: boolean;
+  data: undefined;
+  error: HttpErrorT<StatusCodes>;
+};

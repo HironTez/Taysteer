@@ -1,13 +1,18 @@
+import { ResponseDto } from '../dto';
 import { User } from "@prisma/client";
-import { GetDto } from "../dto";
+
+export interface GetUsersRequestDto {
+  page: string;
+  take: string;
+}
 
 type Pagination = { hasMore: boolean };
 
-export type UserDto = Omit<User, "passwordHash">;
+export type UserResponseT = Omit<User, "passwordHash">;
 
-interface UsersDto {
+export interface GetUsersResponseT {
   users: Omit<User, "passwordHash">[];
   pagination: Pagination;
 }
 
-export type GetUsersDto = GetDto<UsersDto>;
+export type GetUsersResponseDto = ResponseDto<GetUsersResponseT>

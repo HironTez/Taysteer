@@ -1,16 +1,22 @@
-import { StatusCodes, getReasonPhrase } from "http-status-codes";
-import { getServerSession } from "next-auth";
+import { ReasonPhrases, StatusCodes, getReasonPhrase } from "http-status-codes";
+
 import { NextResponse } from "next/server";
-import { HttpErrorT } from "./dto";
+import { getServerSession } from "next-auth";
 
-export const HttpResponse = <T>(data: T) => NextResponse.json({ data });
+export const HttpResponse = <T>(data: T) =>
+  NextResponse.json({ data, ok: true, error: undefined });
 
-export const HttpError = (
-  statusCode: StatusCodes
-): NextResponse<{ error: HttpErrorT }> =>
+export const HttpError = <Status extends StatusCodes>(
+  statusCode: Status
+) =>
   NextResponse.json(
     {
-      error: { message: getReasonPhrase(statusCode), status: statusCode },
+      error: {
+        message: getReasonPhrase(statusCode) as ReasonPhrases,
+        status: statusCode,
+      },
+      ok: false,
+      data: undefined,
     },
     { status: statusCode }
   );

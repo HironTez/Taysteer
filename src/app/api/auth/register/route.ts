@@ -1,31 +1,34 @@
-import { NextResponse } from "next/server";
+import { HttpError, HttpResponse } from "./../../tools";
+
+import { StatusCodes } from "http-status-codes";
+import { excludePassword } from "../../users/tools";
 import { hash } from "bcrypt";
 import { prisma } from "@/db";
 
 export async function POST(req: Request) {
   const { email, password } = await req.json();
-  
+
   // Check if email isn't registered
   const exists = await prisma.user.findUnique({
     where: {
       email,
     },
   });
-  if (exists)
-    return NextResponse.json({ error: "User already exists" }, { status: 400 });
+  if (exists) return HttpError(StatusCodes.CONFLICT);
 
-  // Generate an unique username
-  let username = "";
-  while (!username || (await prisma.user.findUnique({ where: { username } })))
-    username = `user${Math.floor(Math.random() * 1000000000)}`;
+  // Hash the password
+  const passwordHash = await hash(password, 10);
+
+  // Create an unique username
+  const username = `user${Date.now()}`;
 
   // Create the user
   const user = await prisma.user.create({
     data: {
       email,
-      passwordHash: await hash(password, 10),
+      passwordHash,
       username,
     },
   });
-  return NextResponse.json(user);
+  return HttpResponse(excludePassword(user));
 }

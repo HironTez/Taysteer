@@ -1,21 +1,46 @@
 import { PromiseController } from "@/utils/promise";
+import { ResponseDto } from "./dto";
 import { toast } from "react-hot-toast";
 
-export const request = async <ResponseType>(
+export const request = async <
+  ResponseType extends ResponseDto<unknown>,
+  RequestType = unknown
+>(
   url: string,
-  queries?: { [key: string]: string }
+  data?: RequestType,
+  method: "GET" | "POST" | "PUT" = "GET"
 ) => {
-  const promiseController = new PromiseController<ResponseType | null>();
-  fetch(`${url}?${new URLSearchParams(queries).toString()}`)
+  const promiseController = new PromiseController<ResponseType>();
+  fetch(
+    `${url}${
+      method === "GET"
+        ? `?${new URLSearchParams(data as Record<string, string>).toString()}`
+        : ""
+    }`,
+    {
+      body:
+        method === "POST" || method === "PUT"
+          ? JSON.stringify(data)
+          : undefined,
+      method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
     .then((response) =>
       response
         .json()
-        .then((result) => promiseController.resolve(result as ResponseType))
-        .catch(() => promiseController.resolve(null))
+        .then((result) => promiseController.resolve(result))
+        .catch((error) => {
+          toast.error(error.message);
+          promiseController.reject(error);
+        })
     )
     .catch((error) => {
-      toast.error(error.message)
-      promiseController.reject(error)});
+      toast.error(error.message);
+      promiseController.reject(error);
+    });
 
   return promiseController.promise;
 };
