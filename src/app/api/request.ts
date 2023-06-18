@@ -1,5 +1,8 @@
+"use client";
+
 import { PromiseController } from "@/utils/promise";
 import { ResponseDto } from "./dto";
+import { StatusCodes } from "http-status-codes";
 import { toast } from "react-hot-toast";
 
 export const request = async <
@@ -31,7 +34,11 @@ export const request = async <
     .then((response) =>
       response
         .json()
-        .then((result) => promiseController.resolve(result))
+        .then((result: ResponseType) => {
+          if (result.error?.status === StatusCodes.UNAUTHORIZED)
+            window.location.href = "/login";
+          return promiseController.resolve(result);
+        })
         .catch((error) => {
           toast.error(error.message);
           promiseController.reject(error);

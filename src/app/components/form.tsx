@@ -34,14 +34,14 @@ export default function Form({ type }: { type: "login" | "register" }) {
         } else {
           // Register
           register(login, password).then((result) => {
-            console.log("🚀 ~ file: form.tsx:37 ~ register ~ result:", result)
             if (result.ok) {
               // Log in
               logIn(login, password).then((result) => {
                 setLoading(false);
 
                 if (result?.ok) router.push("/");
-                else router.push("/login");
+                // Handle errors
+                else if (result?.error) toast.error(result.error);
               });
             }
             // Handle errors
