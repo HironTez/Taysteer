@@ -1,4 +1,4 @@
-import { UserResponseT } from "./users.dto";
+import { UserResponseT } from "./[userId]/user.dto";
 import { autoLoading } from "@/utils";
 import { getUsers } from "./query";
 import { useState } from "react";

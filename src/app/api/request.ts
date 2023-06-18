@@ -16,7 +16,7 @@ export const request = async <
   const promiseController = new PromiseController<ResponseType>();
   fetch(
     `${url}${
-      method === "GET"
+      method === "GET" && data
         ? `?${new URLSearchParams(data as Record<string, string>).toString()}`
         : ""
     }`,

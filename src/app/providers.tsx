@@ -1,17 +1,19 @@
 "use client";
 
 import {
+  Theme as MUITheme,
   ThemeProvider as MUIThemeProvider,
-  Theme,
   createTheme,
 } from "@mui/material";
 import React, { PropsWithChildren, useEffect, useState } from "react";
 
 import { ThemeProvider as SCThemeProvider } from "styled-components";
+import { SessionProvider } from "next-auth/react";
 import { useMediaQuery } from "@mui/material";
 
+// Declare types for styled components to work with MUI theme
 declare module "styled-components" {
-  interface DefaultTheme extends Theme {}
+  interface DefaultTheme extends MUITheme {}
 }
 
 export const ColorModeContext = React.createContext({
@@ -45,7 +47,9 @@ const Providers = (props: PropsWithChildren) => {
   return (
     <ColorModeContext.Provider value={colorMode}>
       <MUIThemeProvider theme={theme}>
-        <SCThemeProvider theme={theme}>{props.children}</SCThemeProvider>
+        <SCThemeProvider theme={theme}>
+          <SessionProvider>{props.children}</SessionProvider>
+        </SCThemeProvider>
       </MUIThemeProvider>
     </ColorModeContext.Provider>
   );
