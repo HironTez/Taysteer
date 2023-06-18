@@ -1,19 +1,10 @@
 import { HttpError, HttpResponse, isAuthenticated } from "../tools";
 
-import { GetUsersResponseDto } from "./users.dto";
-import { NextResponse } from "next/server";
 import { StatusCodes } from "http-status-codes";
 import { excludePassword } from "./tools";
 import { prisma } from "@/db";
 
-/**
- * Get user list
- * @query page — Index of page to return. Starts with 0. Default 0.
- * @query take — The number of users to return. Default 10.
- */
-export async function GET(
-  request: Request
-): Promise<NextResponse<GetUsersResponseDto>> {
+export async function GET(request: Request) {
   // Auth guard
   if (!(await isAuthenticated())) return HttpError(StatusCodes.UNAUTHORIZED);
 
