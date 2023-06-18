@@ -1,7 +1,8 @@
 import "./globals.css";
 
-import AuthStatus from "./components/auth-status";
 import { Inter } from "next/font/google";
+import Providers from "./providers";
+import StyledLayout from "./styled.layout";
 import { Suspense } from "react";
 import { Toaster } from "react-hot-toast";
 
@@ -22,10 +23,10 @@ export default function RootLayout({
       <body className={inter.className}>
         <Toaster />
         <Suspense fallback="Loading...">
-          {/* @ts-expect-error Async Server Component */}
-          <AuthStatus />
+          <Providers>
+            <StyledLayout>{children}</StyledLayout>
+          </Providers>
         </Suspense>
-        {children}
       </body>
     </html>
   );
