@@ -9,17 +9,18 @@ export const useUsers = () => {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
-  const loadMore = autoLoading(
-    () =>
-      getUsers(page + 1, 1).then((response) => {
-        if (response?.data?.users.length) {
-          setUsers(users.concat(response.data.users));
-          setPage(page + 1);
-          setHasMore(response.data.pagination.hasMore);
-        }
-      }),
-    setLoading
-  );
+  const loadMore = () =>
+    autoLoading(
+      () =>
+        getUsers(page + 1, 1).then((response) => {
+          if (response?.data?.users.length) {
+            setUsers(users.concat(response.data.users));
+            setPage(page + 1);
+            setHasMore(response.data.pagination.hasMore);
+          }
+        }),
+      setLoading
+    );
 
   return {
     users,

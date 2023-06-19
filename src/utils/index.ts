@@ -1,10 +1,8 @@
-export const autoLoading = (
+export const autoLoading = async (
   func: () => Promise<any>,
   setLoading: (state: boolean) => void
 ) => {
-  return async () => {
-    setLoading(true);
-    await func();
-    setLoading(false);
-  };
+  setLoading(true);
+  await func();
+  setLoading(false);
 };

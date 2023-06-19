@@ -6,7 +6,7 @@ import { useUser } from "@/app/api/users/[userId]/hook";
 interface IAuthMasterProps {}
 
 const AuthMaster = (props: IAuthMasterProps) => {
-  const user = useUser("me");
+  const { user, loading } = useUser("me");
 
   return <S.Container>{JSON.stringify(user)}</S.Container>;
 };
