@@ -1,20 +1,26 @@
-import { HttpError, HttpResponse } from "./../../tools";
+"use server";
 
-import { StatusCodes } from "http-status-codes";
-import { excludePassword } from "../../users/tools";
 import { hash } from "bcrypt";
 import { prisma } from "@/db";
+import { z } from "zod";
 
-export async function POST(req: Request) {
-  const { email, password } = await req.json();
+export const createUserSchema = z
+  .object({
+    email: z.string().email("Invalid email"),
+    password: z.string().min(8, "Password must be at least 8 characters long"),
+  })
+  .strict();
 
+type CreateUserDataT = z.infer<typeof createUserSchema>;
+
+export const createUser = async ({ email, password }: CreateUserDataT) => {
   // Check if email isn't registered
   const exists = await prisma.user.findUnique({
     where: {
       email,
     },
   });
-  if (exists) return HttpError(StatusCodes.CONFLICT);
+  if (exists) return { error: "This email is already registered" };
 
   // Hash the password
   const passwordHash = await hash(password, 10);
@@ -30,5 +36,6 @@ export async function POST(req: Request) {
       username,
     },
   });
-  return HttpResponse(excludePassword(user));
-}
+
+  return user;
+};

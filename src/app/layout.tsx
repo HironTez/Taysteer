@@ -1,7 +1,6 @@
 import "./globals.css";
 
 import { Inter } from "next/font/google";
-import Providers from "./providers";
 import StyledLayout from "./styled.layout";
 import { Suspense } from "react";
 import { Toaster } from "react-hot-toast";
@@ -23,9 +22,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <Toaster />
         <Suspense fallback="Loading...">
-          <Providers>
-            <StyledLayout>{children}</StyledLayout>
-          </Providers>
+          <StyledLayout>{children}</StyledLayout>
         </Suspense>
       </body>
     </html>

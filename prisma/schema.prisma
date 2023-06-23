@@ -46,6 +46,7 @@ model Recipe {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  rating    Int      @default(0)
 
   author   User?   @relation(fields: [authorId], references: [id])
   authorId String? @db.ObjectId

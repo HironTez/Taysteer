@@ -8,12 +8,12 @@ export const HttpResponse = <T>(data: T): NextResponse<ResponseDto<T>> =>
   NextResponse.json({ data, ok: true, error: undefined });
 
 export const HttpError = <Status extends StatusCodes>(
-  statusCode: Status
+  statusCode: Status, customErrorMessage?: string
 ): NextResponse<ResponseDto<undefined>> =>
   NextResponse.json(
     {
       error: {
-        message: getReasonPhrase(statusCode) as ReasonPhrases,
+        message: customErrorMessage ?? getReasonPhrase(statusCode) as ReasonPhrases,
         status: statusCode,
       },
       ok: false,
