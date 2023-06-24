@@ -1,15 +1,11 @@
 "use server";
 
+import { error, response } from "./dto";
+
+import { createUserSchema } from "../schemas/user";
 import { hash } from "bcrypt";
 import { prisma } from "@/db";
 import { z } from "zod";
-
-export const createUserSchema = z
-  .object({
-    email: z.string().email("Invalid email"),
-    password: z.string().min(8, "Password must be at least 8 characters long"),
-  })
-  .strict();
 
 type CreateUserDataT = z.infer<typeof createUserSchema>;
 
@@ -20,7 +16,10 @@ export const createUser = async ({ email, password }: CreateUserDataT) => {
       email,
     },
   });
-  if (exists) return { error: "This email is already registered" };
+  if (exists)
+    return error<CreateUserDataT>("This email is already registered", [
+      "email",
+    ]);
 
   // Hash the password
   const passwordHash = await hash(password, 10);
@@ -37,5 +36,5 @@ export const createUser = async ({ email, password }: CreateUserDataT) => {
     },
   });
 
-  return user;
+  return response(user);
 };
