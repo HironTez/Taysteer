@@ -7,7 +7,6 @@ export type ValidateRecipeDataT = (recipe: RecipeDataDto) => boolean;
 export type ValidateCommentT = (CommentText: string) => boolean;
 export type HasRecipeAccessT = (userId: string, recipeId: string) => Promise<boolean>;
 export type HasCommentAccessT = (userId: string, commentId: number) => Promise<boolean>;
-export type HasRatingAccessT = (userId: string, recipeId: string) => Promise<boolean>;
 export type GetRecipesT = (page: number) => Promise<Array<Recipe>>;
 export type GetRecipeByIdT = (id: string) => Promise<Recipe | undefined>;
 export type GetRecipesByTitleT = (title: string, page: number) => Promise<Array<Recipe>>;
