@@ -9,7 +9,7 @@ import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { actionError } from "../../utils/dto";
-import { getSearchParam } from "./url";
+import { getPathname, getSearchParam } from "./url";
 
 const SECRET = process.env.AUTH_SECRET!;
 
@@ -132,7 +132,7 @@ export const logOut = () => {
   redirect("/");
 };
 
-export const getSession = async () => {
+const getSession = async () => {
   const token = cookies().get("authToken")?.value.replace("Bearer ", "");
   if (!token) return null;
 
@@ -149,4 +149,18 @@ export const getSession = async () => {
   });
 
   return user ? { user } : null;
+};
+
+export const authGuard = async (inverted?: "inverted") => {
+  const pathname = getPathname();
+  const redirectTo = getSearchParam("redirectTo");
+
+  const session = await getSession();
+  if (!inverted && !session?.user) {
+    redirect(`/auth?redirectTo=${pathname}`);
+  } else if (inverted && session?.user) {
+    redirect(redirectTo ?? "/");
+  }
+
+  return session;
 };

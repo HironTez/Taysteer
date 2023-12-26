@@ -1,7 +1,7 @@
-import { authGuard } from "@/utils/authGuard";
 import { revalidatePath } from "next/cache";
 import React from "react";
 import { ActionError } from "../../utils/dto";
+import { authGuard } from "../internal-actions/auth";
 import { getUrl } from "../internal-actions/url";
 import { LogInSchemaT } from "../schemas/user";
 import { resolveLogIn } from "./resolvers";

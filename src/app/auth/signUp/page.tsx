@@ -1,6 +1,6 @@
+import { authGuard } from "@/app/internal-actions/auth";
 import { getUrl } from "@/app/internal-actions/url";
 import { SignUpSchemaT } from "@/app/schemas/user";
-import { authGuard } from "@/utils/authGuard";
 import { ActionError } from "@/utils/dto";
 import { revalidatePath } from "next/cache";
 import React from "react";
