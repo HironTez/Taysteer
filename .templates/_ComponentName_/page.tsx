@@ -1,11 +1,8 @@
 import React from "react";
-import _ComponentName_Client from "./client";
-import { getServerSession } from "next-auth";
+import "./style.css";
 
 const _ComponentName_ = async () => {
-  const session = await getServerSession();
-
-  return <_ComponentName_Client session={session} />;
+  return <></>;
 };
 
 export default _ComponentName_;

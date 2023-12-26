@@ -1,14 +1,9 @@
-import React, { Suspense } from "react";
+import React, { PropsWithChildren, Suspense } from "react";
 
-import Auth from "./page";
 import AuthLoading from "./loading";
 
-const AuthLayout = () => {
-  return (
-    <Suspense fallback={<AuthLoading />}>
-      <Auth />
-    </Suspense>
-  );
+const AuthLayout = ({ children }: PropsWithChildren) => {
+  return <Suspense fallback={<AuthLoading />}>{children}</Suspense>;
 };
 
 export default AuthLayout;

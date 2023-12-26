@@ -1,4 +1,10 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = { experimental: { serverActions: true } };
+const checkEnvVars = require("./checkEnvVars");
 
-module.exports = nextConfig;
+/** @type {import('next').NextConfig} */
+const nextConfig = {};
+
+module.exports = () => {
+  checkEnvVars();
+
+  return nextConfig;
+};

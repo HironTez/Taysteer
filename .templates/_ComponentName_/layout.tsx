@@ -1,14 +1,9 @@
-import React, { Suspense } from "react";
+import React, { PropsWithChildren, Suspense } from "react";
 
-import _ComponentName_ from "./page";
 import _ComponentName_Loading from "./loading";
 
-const _ComponentName_Layout = () => {
-  return (
-    <Suspense fallback={<_ComponentName_Loading />}>
-      <_ComponentName_ />
-    </Suspense>
-  );
+const _ComponentName_Layout = ({ children }: PropsWithChildren) => {
+  return <Suspense fallback={<_ComponentName_Loading />}>{children}</Suspense>;
 };
 
 export default _ComponentName_Layout;

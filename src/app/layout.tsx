@@ -1,8 +1,7 @@
 import "./globals.css";
 
 import { Inter } from "next/font/google";
-import { Suspense } from "react";
-import { Toaster } from "react-hot-toast";
+import React, { Suspense } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,7 +18,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Toaster />
         <Suspense fallback="Loading...">{children}</Suspense>
       </body>
     </html>
