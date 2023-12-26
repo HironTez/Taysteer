@@ -1,7 +1,5 @@
 import React from "react";
 
-const SignInLoading = () => {
+export default function SignInLoading() {
   return <>Loading...</>;
-};
-
-export default SignInLoading;
+}

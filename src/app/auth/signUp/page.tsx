@@ -9,7 +9,7 @@ import "./style.css";
 
 let errors: ActionError<SignUpSchemaT> = {};
 
-const SignUp = async () => {
+export default async function SignUp() {
   await authGuard("inverted");
 
   const submit = async (data: FormData) => {
@@ -35,6 +35,4 @@ const SignUp = async () => {
       <button type="submit">Sign Up</button>
     </form>
   );
-};
-
-export default SignUp;
+}

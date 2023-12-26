@@ -1,8 +1,6 @@
 import React from "react";
 import "./style.css";
 
-const _ComponentName_ = async () => {
+export default async function _ComponentName_() {
   return <></>;
-};
-
-export default _ComponentName_;
+}

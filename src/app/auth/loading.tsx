@@ -1,7 +1,5 @@
 import React from "react";
 
-const AuthLoading = () => {
+export default function AuthLoading() {
   return <>Loading...</>;
-};
-
-export default AuthLoading;
+}

@@ -1,7 +1,5 @@
 import React from "react";
 
-const SignUpLoading = () => {
+export default function SignUpLoading() {
   return <>Loading...</>;
-};
-
-export default SignUpLoading;
+}

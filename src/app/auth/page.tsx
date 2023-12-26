@@ -8,7 +8,7 @@ import { resolveLogIn } from "./resolvers";
 
 let errors: ActionError<LogInSchemaT> = {};
 
-const Auth = async () => {
+export default async function Auth() {
   await authGuard("inverted");
 
   const submit = async (data: FormData) => {
@@ -26,6 +26,4 @@ const Auth = async () => {
       <button type="submit">Continue</button>
     </form>
   );
-};
-
-export default Auth;
+}
