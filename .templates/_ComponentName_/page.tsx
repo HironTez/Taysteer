@@ -1,6 +1,8 @@
 import React from "react";
 import "./style.css";
 
-export default async function _ComponentName_() {
+type _ComponentName_Props = {};
+
+export default function _ComponentName_(props: _ComponentName_Props) {
   return <></>;
 }

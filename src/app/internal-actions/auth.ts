@@ -105,7 +105,7 @@ export const signUp = async (password: string, confirmPassword: string) => {
   const passwordHash = await hash(password, 10);
 
   // Create a unique username
-  const username = `user${Date.now()}`;
+  const username = `user${Date.now()}`; // FIXME: collision
 
   // Create the user
   const newUser = await prisma.user.create({
@@ -132,7 +132,7 @@ export const logOut = () => {
   redirect("/");
 };
 
-const getSession = async () => {
+export const getSession = async () => {
   const token = cookies().get("authToken")?.value.replace("Bearer ", "");
   if (!token) return null;
 
@@ -148,7 +148,7 @@ const getSession = async () => {
     },
   });
 
-  return user ? { user } : null;
+  return user;
 };
 
 export const authGuard = async (inverted?: "inverted") => {
@@ -156,9 +156,9 @@ export const authGuard = async (inverted?: "inverted") => {
   const redirectTo = getSearchParam("redirectTo");
 
   const session = await getSession();
-  if (!inverted && !session?.user) {
+  if (!inverted && !session) {
     redirect(`/auth?redirectTo=${pathname}`);
-  } else if (inverted && session?.user) {
+  } else if (inverted && session) {
     redirect(redirectTo ?? "/");
   }
 
