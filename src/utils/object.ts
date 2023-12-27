@@ -1,3 +1,5 @@
+// TODO: JSDOC
+
 // Exclude fields from an object
 export const exclude = <T extends object, Key extends keyof T>(
   obj: T,
@@ -8,6 +10,8 @@ export const exclude = <T extends object, Key extends keyof T>(
   }
   return obj;
 };
+
+// type Object = Record<string, unknown>;
 
 // type RequiredProperty<T extends Object> = {
 //   [P in keyof T]-?: Required<NonNullable<T[P]>>;
@@ -36,8 +40,3 @@ export const exclude = <T extends object, Key extends keyof T>(
 //   });
 //   return obj as unknown as NonNullableObject<T>;
 // };
-
-// removeNullUndefined<{ a?: undefined; b: string | undefined }>({
-//   a: undefined,
-//   b: "",
-// });

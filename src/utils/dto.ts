@@ -5,15 +5,17 @@ type FormDataLikeInput = {
   entries(): IterableIterator<[string, FormDataEntryValue]>;
 };
 
-export const actionResponse = <T>(data: T) => ({
-  success: true as true,
-  data,
-});
-
 export type ActionResponseSuccess<T> = {
   success: true;
   data: T;
 };
+
+export const actionResponse = <T extends unknown = undefined>(
+  data?: T,
+): ActionResponseSuccess<T> => ({
+  success: true as true,
+  data: data as T,
+});
 
 export type ActionResponseError<T extends object> = {
   success: false;

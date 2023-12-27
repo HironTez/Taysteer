@@ -1,8 +1,9 @@
 import { authGuard } from "@/app/internal-actions/auth";
-import { getUrl } from "@/app/internal-actions/url";
-import { SignUpSchemaT } from "@/app/schemas/user";
+import { getSearchParam, getUrl } from "@/app/internal-actions/url";
+import { SignUpSchemaT } from "@/app/schemas/auth";
 import { ActionError } from "@/utils/dto";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import React from "react";
 import { resolveSignUp } from "./resolvers";
 import "./style.module.css";
@@ -15,8 +16,14 @@ export async function SignUp() {
   const submit = async (data: FormData) => {
     "use server";
     const result = await resolveSignUp(data);
-    errors = result.errors;
-    revalidatePath(getUrl());
+    if (result.success) {
+      result.data;
+      const redirectTo = getSearchParam("redirectTo");
+      redirect(redirectTo ?? "/");
+    } else {
+      errors = result.errors;
+      revalidatePath(getUrl());
+    }
   };
 
   return (

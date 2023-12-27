@@ -1,8 +1,9 @@
 import { authGuard } from "@/app/internal-actions/auth";
-import { getUrl } from "@/app/internal-actions/url";
-import { SignInSchemaT } from "@/app/schemas/user";
+import { getSearchParam, getUrl } from "@/app/internal-actions/url";
+import { SignInSchemaT } from "@/app/schemas/auth";
 import { ActionError } from "@/utils/dto";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import React from "react";
 import { resolveSignIn } from "./resolvers";
 import "./style.module.css";
@@ -15,8 +16,13 @@ export async function SignIn() {
   const submit = async (data: FormData) => {
     "use server";
     const result = await resolveSignIn(data);
-    errors = result.errors;
-    revalidatePath(getUrl());
+    if (result.success) {
+      const redirectTo = getSearchParam("redirectTo");
+      redirect(redirectTo ?? "/");
+    } else {
+      errors = result.errors;
+      revalidatePath(getUrl());
+    }
   };
 
   return (

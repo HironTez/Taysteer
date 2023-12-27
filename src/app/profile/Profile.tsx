@@ -8,7 +8,6 @@ import "./style.module.css";
 type ProfileProps = {
   username?: string;
 };
-
 export async function Profile({ username }: ProfileProps) {
   const user = username ? await getUserBy({ username }) : await getSession();
 

@@ -1,7 +1,11 @@
 const checkEnvVars = require("./checkEnvVars");
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  images: {
+    dangerouslyAllowSVG: true,
+  },
+};
 
 module.exports = () => {
   checkEnvVars();

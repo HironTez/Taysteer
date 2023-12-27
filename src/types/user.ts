@@ -1,5 +1,8 @@
 import { Prisma } from "@prisma/client";
 
-export type UserWithImage = Prisma.UserGetPayload<{
-  include: { image: { select: { id: true } } };
-}>;
+export type UserWithImage = Omit<
+  Prisma.UserGetPayload<{
+    include: { image: { select: { id: true } } };
+  }>,
+  "passwordHash"
+>;

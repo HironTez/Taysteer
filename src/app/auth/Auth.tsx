@@ -1,9 +1,10 @@
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import React from "react";
 import { ActionError } from "../../utils/dto";
 import { authGuard } from "../internal-actions/auth";
-import { getUrl } from "../internal-actions/url";
-import { LogInSchemaT } from "../schemas/user";
+import { getSearchParam, getUrl } from "../internal-actions/url";
+import { LogInSchemaT } from "../schemas/auth";
 import { resolveLogIn } from "./resolvers";
 
 let errors: ActionError<LogInSchemaT> = {};
@@ -14,8 +15,17 @@ export async function Auth() {
   const submit = async (data: FormData) => {
     "use server";
     const result = await resolveLogIn(data);
-    errors = result.errors;
-    revalidatePath(getUrl());
+    if (result.success) {
+      const redirectTo = getSearchParam("redirectTo");
+      redirect(
+        `/auth/${result.data.nextStep}?email=${result.data.email}${
+          redirectTo ? `&redirectTo=${redirectTo}` : ""
+        }`,
+      );
+    } else {
+      errors = result.errors;
+      revalidatePath(getUrl());
+    }
   };
 
   return (

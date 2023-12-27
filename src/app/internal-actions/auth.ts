@@ -1,14 +1,22 @@
 import { hash } from "bcrypt";
-import { LogInSchemaT, SignInSchemaT, SignUpSchemaT } from "../schemas/user";
+import { LogInSchemaT, SignInSchemaT, SignUpSchemaT } from "../schemas/auth";
 
 import { prisma } from "@/db";
+import { UserWithImage } from "@/types/user";
 import { validateEmail } from "@/utils/email";
-import { Status } from "@prisma/client";
+import {
+  Comment,
+  Recipe,
+  RecipeRating,
+  Role,
+  Status,
+  User,
+} from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { actionError } from "../../utils/dto";
+import { actionError, actionResponse } from "../../utils/dto";
 import { getPathname, getSearchParam } from "./url";
 import { getUserBy } from "./user";
 
@@ -33,12 +41,16 @@ export const logIn = async (email: string) => {
       return actionError<LogInSchemaT>("User is banned", "email");
     }
 
+    return actionResponse({ nextStep: "signIn", email });
+
     redirect(
       `/auth/signIn?email=${email}${
         redirectTo ? `&redirectTo=${redirectTo}` : ""
       }`,
     ); // TODO: hide email from url
   } else {
+    return actionResponse({ nextStep: "signUp", email });
+
     redirect(
       `/auth/signUp?email=${email}${
         redirectTo ? `&redirectTo=${redirectTo}` : ""
@@ -73,11 +85,10 @@ export const signIn = async (password: string) => {
   // Set token
   cookies().set("authToken", `Bearer ${token}`);
 
-  const redirectTo = getSearchParam("redirectTo");
-  redirect(redirectTo ?? "/");
+  return actionResponse();
 };
 
-export const signUp = async (password: string, confirmPassword: string) => {
+export const signUp = async (password: string) => {
   const email = getSearchParam("email");
 
   const user =
@@ -93,13 +104,6 @@ export const signUp = async (password: string, confirmPassword: string) => {
   // Exit if email is not valid or already used
   if (!email || user || !emailValid) {
     return actionError<SignUpSchemaT>("Couldn't sign up");
-  }
-
-  if (password !== confirmPassword) {
-    return actionError<SignUpSchemaT>(
-      "Passwords don't match",
-      "confirmPassword",
-    );
   }
 
   // Hash the password
@@ -123,8 +127,7 @@ export const signUp = async (password: string, confirmPassword: string) => {
   // Set token
   cookies().set("authToken", `Bearer ${token}`);
 
-  const redirectTo = getSearchParam("redirectTo");
-  redirect(redirectTo ?? "/");
+  return actionResponse();
 };
 
 export const logOut = () => {
@@ -160,4 +163,25 @@ export const authGuard = async (inverted?: "inverted") => {
   }
 
   return session;
+};
+
+export const accessGuard = async (
+  target: User | UserWithImage | Recipe | RecipeRating | Comment,
+  session: UserWithImage | null,
+) => {
+  if (session) {
+    if (session.role === Role.ADMIN) {
+      return actionResponse({ session });
+    }
+
+    if ("userId" in target) {
+      if (target.userId === session.id) {
+        return actionResponse({ session });
+      }
+    } else if (target.id === session.id) {
+      return actionResponse({ session });
+    }
+  }
+
+  return actionError("Forbidden");
 };
