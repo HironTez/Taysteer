@@ -5,7 +5,7 @@ import { ActionError } from "@/utils/dto";
 import { revalidatePath } from "next/cache";
 import React from "react";
 import { resolveSignUp } from "./resolvers";
-import "./style.css";
+import "./style.module.css";
 
 let errors: ActionError<SignUpSchemaT> = {};
 

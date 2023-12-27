@@ -1,15 +1,13 @@
-// type Object = Record<string, unknown>;
-
-// // Exclude fields from an object
-// export const exclude = <T extends Object, Key extends keyof T>(
-//   obj: T,
-//   keys: Key[],
-// ): Omit<T, Key> => {
-//   for (let key of keys) {
-//     delete obj[key];
-//   }
-//   return obj;
-// };
+// Exclude fields from an object
+export const exclude = <T extends object, Key extends keyof T>(
+  obj: T,
+  keys: Key[],
+): Omit<T, Key> => {
+  for (let key of keys) {
+    delete obj[key];
+  }
+  return obj;
+};
 
 // type RequiredProperty<T extends Object> = {
 //   [P in keyof T]-?: Required<NonNullable<T[P]>>;

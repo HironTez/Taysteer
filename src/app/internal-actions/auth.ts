@@ -10,6 +10,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { actionError } from "../../utils/dto";
 import { getPathname, getSearchParam } from "./url";
+import { getUserBy } from "./user";
 
 const SECRET = process.env.AUTH_SECRET!;
 
@@ -142,11 +143,7 @@ export const getSession = async () => {
   const userId = decodedToken["userId"];
   if (!userId) return null;
 
-  const user = await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-  });
+  const user = await getUserBy({ userId });
 
   return user;
 };

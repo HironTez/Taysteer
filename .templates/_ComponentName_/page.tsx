@@ -1,5 +1,5 @@
 import React from "react";
-import "./style.css";
+import "./style.module.css";
 
 type _ComponentName_Props = {};
 
