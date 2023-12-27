@@ -15,6 +15,7 @@
     "@material/react-button": "^0.15.0",
     "@prisma/client": "5.7.1",
     "bcrypt": "^5.1.1",
+    "file-type": "^18.7.0",
     "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.2",
     "next": "14.0.4",
