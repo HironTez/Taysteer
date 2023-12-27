@@ -1,8 +1,3 @@
-import React from "react";
-import "./style.module.css";
+import { _ComponentName_ } from "./_ComponentName_";
 
-type _ComponentName_Props = {};
-
-export default function _ComponentName_(props: _ComponentName_Props) {
-  return <></>;
-}
+export default _ComponentName_;
