@@ -27,7 +27,7 @@ export async function SignIn() {
 
   return (
     <form action={submit}>
-      Enter your new password
+      Enter your password
       <input name="password" placeholder="Password" type="password" required />
       {errors.password && <p>{errors.password}</p>}
       {errors.global && <p>{errors.global}</p>}

@@ -34,28 +34,14 @@ export const logIn = async (email: string) => {
     },
   });
 
-  const redirectTo = getSearchParam("redirectTo");
-
   if (user) {
     if (user.status === Status.BANNED) {
       return actionError<LogInSchemaT>("User is banned", "email");
     }
 
     return actionResponse({ nextStep: "signIn", email });
-
-    redirect(
-      `/auth/signIn?email=${email}${
-        redirectTo ? `&redirectTo=${redirectTo}` : ""
-      }`,
-    ); // TODO: hide email from url
   } else {
     return actionResponse({ nextStep: "signUp", email });
-
-    redirect(
-      `/auth/signUp?email=${email}${
-        redirectTo ? `&redirectTo=${redirectTo}` : ""
-      }`,
-    );
   }
 };
 

@@ -3,6 +3,7 @@ import { getUrl } from "@/app/internal-actions/url";
 import { getUserBy } from "@/app/internal-actions/user";
 import { EditProfileSchemaT } from "@/app/schemas/user";
 import { ActionError } from "@/utils/dto";
+import { urlMoveDownPath } from "@/utils/url";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 import React from "react";
@@ -23,16 +24,16 @@ export async function Edit({ username }: EditProps) {
     notFound();
   }
 
-  const result = await accessGuard(user, session);
-  if (!result.success) {
-    redirect(`/profile/${username}`);
+  const access = await accessGuard(user, session);
+  if (!access.success) {
+    redirect(urlMoveDownPath(getUrl()));
   }
 
   const submit = async (data: FormData) => {
     "use server";
     const result = await resolveEditUser(user, data);
     if (result.success) {
-      redirect(`/profile/${result.data.user.username}`);
+      redirect(`/profile${username ? `/${result.data.user.username}` : ""}`);
     } else {
       errors = result.errors;
       revalidatePath(getUrl());

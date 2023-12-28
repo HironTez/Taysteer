@@ -21,7 +21,7 @@ export async function Auth() {
         `/auth/${result.data.nextStep}?email=${result.data.email}${
           redirectTo ? `&redirectTo=${redirectTo}` : ""
         }`,
-      );
+      ); // TODO: hide email from url
     } else {
       errors = result.errors;
       revalidatePath(getUrl());
