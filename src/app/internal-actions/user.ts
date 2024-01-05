@@ -1,11 +1,11 @@
 import { prisma } from "@/db";
 import { RequireOnlyOne } from "@/types/RequireOnlyOne";
 import { UserWithImage } from "@/types/user";
-import { actionResponse } from "@/utils/dto";
+import { actionError, actionResponse } from "@/utils/dto";
 import { exclude } from "@/utils/object";
 import { hash } from "bcrypt";
 import { fileTypeFromBuffer } from "file-type";
-import { accessGuard, getSession } from "./auth";
+import { accessGuard } from "./auth";
 
 type UserWithImageAndPassword = UserWithImage & { passwordHash: string };
 
@@ -55,10 +55,9 @@ export const editUser = async (
   email: string | undefined,
   password: string | undefined,
 ) => {
-  const session = await getSession();
-  const response = await accessGuard(targetUser, session);
-  if (!response.success) {
-    return response;
+  const { hasAccess } = await accessGuard(targetUser);
+  if (!hasAccess) {
+    return actionError("Forbidden");
   }
 
   const passwordHash = password && (await hash(password, 10));

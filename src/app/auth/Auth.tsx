@@ -10,7 +10,7 @@ import { resolveLogIn } from "./resolvers";
 let errors: ActionError<LogInSchemaT> = {};
 
 export async function Auth() {
-  await authGuard("inverted");
+  await authGuard({ inverted: true });
 
   const submit = async (data: FormData) => {
     "use server";

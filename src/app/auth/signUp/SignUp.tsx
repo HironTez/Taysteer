@@ -11,7 +11,7 @@ import "./style.module.css";
 let errors: ActionError<SignUpSchemaT> = {};
 
 export async function SignUp() {
-  await authGuard("inverted");
+  await authGuard({ inverted: true });
 
   const submit = async (data: FormData) => {
     "use server";

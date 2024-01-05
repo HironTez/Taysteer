@@ -1,3 +1,5 @@
 import { Edit } from "./Edit";
 
-export default Edit;
+export default function EditPage() {
+  return <Edit />;
+}

@@ -1,11 +1,11 @@
-import { accessGuard, authGuard } from "@/app/internal-actions/auth";
+import { accessGuard } from "@/app/internal-actions/auth";
 import { getUrl } from "@/app/internal-actions/url";
 import { getUserBy } from "@/app/internal-actions/user";
 import { EditProfileSchemaT } from "@/app/schemas/user";
 import { ActionError } from "@/utils/dto";
 import { urlMoveDownPath } from "@/utils/url";
 import { revalidatePath } from "next/cache";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import React from "react";
 import { resolveEditUser } from "./resolvers";
 import "./style.module.css";
@@ -17,17 +17,14 @@ type EditProps = {
 let errors: ActionError<EditProfileSchemaT> = {};
 
 export async function Edit({ username }: EditProps) {
-  const session = await authGuard();
+  const requestedUser = username && (await getUserBy({ username }));
 
-  const user = username ? await getUserBy({ username }) : session;
-  if (!user) {
-    notFound();
-  }
-
-  const access = await accessGuard(user, session);
-  if (!access.success) {
+  const { hasAccess, session } = await accessGuard(requestedUser || undefined);
+  if (!hasAccess) {
     redirect(urlMoveDownPath(getUrl()));
   }
+
+  const user = requestedUser || session;
 
   const submit = async (data: FormData) => {
     "use server";

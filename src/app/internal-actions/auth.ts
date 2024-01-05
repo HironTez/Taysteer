@@ -137,14 +137,15 @@ export const getSession = async () => {
   return user;
 };
 
-export const authGuard = async (inverted?: "inverted") => {
+export const authGuard = async (options?: { inverted?: boolean }) => {
   const pathname = getPathname();
   const redirectTo = getSearchParam("redirectTo");
 
   const session = await getSession();
-  if (!inverted && !session) {
+
+  if (!options?.inverted && !session) {
     redirect(`/auth?redirectTo=${pathname}`);
-  } else if (inverted && session) {
+  } else if (options?.inverted && session) {
     redirect(redirectTo ?? "/");
   }
 
@@ -152,22 +153,22 @@ export const authGuard = async (inverted?: "inverted") => {
 };
 
 export const accessGuard = async (
-  target: User | UserWithImage | Recipe | RecipeRating | Comment,
-  session: UserWithImage | null,
-) => {
-  if (session) {
-    if (session.role === Role.ADMIN) {
-      return actionResponse({ session });
-    }
+  target: User | UserWithImage | Recipe | RecipeRating | Comment | undefined,
+): Promise<
+  | { session: UserWithImage; hasAccess: true }
+  | { session: UserWithImage | null; hasAccess: false }
+> => {
+  const session = await authGuard();
 
-    if ("userId" in target) {
-      if (target.userId === session.id) {
-        return actionResponse({ session });
-      }
-    } else if (target.id === session.id) {
-      return actionResponse({ session });
-    }
+  if (
+    session &&
+    (session.role === Role.ADMIN ||
+      (target && "userId" in target) ||
+      !target ||
+      target.id === session.id)
+  ) {
+    return { session, hasAccess: true };
   }
 
-  return actionError("Forbidden");
+  return { session, hasAccess: false };
 };
