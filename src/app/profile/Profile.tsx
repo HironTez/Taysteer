@@ -1,19 +1,19 @@
 import { urlAddToPath } from "@/utils/url";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import React from "react";
 import AutoImage from "../components/AutoImage";
 import { accessGuard } from "../internal-actions/auth";
 import { getUrl } from "../internal-actions/url";
 import { getUserBy } from "../internal-actions/user";
 import "./style.module.css";
-import React from "react";
 
 type ProfileProps = {
-  username?: string;
+  userId?: string;
 };
 
-export async function Profile({ username }: ProfileProps) {
-  const requestedUser = username && (await getUserBy({ username }));
+export async function Profile({ userId }: ProfileProps) {
+  const requestedUser = userId && (await getUserBy({ userId }));
 
   const { hasAccess, session } = await accessGuard(requestedUser || undefined);
 

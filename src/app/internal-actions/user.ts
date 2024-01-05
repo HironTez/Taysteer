@@ -15,20 +15,16 @@ const excludePassword = (user: UserWithImageAndPassword | null) => {
 
 type Param = RequireOnlyOne<{
   userId: string;
-  username: string;
   email: string;
 }>;
 
-export const getUserBy = async ({ userId, username, email }: Param) => {
+export const getUserBy = async ({ userId, email }: Param) => {
   try {
     const user = await prisma.user.findFirst({
       where: {
         OR: [
           {
             id: userId,
-          },
-          {
-            username,
           },
           {
             email,
