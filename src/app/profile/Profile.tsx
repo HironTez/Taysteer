@@ -2,9 +2,9 @@ import { urlAddToPath } from "@/utils/url";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { accessGuard } from "../internal-actions/auth";
+import { getSession } from "../internal-actions/auth";
 import { getUrl } from "../internal-actions/url";
-import { getUserBy } from "../internal-actions/user";
+import { checkAccess, getUserBy } from "../internal-actions/user";
 import styles from "./style.module.css";
 
 type ProfileProps = {
@@ -14,13 +14,11 @@ type ProfileProps = {
 export async function Profile({ userId }: ProfileProps) {
   const requestedUser = userId && (await getUserBy({ userId }));
 
-  const { hasAccess, session } = await accessGuard(requestedUser || undefined);
-
-  if (!session) {
-    notFound();
-  }
+  const session = await getSession();
+  const hasAccess = await checkAccess(requestedUser, session);
 
   const user = requestedUser || session;
+  if (!user) notFound();
 
   const profilePicture = user.image?.id
     ? `/image/${user.image.id}`

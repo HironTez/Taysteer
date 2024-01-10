@@ -2,16 +2,8 @@ import { hash } from "bcrypt";
 import { LogInSchemaT, SignInSchemaT, SignUpSchemaT } from "../schemas/auth";
 
 import { prisma } from "@/db";
-import { UserWithImage } from "@/types/user";
 import { validateEmail } from "@/utils/email";
-import {
-  Comment,
-  Recipe,
-  RecipeRating,
-  Role,
-  Status,
-  User,
-} from "@prisma/client";
+import { Status } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
@@ -137,38 +129,20 @@ export const getSession = async () => {
   return user;
 };
 
-export const authGuard = async (options?: { inverted?: boolean }) => {
-  const pathname = getPathname();
-  const redirectTo = getSearchParam("redirectTo");
-
+const authGuard = async () => {
   const session = await getSession();
-
-  if (!options?.inverted && !session) {
+  if (!session) {
+    const pathname = getPathname();
     redirect(`/auth?redirectTo=${pathname}`);
-  } else if (options?.inverted && session) {
-    redirect(redirectTo ?? "/");
   }
 
   return session;
 };
 
-export const accessGuard = async (
-  target: User | UserWithImage | Recipe | RecipeRating | Comment | undefined,
-): Promise<
-  | { session: UserWithImage; hasAccess: true }
-  | { session: UserWithImage | null; hasAccess: false }
-> => {
-  const session = await authGuard();
-
-  if (
-    session &&
-    (session.role === Role.ADMIN ||
-      (target && "userId" in target) ||
-      !target ||
-      target.id === session.id)
-  ) {
-    return { session, hasAccess: true };
+export const unAuthGuard = async () => {
+  const session = await getSession();
+  if (session) {
+    const redirectTo = getSearchParam("redirectTo");
+    redirect(redirectTo ?? "/");
   }
-
-  return { session, hasAccess: false };
 };

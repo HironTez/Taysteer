@@ -3,9 +3,35 @@ import { RequireOnlyOne } from "@/types/RequireOnlyOne";
 import { UserWithImage } from "@/types/user";
 import { actionError, actionResponse } from "@/utils/dto";
 import { exclude } from "@/utils/object";
+import { Comment, Recipe, RecipeRating, Role, User } from "@prisma/client";
 import { hash } from "bcrypt";
 import { fileTypeFromBuffer } from "file-type";
-import { accessGuard } from "./auth";
+import { getSession } from "./auth";
+
+export const checkAccess = async (
+  target:
+    | User
+    | UserWithImage
+    | Recipe
+    | RecipeRating
+    | Comment
+    | undefined
+    | null
+    | "",
+  user: UserWithImage | undefined | null | "",
+) => {
+  if (
+    user &&
+    (user.role === Role.ADMIN ||
+      (target && "userId" in target) ||
+      !target ||
+      target.id === user.id)
+  ) {
+    return { user, hasAccess: true };
+  }
+
+  return { user, hasAccess: false };
+};
 
 type UserWithImageAndPassword = UserWithImage & { passwordHash: string };
 
@@ -51,7 +77,8 @@ export const editUser = async (
   email: string | undefined,
   password: string | undefined,
 ) => {
-  const { hasAccess } = await accessGuard(targetUser);
+  const session = await getSession();
+  const hasAccess = await checkAccess(targetUser, session);
   if (!hasAccess) {
     return actionError("Forbidden");
   }

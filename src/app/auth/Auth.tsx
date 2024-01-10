@@ -1,8 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import React from "react";
 import { ActionError } from "../../utils/dto";
-import { authGuard } from "../internal-actions/auth";
+import { unAuthGuard } from "../internal-actions/auth";
 import { getSearchParam, getUrl } from "../internal-actions/url";
 import { LogInSchemaT } from "../schemas/auth";
 import { resolveLogIn } from "./resolvers";
@@ -10,7 +9,7 @@ import { resolveLogIn } from "./resolvers";
 let errors: ActionError<LogInSchemaT> = {};
 
 export async function Auth() {
-  await authGuard({ inverted: true });
+  await unAuthGuard();
 
   const submit = async (data: FormData) => {
     "use server";

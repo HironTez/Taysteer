@@ -1,17 +1,16 @@
-import { authGuard } from "@/app/internal-actions/auth";
+import { unAuthGuard } from "@/app/internal-actions/auth";
 import { getSearchParam, getUrl } from "@/app/internal-actions/url";
 import { SignInSchemaT } from "@/app/schemas/auth";
 import { ActionError } from "@/utils/dto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import React from "react";
 import { resolveSignIn } from "./resolvers";
 import "./style.module.css";
 
 let errors: ActionError<SignInSchemaT> = {};
 
 export async function SignIn() {
-  await authGuard({ inverted: true });
+  await unAuthGuard();
 
   const submit = async (data: FormData) => {
     "use server";
