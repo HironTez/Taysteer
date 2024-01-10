@@ -4,7 +4,6 @@
     "editorconfig.editorconfig",
     "esbenp.prettier-vscode",
     "mikestead.dotenv",
-    "mgmcdermott.vscode-language-babel",
     "orta.vscode-jest",
     "prisma.prisma"
   ],
