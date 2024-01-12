@@ -23,8 +23,8 @@ export async function Edit({ userId }: EditProps) {
 
   const user = requestedUser || sessionUser;
 
-  const hasAccess = await checkAccess(user, sessionUser);
-  if (!hasAccess) return "403 forbidden";
+  const viewerHasAccess = await checkAccess(user, sessionUser);
+  if (!viewerHasAccess) return "403 forbidden";
 
   const submit = async (data: FormData) => {
     "use server";

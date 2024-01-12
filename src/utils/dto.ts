@@ -22,7 +22,7 @@ export type ActionResponseError<T extends object> = {
   errors: ActionError<T>;
 };
 
-export type ActionError<T extends object> = Partial<
+export type ActionError<T extends object = { global: void }> = Partial<
   Record<keyof T | "global", string>
 >;
 

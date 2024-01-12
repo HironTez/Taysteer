@@ -3,12 +3,21 @@ import { RequireOnlyOne } from "@/types/RequireOnlyOne";
 import { UserWithImage } from "@/types/user";
 import { actionError, actionResponse } from "@/utils/dto";
 import { exclude } from "@/utils/object";
-import { Comment, Recipe, RecipeRating, Role, User } from "@prisma/client";
+import {
+  Comment,
+  Recipe,
+  RecipeRating,
+  Role,
+  Status,
+  User,
+} from "@prisma/client";
 import { hash } from "bcrypt";
 import { fileTypeFromBuffer } from "file-type";
+import { revalidatePath } from "next/cache";
 import { getURL } from "next/dist/shared/lib/utils";
 import { redirect } from "next/navigation";
 import { deleteSessionCookies, getSessionUser } from "./auth";
+import { getUrl } from "./url";
 
 export const checkAccess = async (
   target: User | UserWithImage | Recipe | RecipeRating | Comment | null,
@@ -17,7 +26,7 @@ export const checkAccess = async (
   if (!user || !target) return false;
 
   if (user.role === Role.ADMIN) return true;
-  if (target.id === user.id) return true;
+  if (target.id === user.id && user.status === Status.ACTIVE) return true;
   if ("userId" in target && target.userId === user.id) return true;
 
   return false;
@@ -106,7 +115,7 @@ export const deleteUser = async (targetUser: UserWithImage) => {
   const user = await getSessionUser();
   const hasAccess = await checkAccess(targetUser, user);
   if (!hasAccess) {
-    return false;
+    return actionError("Forbidden");
   }
 
   try {
@@ -119,6 +128,52 @@ export const deleteUser = async (targetUser: UserWithImage) => {
       redirect(getURL());
     }
   } catch {
-    return false;
+    return actionError("Could not delete user");
+  }
+};
+
+export const banUser = async (targetUser: UserWithImage) => {
+  const user = await getSessionUser();
+  const hasAccess = await checkAccess(targetUser, user);
+  const userIsSame = targetUser.id === user?.id;
+  if (!hasAccess || userIsSame) {
+    return actionError("Forbidden");
+  }
+
+  try {
+    await prisma.user.update({
+      where: { id: targetUser.id },
+      data: { status: Status.BANNED },
+    });
+
+    await prisma.session.deleteMany({ where: { userId: targetUser.id } });
+
+    revalidatePath(getUrl());
+    return actionResponse();
+  } catch {
+    return actionError("Could not ban user");
+  }
+};
+
+export const unbanUser = async (targetUser: UserWithImage) => {
+  const user = await getSessionUser();
+  const hasAccess = await checkAccess(targetUser, user);
+  const userIsSame = targetUser.id === user?.id;
+  if (!hasAccess || userIsSame) {
+    return actionError("Forbidden");
+  }
+
+  try {
+    await prisma.user.update({
+      where: { id: targetUser.id },
+      data: { status: Status.ACTIVE },
+    });
+
+    await prisma.session.deleteMany({ where: { userId: targetUser.id } });
+
+    revalidatePath(getUrl());
+    return actionResponse();
+  } catch {
+    return actionError("Could not ban user");
   }
 };

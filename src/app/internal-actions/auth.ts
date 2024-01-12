@@ -93,6 +93,7 @@ const createSession = async (userId: string) => {
 export const renewSession = async () => {
   const { decodedAccessToken, decodedRefreshToken } = verifyTokens();
   if (decodedAccessToken || !decodedRefreshToken) return;
+
   // Verify session
   const sessionId = decodedRefreshToken.jti;
   const session = await prisma.session.findUnique({ where: { id: sessionId } });

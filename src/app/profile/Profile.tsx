@@ -1,10 +1,18 @@
 import { urlAddToPath } from "@/utils/url";
+import { Role, Status } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import Confirm from "../components/confirm";
 import { getSessionUser } from "../internal-actions/auth";
 import { getUrl } from "../internal-actions/url";
-import { checkAccess, deleteUser, getUserBy } from "../internal-actions/user";
+import {
+  banUser,
+  checkAccess,
+  deleteUser,
+  getUserBy,
+  unbanUser,
+} from "../internal-actions/user";
 import styles from "./style.module.css";
 
 type ProfileProps = {
@@ -20,17 +28,36 @@ export async function Profile({ userId }: ProfileProps) {
 
   const user = (requestedUser || sessionUser)!;
 
+  const viewerHasAccess = await checkAccess(user, sessionUser);
+  const viewerIsAdmin = sessionUser?.role === Role.ADMIN;
+  const userIsBanned = user.status === Status.BANNED;
+  const userIsSame = user.id === sessionUser?.id;
+
   const profilePicture = user.image?.id
     ? `/image/${user.image.id}`
     : (await import("@/../public/profile.svg")).default;
-
-  const hasAccess = await checkAccess(user, sessionUser);
   const pathEdit = urlAddToPath(getUrl(), "edit");
+
+  let deleteUserError: string | undefined = undefined;
+  let banUserError: string | undefined = undefined;
+  let unbanUserError: string | undefined = undefined;
 
   const submitDelete = async () => {
     "use server";
+    const result = await deleteUser(user);
+    if (!result.success) deleteUserError = result.errors.global;
+  };
 
-    await deleteUser(user);
+  const submitBan = async () => {
+    "use server";
+    const result = await banUser(user);
+    if (!result.success) banUserError = result.errors.global;
+  };
+
+  const submitUnban = async () => {
+    "use server";
+    const result = await unbanUser(user);
+    if (!result.success) unbanUserError = result.errors.global;
   };
 
   return (
@@ -41,29 +68,46 @@ export async function Profile({ userId }: ProfileProps) {
       <p>Name: {user.name}</p>
       <p>Username: {user.username}</p>
       <p>Description: {user.description}</p>
-      {hasAccess && (
+      <p>Role: {user.role}</p>
+      <p>Status: {user.status}</p>
+      {viewerHasAccess && (
         <>
           <Link href={pathEdit}>Edit</Link>
-          <button popovertarget="delete-user" type="button">
-            Delete
-          </button>
+          <Confirm
+            buttonText="Delete"
+            confirmText="Confirm deletion"
+            onConfirm={submitDelete}
+          >
+            Do you actually want to delete this profile? This action cannot be
+            undone
+            {deleteUserError}
+          </Confirm>
+
+          {viewerIsAdmin &&
+            !userIsSame &&
+            (userIsBanned ? (
+              <Confirm
+                buttonText="Unban"
+                confirmText="Confirm unban"
+                onConfirm={submitUnban}
+                key="unban"
+              >
+                Unban user?
+                {banUserError}
+              </Confirm>
+            ) : (
+              <Confirm
+                buttonText="Ban"
+                confirmText="Confirm ban"
+                onConfirm={submitBan}
+                key="ban"
+              >
+                Ban user?
+                {unbanUserError}
+              </Confirm>
+            ))}
         </>
       )}
-
-      <div popover="auto" id="delete-user">
-        Do you actually want to delete this account? This action cannot be
-        undone
-        <button
-          popovertarget="delete-user"
-          popovertargetaction="hide"
-          type="button"
-        >
-          Cancel
-        </button>
-        <form action={submitDelete}>
-          <input type="submit" value="Confirm deletion" />
-        </form>
-      </div>
     </div>
   );
 }
