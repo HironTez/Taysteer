@@ -5,14 +5,117 @@ import { prisma } from "@/db";
 import { validateEmail } from "@/utils/email";
 import { Status } from "@prisma/client";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { actionError, actionResponse } from "../../utils/dto";
 import { getPathname, getSearchParam } from "./url";
 import { getUserBy } from "./user";
 
+type JWT = {
+  iat: number;
+  exp: number;
+};
+
+type AccessJWTInput = {
+  sub: string;
+};
+
+type RefreshJWTInput = {
+  jti: string;
+};
+
+type AccessJWT = AccessJWTInput & JWT;
+
+type RefreshJWT = RefreshJWTInput & JWT;
+
 const SECRET = process.env.AUTH_SECRET!;
+
+const createToken = <T extends AccessJWTInput | RefreshJWTInput>(
+  payload: T,
+  options?: SignOptions,
+) => jwt.sign(payload, SECRET, options);
+
+const verifyToken = <R extends JWT>(
+  token: string | undefined,
+): R | undefined => {
+  try {
+    let decodedToken = token && jwt.verify(token, SECRET);
+    if (typeof decodedToken === "string") decodedToken = undefined;
+    return decodedToken as R | undefined;
+  } catch {
+    return undefined;
+  }
+};
+
+const verifyTokens = () => {
+  // Verify access token
+  const accessToken = cookies().get("accessToken")?.value;
+  const decodedAccessToken = verifyToken<AccessJWT>(accessToken);
+
+  // Verify refresh token
+  const refreshToken = cookies().get("refreshToken")?.value;
+  const decodedRefreshToken = verifyToken<RefreshJWT>(refreshToken);
+
+  return { decodedAccessToken, decodedRefreshToken };
+};
+
+const createSession = async (userId: string) => {
+  // Create a session
+  const newSession = await prisma.session.create({
+    data: { userId },
+  });
+
+  // Generate tokens
+  const newAccessToken = createToken(
+    { sub: newSession.userId },
+    { expiresIn: "10m" },
+  );
+  const newRefreshToken = createToken(
+    { jti: newSession.id },
+    { expiresIn: "60d" },
+  );
+  const currentTime = new Date().getTime();
+  const in60Days = currentTime + 5184000000;
+  const in10Minutes = currentTime + 600000;
+
+  // Set tokens to cookies
+  cookies().set("accessToken", `${newAccessToken}`, {
+    httpOnly: true,
+    expires: in10Minutes,
+  });
+  cookies().set("refreshToken", `${newRefreshToken}`, {
+    httpOnly: true,
+    expires: in60Days,
+  });
+};
+
+export const renewSession = async () => {
+  const { decodedAccessToken, decodedRefreshToken } = verifyTokens();
+  if (decodedAccessToken || !decodedRefreshToken) return;
+  // Verify session
+  const sessionId = decodedRefreshToken.jti;
+  const session = await prisma.session.findUnique({ where: { id: sessionId } });
+  if (!session) return;
+
+  // Renew session
+  await prisma.session.delete({ where: { id: sessionId } });
+  await createSession(session.userId);
+};
+
+const deleteSession = async () => {
+  const { decodedAccessToken, decodedRefreshToken } = verifyTokens();
+  if (!decodedAccessToken || !decodedRefreshToken) return false;
+
+  await prisma.session
+    .delete({ where: { id: decodedRefreshToken.jti } })
+    .catch(null);
+
+  cookies().delete("accessToken");
+  cookies().delete("refreshToken");
+
+  return true;
+};
 
 export const logIn = async (email: string) => {
   const emailValid = validateEmail(email);
@@ -37,9 +140,7 @@ export const logIn = async (email: string) => {
   }
 };
 
-export const signIn = async (password: string) => {
-  const email = getSearchParam("email");
-
+export const signIn = async (email: string, password: string) => {
   const user =
     email &&
     (await prisma.user.findUnique({
@@ -57,18 +158,12 @@ export const signIn = async (password: string) => {
     return actionError<SignInSchemaT>("Password is incorrect", "password");
   }
 
-  // Generate token
-  const token = jwt.sign({ userId: user.id }, SECRET);
-
-  // Set token
-  cookies().set("authToken", `Bearer ${token}`);
+  await createSession(user.id);
 
   return actionResponse();
 };
 
-export const signUp = async (password: string) => {
-  const email = getSearchParam("email");
-
+export const signUp = async (email: string, password: string) => {
   const user =
     email &&
     (await prisma.user.findUnique({
@@ -99,49 +194,39 @@ export const signUp = async (password: string) => {
     },
   });
 
-  // Generate token
-  const token = jwt.sign({ userId: newUser.id }, SECRET);
-
-  // Set token
-  cookies().set("authToken", `Bearer ${token}`);
+  await createSession(newUser.id);
 
   return actionResponse();
 };
 
-export const logOut = () => {
-  cookies().delete("authToken");
+export const logOut = async () => {
+  const sessionDeleted = await deleteSession();
 
-  redirect("/");
+  if (sessionDeleted) redirect("/");
+  return false;
 };
 
-export const getSession = async () => {
-  const token = cookies().get("authToken")?.value.replace("Bearer ", "");
-  if (!token) return null;
+export const getSessionUser = async () => {
+  const { decodedAccessToken, decodedRefreshToken } = verifyTokens();
+  if (!decodedAccessToken || !decodedRefreshToken) return null;
 
-  const decodedToken = jwt.verify(token, SECRET);
-  if (typeof decodedToken === "string") return null;
-
-  const userId = decodedToken["userId"];
-  if (!userId) return null;
-
-  const user = await getUserBy({ userId });
-
+  const user = await getUserBy({ userId: decodedAccessToken.sub });
   return user;
 };
 
 const authGuard = async () => {
-  const session = await getSession();
-  if (!session) {
+  const user = await getSessionUser();
+  if (!user) {
     const pathname = getPathname();
     redirect(`/auth?redirectTo=${pathname}`);
   }
 
-  return session;
+  return user;
 };
 
 export const unAuthGuard = async () => {
-  const session = await getSession();
-  if (session) {
+  const user = await getSessionUser();
+  if (user) {
     const redirectTo = getSearchParam("redirectTo");
     redirect(redirectTo ?? "/");
   }

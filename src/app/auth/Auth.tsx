@@ -1,4 +1,5 @@
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { ActionError } from "../../utils/dto";
 import { unAuthGuard } from "../internal-actions/auth";
@@ -15,12 +16,16 @@ export async function Auth() {
     "use server";
     const result = await resolveLogIn(data);
     if (result.success) {
+      cookies().set("email", result.data.email, {
+        httpOnly: true,
+      });
+
       const redirectTo = getSearchParam("redirectTo");
       redirect(
-        `/auth/${result.data.nextStep}?email=${result.data.email}${
+        `/auth/${result.data.nextStep}${
           redirectTo ? `&redirectTo=${redirectTo}` : ""
         }`,
-      ); // TODO: hide email from url
+      );
     } else {
       errors = result.errors;
       revalidatePath(getUrl());

@@ -3,6 +3,7 @@ import { getSearchParam, getUrl } from "@/app/internal-actions/url";
 import { SignUpSchemaT } from "@/app/schemas/auth";
 import { ActionError } from "@/utils/dto";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { resolveSignUp } from "./resolvers";
 import "./style.module.css";
@@ -12,11 +13,15 @@ let errors: ActionError<SignUpSchemaT> = {};
 export async function SignUp() {
   await unAuthGuard();
 
+  const email = cookies().get("email")?.value;
+  if (!email) redirect("/auth");
+
   const submit = async (data: FormData) => {
     "use server";
-    const result = await resolveSignUp(data);
+    const result = await resolveSignUp(data, email);
     if (result.success) {
-      result.data;
+      cookies().delete("email");
+
       const redirectTo = getSearchParam("redirectTo");
       redirect(redirectTo ?? "/");
     } else {
@@ -27,6 +32,7 @@ export async function SignUp() {
 
   return (
     <form action={submit}>
+      Register {email}
       Enter your new password
       <input name="password" placeholder="Password" type="password" required />
       {errors.password && <p>{errors.password}</p>}

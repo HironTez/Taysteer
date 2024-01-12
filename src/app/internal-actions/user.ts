@@ -6,31 +6,23 @@ import { exclude } from "@/utils/object";
 import { Comment, Recipe, RecipeRating, Role, User } from "@prisma/client";
 import { hash } from "bcrypt";
 import { fileTypeFromBuffer } from "file-type";
-import { getSession } from "./auth";
+import { getSessionUser } from "./auth";
 
 export const checkAccess = async (
-  target:
-    | User
-    | UserWithImage
-    | Recipe
-    | RecipeRating
-    | Comment
-    | undefined
-    | null
-    | "",
-  user: UserWithImage | undefined | null | "",
+  target: User | UserWithImage | Recipe | RecipeRating | Comment | null,
+  user: UserWithImage | null,
 ) => {
   if (
     user &&
     (user.role === Role.ADMIN ||
-      (target && "userId" in target) ||
-      !target ||
-      target.id === user.id)
+      (target &&
+        (("userId" in target && target.userId === user.id) ||
+          target.id === user.id)))
   ) {
-    return { user, hasAccess: true };
+    return true;
   }
 
-  return { user, hasAccess: false };
+  return false;
 };
 
 type UserWithImageAndPassword = UserWithImage & { passwordHash: string };
@@ -77,8 +69,8 @@ export const editUser = async (
   email: string | undefined,
   password: string | undefined,
 ) => {
-  const session = await getSession();
-  const hasAccess = await checkAccess(targetUser, session);
+  const user = await getSessionUser();
+  const hasAccess = await checkAccess(targetUser, user);
   if (!hasAccess) {
     return actionError("Forbidden");
   }
