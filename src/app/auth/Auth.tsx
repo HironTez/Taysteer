@@ -36,7 +36,7 @@ export async function Auth() {
   return (
     <form action={submit}>
       Welcome! Enter your email to sign up or login
-      <input name="email" placeholder="Email" type="email" required />
+      <input name="email" placeholder="Email" type="email" required maxLength={254} />
       {errors.email && <p>{errors.email}</p>}
       <button type="submit">Continue</button>
     </form>

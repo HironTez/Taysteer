@@ -42,17 +42,27 @@ export async function Edit({ userId }: EditProps) {
       Edit {userId ? `${user.username}'s` : "your"} profile
       <input name="image" placeholder="Image" type="file" />
       {errors.image && <p>{errors.image}</p>}
-      <input name="name" placeholder="Name" />
+      <input name="name" placeholder="Name" maxLength={50} />
       {errors.name && <p>{errors.name}</p>}
-      <input name="username" placeholder="Username" />
+      <input name="username" placeholder="Username" maxLength={20} />
       {errors.username && <p>{errors.username}</p>}
-      <input name="description" placeholder="Description" />
+      <input name="description" placeholder="Description" maxLength={500} />
       {errors.description && <p>{errors.description}</p>}
-      <input name="email" placeholder="Email" type="email" />
+      <input name="email" placeholder="Email" type="email" maxLength={254} />
       {errors.email && <p>{errors.email}</p>}
-      <input name="password" placeholder="Password" type="password" />
+      <input
+        name="password"
+        placeholder="Password"
+        type="password"
+        maxLength={254}
+      />
       {errors.password && <p>{errors.password}</p>}
-      <input name="confirmPassword" placeholder="Password" type="password" />
+      <input
+        name="confirmPassword"
+        placeholder="Password"
+        type="password"
+        maxLength={254}
+      />
       {errors.confirmPassword && <p>{errors.confirmPassword}</p>}
       {errors.global && <p>{errors.global}</p>}
       <input type="submit" />

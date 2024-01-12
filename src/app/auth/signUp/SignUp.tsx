@@ -18,7 +18,7 @@ export async function SignUp() {
 
   const submit = async (data: FormData) => {
     "use server";
-    
+
     const result = await resolveSignUp(data, email);
     if (result.success) {
       cookies().delete("email");
@@ -35,13 +35,20 @@ export async function SignUp() {
     <form action={submit}>
       Register {email}
       Enter your new password
-      <input name="password" placeholder="Password" type="password" required />
+      <input
+        name="password"
+        placeholder="Password"
+        type="password"
+        required
+        maxLength={254}
+      />
       {errors.password && <p>{errors.password}</p>}
       <input
         name="confirmPassword"
         placeholder="Confirm password"
         type="password"
         required
+        maxLength={254}
       />
       {errors.confirmPassword && <p>{errors.confirmPassword}</p>}
       {errors.global && <p>{errors.global}</p>}

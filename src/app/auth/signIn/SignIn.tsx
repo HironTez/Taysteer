@@ -35,7 +35,13 @@ export async function SignIn() {
     <form action={submit}>
       Log in as {email}
       Enter your password
-      <input name="password" placeholder="Password" type="password" required />
+      <input
+        name="password"
+        placeholder="Password"
+        type="password"
+        required
+        maxLength={254}
+      />
       {errors.password && <p>{errors.password}</p>}
       {errors.global && <p>{errors.global}</p>}
       <button type="submit">Sign In</button>
