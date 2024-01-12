@@ -28,6 +28,7 @@ export async function Edit({ userId }: EditProps) {
 
   const submit = async (data: FormData) => {
     "use server";
+
     const result = await resolveEditUser(user, data);
     if (result.success) {
       redirect(`/profile${userId ? `/${userId}` : ""}`);

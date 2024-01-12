@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getSessionUser } from "../internal-actions/auth";
 import { getUrl } from "../internal-actions/url";
-import { checkAccess, getUserBy } from "../internal-actions/user";
+import { checkAccess, deleteUser, getUserBy } from "../internal-actions/user";
 import styles from "./style.module.css";
 
 type ProfileProps = {
@@ -24,8 +24,14 @@ export async function Profile({ userId }: ProfileProps) {
     ? `/image/${user.image.id}`
     : (await import("@/../public/profile.svg")).default;
 
-  const hasAccess = await checkAccess(requestedUser, sessionUser);
+  const hasAccess = await checkAccess(user, sessionUser);
   const pathEdit = urlAddToPath(getUrl(), "edit");
+
+  const submitDelete = async () => {
+    "use server";
+
+    await deleteUser(user);
+  };
 
   return (
     <div>
@@ -35,8 +41,29 @@ export async function Profile({ userId }: ProfileProps) {
       <p>Name: {user.name}</p>
       <p>Username: {user.username}</p>
       <p>Description: {user.description}</p>
-      {hasAccess && <Link href={pathEdit}>Edit</Link>}
-      {/* TODO: delete button */}
+      {hasAccess && (
+        <>
+          <Link href={pathEdit}>Edit</Link>
+          <button popovertarget="delete-user" type="button">
+            Delete
+          </button>
+        </>
+      )}
+
+      <div popover="auto" id="delete-user">
+        Do you actually want to delete this account? This action cannot be
+        undone
+        <button
+          popovertarget="delete-user"
+          popovertargetaction="hide"
+          type="button"
+        >
+          Cancel
+        </button>
+        <form action={submitDelete}>
+          <input type="submit" value="Confirm deletion" />
+        </form>
+      </div>
     </div>
   );
 }

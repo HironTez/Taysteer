@@ -15,20 +15,29 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  const responseRenewSession = await fetch(
-    new URL("/renew-session", request.url),
-    {
-      headers,
-    },
-  );
+  if (request.method === "GET") {
+    const responseRenewSession = await fetch(
+      new URL("/renew-session", request.url),
+      {
+        headers,
+      },
+    );
 
-  const setCookieHeader = responseRenewSession.headers.get("Set-Cookie");
-  const cookieStrings = setCookieHeader
-    ? splitCookiesString(setCookieHeader)
-    : [];
-  for (const cookieString of cookieStrings) {
-    const parsed = parseSetCookie(cookieString);
-    if (parsed) response.cookies.set(parsed.name, parsed.value, parsed);
+    const setCookieHeader = responseRenewSession.headers.get("Set-Cookie");
+    const cookieStrings = setCookieHeader
+      ? splitCookiesString(setCookieHeader)
+      : [];
+
+    for (const cookieString of cookieStrings) {
+      const parsedCookie = parseSetCookie(cookieString);
+      if (parsedCookie) {
+        response.cookies.set(
+          parsedCookie.name,
+          parsedCookie.value,
+          parsedCookie,
+        );
+      }
+    }
   }
 
   return response;

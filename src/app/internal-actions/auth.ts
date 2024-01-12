@@ -103,6 +103,11 @@ export const renewSession = async () => {
   await createSession(session.userId);
 };
 
+export const deleteSessionCookies = () => {
+  cookies().delete("accessToken");
+  cookies().delete("refreshToken");
+};
+
 const deleteSession = async () => {
   const { decodedAccessToken, decodedRefreshToken } = verifyTokens();
   if (!decodedAccessToken || !decodedRefreshToken) return false;
@@ -111,8 +116,7 @@ const deleteSession = async () => {
     .delete({ where: { id: decodedRefreshToken.jti } })
     .catch(null);
 
-  cookies().delete("accessToken");
-  cookies().delete("refreshToken");
+  deleteSessionCookies();
 
   return true;
 };

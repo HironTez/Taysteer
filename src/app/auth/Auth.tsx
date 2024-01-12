@@ -14,6 +14,7 @@ export async function Auth() {
 
   const submit = async (data: FormData) => {
     "use server";
+
     const result = await resolveLogIn(data);
     if (result.success) {
       cookies().set("email", result.data.email, {

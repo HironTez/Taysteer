@@ -6,21 +6,19 @@ import { exclude } from "@/utils/object";
 import { Comment, Recipe, RecipeRating, Role, User } from "@prisma/client";
 import { hash } from "bcrypt";
 import { fileTypeFromBuffer } from "file-type";
-import { getSessionUser } from "./auth";
+import { getURL } from "next/dist/shared/lib/utils";
+import { redirect } from "next/navigation";
+import { deleteSessionCookies, getSessionUser } from "./auth";
 
 export const checkAccess = async (
   target: User | UserWithImage | Recipe | RecipeRating | Comment | null,
   user: UserWithImage | null,
 ) => {
-  if (
-    user &&
-    (user.role === Role.ADMIN ||
-      (target &&
-        (("userId" in target && target.userId === user.id) ||
-          target.id === user.id)))
-  ) {
-    return true;
-  }
+  if (!user || !target) return false;
+
+  if (user.role === Role.ADMIN) return true;
+  if (target.id === user.id) return true;
+  if ("userId" in target && target.userId === user.id) return true;
 
   return false;
 };
@@ -102,4 +100,25 @@ export const editUser = async (
   });
 
   return actionResponse({ user: newUser });
+};
+
+export const deleteUser = async (targetUser: UserWithImage) => {
+  const user = await getSessionUser();
+  const hasAccess = await checkAccess(targetUser, user);
+  if (!hasAccess) {
+    return false;
+  }
+
+  try {
+    await prisma.user.delete({ where: { id: targetUser.id } });
+
+    if (targetUser.id === user!.id) {
+      deleteSessionCookies();
+      redirect("/");
+    } else {
+      redirect(getURL());
+    }
+  } catch {
+    return false;
+  }
 };

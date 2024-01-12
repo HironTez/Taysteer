@@ -18,6 +18,7 @@ export async function SignUp() {
 
   const submit = async (data: FormData) => {
     "use server";
+    
     const result = await resolveSignUp(data, email);
     if (result.success) {
       cookies().delete("email");

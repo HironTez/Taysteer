@@ -18,6 +18,7 @@ export async function SignIn() {
 
   const submit = async (data: FormData) => {
     "use server";
+
     const result = await resolveSignIn(data, email);
     if (result.success) {
       cookies().delete("email");
