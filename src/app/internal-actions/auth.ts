@@ -61,9 +61,13 @@ const verifyTokens = () => {
 };
 
 const createSession = async (userId: string) => {
+  const currentTime = new Date().getTime();
+  const in60Days = new Date(currentTime + 5184000000);
+  const in10Minutes = new Date(currentTime + 600000);
+
   // Create a session
   const newSession = await prisma.session.create({
-    data: { userId },
+    data: { userId, expiresAt: in60Days },
   });
 
   // Generate tokens
@@ -75,9 +79,6 @@ const createSession = async (userId: string) => {
     { jti: newSession.id },
     { expiresIn: "60d" },
   );
-  const currentTime = new Date().getTime();
-  const in60Days = currentTime + 5184000000;
-  const in10Minutes = currentTime + 600000;
 
   // Set tokens to cookies
   cookies().set("accessToken", `${newAccessToken}`, {
