@@ -10,6 +10,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Session {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  expiresAt DateTime
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique @db.ObjectId
+}
+
 model User {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
   createdAt    DateTime @default(now())
@@ -27,14 +35,6 @@ model User {
   recipes       Recipe[]
   comments      Comment[]
   recipeRatings RecipeRating[]
-}
-
-model Session {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  expiresAt DateTime
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String @unique @db.ObjectId
 }
 
 enum Role {

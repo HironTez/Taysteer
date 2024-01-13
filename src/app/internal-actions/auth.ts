@@ -62,7 +62,7 @@ const verifyTokens = () => {
 
 const createSession = async (userId: string) => {
   const currentTime = new Date().getTime();
-  const in60Days = new Date(currentTime + 1000);
+  const in60Days = new Date(currentTime + 5184000000);
   const in10Minutes = new Date(currentTime + 600000);
 
   // Create a session
