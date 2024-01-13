@@ -62,12 +62,26 @@ const verifyTokens = () => {
 
 const createSession = async (userId: string) => {
   const currentTime = new Date().getTime();
-  const in60Days = new Date(currentTime + 5184000000);
+  const in60Days = new Date(currentTime + 1000);
   const in10Minutes = new Date(currentTime + 600000);
 
   // Create a session
   const newSession = await prisma.session.create({
     data: { userId, expiresAt: in60Days },
+  });
+
+  // Delete the session after 60 days
+  await prisma.$runCommandRaw({
+    createIndexes: "Session",
+    indexes: [
+      {
+        key: {
+          expiresAt: 1,
+        },
+        name: "expiresAt_ttl_index",
+        expireAfterSeconds: 0,
+      },
+    ],
   });
 
   // Generate tokens

@@ -11,12 +11,3 @@ export const prisma =
   });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
-
-// Delete all expired sessions
-prisma.session.deleteMany({
-  where: {
-    expiresAt: {
-      lt: new Date(),
-    },
-  },
-});
