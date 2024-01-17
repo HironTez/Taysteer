@@ -1,26 +1,16 @@
 import { prisma } from "@/db";
-import { RequireOnlyOne } from "@/types/RequireOnlyOne";
-import { UserWithImage } from "@/types/user";
+import { UserWithImage } from "@/types/Models";
 import { actionError, actionResponse } from "@/utils/dto";
-import { exclude } from "@/utils/object";
-import {
-  Comment,
-  Recipe,
-  RecipeRating,
-  Role,
-  Status,
-  User,
-} from "@prisma/client";
+import { Comment, Recipe, RecipeRating, Role, Status } from "@prisma/client";
 import { hash } from "bcrypt";
-import { fileTypeFromBuffer } from "file-type";
-import { revalidatePath } from "next/cache";
 import { getURL } from "next/dist/shared/lib/utils";
 import { redirect } from "next/navigation";
 import { deleteSessionCookies, getSessionUser } from "./auth";
-import { getUrl } from "./url";
+import { getCreateImageVariable } from "./helpers";
+import { revalidatePage } from "./url";
 
 export const checkAccess = async (
-  target: User | UserWithImage | Recipe | RecipeRating | Comment | null,
+  target: UserWithImage | Recipe | RecipeRating | Comment | null,
   user: UserWithImage | null,
 ) => {
   if (!user || !target) return false;
@@ -32,36 +22,14 @@ export const checkAccess = async (
   return false;
 };
 
-type UserWithImageAndPassword = UserWithImage & { passwordHash: string };
-
-const excludePassword = (user: UserWithImageAndPassword | null) => {
-  return user && exclude(user, ["passwordHash"]);
-};
-
-type Param = RequireOnlyOne<{
-  userId: string;
-  email: string;
-}>;
-
-export const getUserBy = async ({ userId, email }: Param) => {
+export const getUserById = async (id: string) => {
   try {
-    const user = await prisma.user.findFirst({
+    return prisma.user.findUnique({
       where: {
-        OR: [
-          {
-            id: userId,
-          },
-          {
-            email,
-          },
-        ],
+        id,
       },
-      include: {
-        image: { select: { id: true } },
-      },
+      include: { image: { select: { id: true } } },
     });
-
-    return excludePassword(user);
   } catch {
     return null;
   }
@@ -83,10 +51,9 @@ export const editUser = async (
   }
 
   const passwordHash = password && (await hash(password, 10));
-
-  const imageBuffer = image && Buffer.from(await image.arrayBuffer());
-  const imageFileType = imageBuffer && (await fileTypeFromBuffer(imageBuffer));
-  const imageMime = imageFileType?.mime;
+  const createImageVariable = image
+    ? await getCreateImageVariable(image)
+    : undefined;
 
   const newUser = await prisma.user.update({
     where: { id: targetUser.id },
@@ -96,15 +63,7 @@ export const editUser = async (
       username,
       email,
       passwordHash,
-      image:
-        imageBuffer && imageMime
-          ? {
-              create: {
-                value: imageBuffer,
-                mime: imageMime,
-              },
-            }
-          : undefined,
+      image: createImageVariable,
     },
   });
 
@@ -120,6 +79,10 @@ export const deleteUser = async (targetUser: UserWithImage) => {
 
   try {
     await prisma.user.delete({ where: { id: targetUser.id } });
+
+    if (targetUser.image?.id) {
+      await prisma.image.delete({ where: { id: targetUser.image.id } });
+    }
 
     if (targetUser.id === user!.id) {
       deleteSessionCookies();
@@ -148,7 +111,7 @@ export const banUser = async (targetUser: UserWithImage) => {
 
     await prisma.session.deleteMany({ where: { userId: targetUser.id } });
 
-    revalidatePath(getUrl());
+    revalidatePage();
     return actionResponse();
   } catch {
     return actionError("Could not ban user");
@@ -171,9 +134,16 @@ export const unbanUser = async (targetUser: UserWithImage) => {
 
     await prisma.session.deleteMany({ where: { userId: targetUser.id } });
 
-    revalidatePath(getUrl());
+    revalidatePage();
     return actionResponse();
   } catch {
     return actionError("Could not ban user");
   }
+};
+
+export const getNameOfUser = (user: UserWithImage | null | undefined) => {
+  const userExists = !!user;
+  const userValid = userExists && user.status === Status.ACTIVE;
+
+  return userExists ? (userValid ? user.name : "Banned user") : "Deleted user";
 };

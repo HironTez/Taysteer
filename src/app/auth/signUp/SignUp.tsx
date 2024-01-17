@@ -1,12 +1,11 @@
 import { unAuthGuard } from "@/app/internal-actions/auth";
-import { getSearchParam, getUrl } from "@/app/internal-actions/url";
+import { getSearchParam, revalidatePage } from "@/app/internal-actions/url";
 import { SignUpSchemaT } from "@/app/schemas/auth";
 import { ActionError } from "@/utils/dto";
-import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { resolveSignUp } from "./resolvers";
-import "./style.module.css";
+import "./sign-up.module.css";
 
 let errors: ActionError<SignUpSchemaT> = {};
 
@@ -27,7 +26,7 @@ export async function SignUp() {
       redirect(redirectTo ?? "/");
     } else {
       errors = result.errors;
-      revalidatePath(getUrl());
+      revalidatePage();
     }
   };
 

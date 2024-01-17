@@ -2,6 +2,7 @@ import {
   DO_NOT_USE_OR_YOU_WILL_BE_FIRED_EXPERIMENTAL_FORM_ACTIONS,
   ReactNode,
 } from "react";
+import "./confirm.module.css";
 
 type ConfirmProps = {
   children: ReactNode;

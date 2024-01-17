@@ -10,7 +10,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { actionError, actionResponse } from "../../utils/dto";
 import { getPathname, getSearchParam } from "./url";
-import { getUserBy } from "./user";
+import { getUserById } from "./user";
 
 type JWT = {
   iat: number;
@@ -195,7 +195,7 @@ export const signUp = async (email: string, password: string) => {
   const emailValid = email && validateEmail(email);
 
   // Exit if email is not valid or already used
-  if (!email || user || !emailValid) {
+  if (!email || !emailValid || user) {
     return actionError<SignUpSchemaT>("Couldn't sign up");
   }
 
@@ -227,18 +227,21 @@ export const logOut = async () => {
 };
 
 export const getSessionUser = async () => {
-  const { decodedAccessToken, decodedRefreshToken } = verifyTokens();
-  if (!decodedAccessToken || !decodedRefreshToken) return null;
-
-  const user = await getUserBy({ userId: decodedAccessToken.sub });
+  const { decodedAccessToken } = verifyTokens();
+  if (!decodedAccessToken) return null;
+  const user = await getUserById(decodedAccessToken.sub);
   return user;
 };
 
-const authGuard = async () => {
+export const redirectToAuth: () => never = () => {
+  const pathname = getPathname();
+  redirect(`/auth?redirectTo=${pathname}`);
+};
+
+export const authGuard = async () => {
   const user = await getSessionUser();
   if (!user) {
-    const pathname = getPathname();
-    redirect(`/auth?redirectTo=${pathname}`);
+    redirectToAuth();
   }
 
   return user;

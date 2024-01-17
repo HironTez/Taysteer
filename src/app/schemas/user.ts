@@ -1,14 +1,6 @@
 import { z } from "zod";
 import { zfd } from "zod-form-data";
-
-const MAX_FILE_SIZE = 2000000;
-const ACCEPTED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-  "image/svg+xml",
-];
+import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from "./constants";
 
 export const editUserSchema = zfd
   .formData({

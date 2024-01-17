@@ -1,6 +1,6 @@
 import { editUser } from "@/app/internal-actions/user";
 import { EditProfileSchemaT, editUserSchema } from "@/app/schemas/user";
-import { UserWithImage } from "@/types/user";
+import { UserWithImage } from "@/types/Models";
 import { zodError } from "@/utils/dto";
 
 export const resolveEditUser = async (

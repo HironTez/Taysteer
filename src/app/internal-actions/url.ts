@@ -1,17 +1,14 @@
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
 export const getUrl = () => {
   const headersList = headers();
-  const url = headersList.get("x-url")!;
-
-  return url;
+  return headersList.get("x-url")!;
 };
 
 export const getPathname = () => {
   const headersList = headers();
-  const pathname = headersList.get("x-pathname")!;
-
-  return pathname;
+  return headersList.get("x-pathname")!;
 };
 
 export const getSearchParam = (name: string) => {
@@ -20,7 +17,9 @@ export const getSearchParam = (name: string) => {
   if (!search) return null;
 
   const searchParams = new URLSearchParams(search);
-  const searchParam = searchParams.get(name);
+  return searchParams.get(name);
+};
 
-  return searchParam;
+export const revalidatePage = () => {
+  revalidatePath(getUrl(), "page");
 };

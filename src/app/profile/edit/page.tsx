@@ -1,5 +1,5 @@
-import { Edit } from "./Edit";
+import { EditProfile } from "./EditProfile";
 
 export default function EditPage() {
-  return <Edit />;
+  return <EditProfile />;
 }

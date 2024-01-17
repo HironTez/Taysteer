@@ -1,24 +1,22 @@
-import { getSessionUser } from "@/app/internal-actions/auth";
-import { getUrl } from "@/app/internal-actions/url";
-import { checkAccess, getUserBy } from "@/app/internal-actions/user";
+import { authGuard } from "@/app/internal-actions/auth";
+import { revalidatePage } from "@/app/internal-actions/url";
+import { checkAccess, getUserById } from "@/app/internal-actions/user";
 import { EditProfileSchemaT } from "@/app/schemas/user";
 import { ActionError } from "@/utils/dto";
-import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
+import "./edit-profile.module.css";
 import { resolveEditUser } from "./resolvers";
-import "./style.module.css";
 
-type EditProps = {
+type EditProfileProps = {
   userId?: string;
 };
 
 let errors: ActionError<EditProfileSchemaT> = {};
 
-export async function Edit({ userId }: EditProps) {
-  const requestedUser = userId ? await getUserBy({ userId }) : null;
-  const sessionUser = await getSessionUser();
+export async function EditProfile({ userId }: EditProfileProps) {
+  const requestedUser = userId ? await getUserById(userId) : null;
+  const sessionUser = await authGuard();
 
-  if (!sessionUser) redirect("/auth");
   if (userId && !requestedUser) notFound();
 
   const user = requestedUser || sessionUser;
@@ -34,7 +32,7 @@ export async function Edit({ userId }: EditProps) {
       redirect(`/profile${userId ? `/${userId}` : ""}`);
     } else {
       errors = result.errors;
-      revalidatePath(getUrl());
+      revalidatePage();
     }
   };
   return (

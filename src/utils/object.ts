@@ -11,6 +11,14 @@ export const exclude = <T extends object, Key extends keyof T>(
   return obj;
 };
 
+export const typeSafeObjectFromEntries = <
+  const T extends ReadonlyArray<readonly [PropertyKey, unknown]>,
+>(
+  entries: T,
+): { [K in T[number] as K[0]]: K[1] } => {
+  return Object.fromEntries(entries) as { [K in T[number] as K[0]]: K[1] };
+};
+
 // type Object = Record<string, unknown>;
 
 // type RequiredProperty<T extends Object> = {

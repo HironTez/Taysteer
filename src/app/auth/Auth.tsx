@@ -1,10 +1,10 @@
-import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { ActionError } from "../../utils/dto";
 import { unAuthGuard } from "../internal-actions/auth";
-import { getSearchParam, getUrl } from "../internal-actions/url";
+import { getSearchParam, revalidatePage } from "../internal-actions/url";
 import { LogInSchemaT } from "../schemas/auth";
+import "./auth.module.css";
 import { resolveLogIn } from "./resolvers";
 
 let errors: ActionError<LogInSchemaT> = {};
@@ -24,19 +24,25 @@ export async function Auth() {
       const redirectTo = getSearchParam("redirectTo");
       redirect(
         `/auth/${result.data.nextStep}${
-          redirectTo ? `&redirectTo=${redirectTo}` : ""
+          redirectTo ? `?redirectTo=${redirectTo}` : ""
         }`,
       );
     } else {
       errors = result.errors;
-      revalidatePath(getUrl());
+      revalidatePage();
     }
   };
 
   return (
     <form action={submit}>
       Welcome! Enter your email to sign up or login
-      <input name="email" placeholder="Email" type="email" required maxLength={254} />
+      <input
+        name="email"
+        placeholder="Email"
+        type="email"
+        required
+        maxLength={254}
+      />
       {errors.email && <p>{errors.email}</p>}
       <button type="submit">Continue</button>
     </form>

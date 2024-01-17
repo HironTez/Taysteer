@@ -1,29 +1,29 @@
 import { urlAddToPath } from "@/utils/url";
 import { Role, Status } from "@prisma/client";
-import Image from "next/image";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import Confirm from "../components/confirm";
-import { getSessionUser } from "../internal-actions/auth";
+import ProfilePicture from "../components/profile-picture";
+import { getSessionUser, redirectToAuth } from "../internal-actions/auth";
 import { getUrl } from "../internal-actions/url";
 import {
   banUser,
   checkAccess,
   deleteUser,
-  getUserBy,
+  getUserById,
   unbanUser,
 } from "../internal-actions/user";
-import styles from "./style.module.css";
+import styles from "./profile.module.css";
 
 type ProfileProps = {
   userId?: string;
 };
 
 export async function Profile({ userId }: ProfileProps) {
-  const requestedUser = userId ? await getUserBy({ userId }) : null;
+  const requestedUser = userId ? await getUserById( userId ) : null;
   const sessionUser = await getSessionUser();
 
-  if (!userId && !sessionUser) redirect("/auth");
+  if (!userId && !sessionUser) redirectToAuth();
   if (userId && !requestedUser) notFound();
 
   const user = (requestedUser || sessionUser)!;
@@ -33,9 +33,6 @@ export async function Profile({ userId }: ProfileProps) {
   const userIsBanned = user.status === Status.BANNED;
   const userIsSame = user.id === sessionUser?.id;
 
-  const profilePicture = user.image?.id
-    ? `/image/${user.image.id}`
-    : (await import("@/../public/profile.svg")).default;
   const pathEdit = urlAddToPath(getUrl(), "edit");
 
   let deleteUserError: string | undefined = undefined;
@@ -63,7 +60,7 @@ export async function Profile({ userId }: ProfileProps) {
   return (
     <div>
       <div className={styles.imageContainer}>
-        <Image fill sizes="50%" src={profilePicture} alt="Profile picture" />
+        <ProfilePicture user={user} />
       </div>
       <p>Name: {user.name}</p>
       <p>Username: {user.username}</p>
