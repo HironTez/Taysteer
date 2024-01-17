@@ -137,7 +137,7 @@ export const unbanUser = async (targetUser: UserWithImage) => {
     revalidatePage();
     return actionResponse();
   } catch {
-    return actionError("Could not ban user");
+    return actionError("Could not unban user");
   }
 };
 

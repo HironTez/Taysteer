@@ -1,9 +1,13 @@
 import ProfilePicture from "@/app/components/profile-picture";
-import { getComments } from "@/app/internal-actions/comment";
+import { getSessionUser } from "@/app/internal-actions/auth";
+import { getComments, getCommentsCount } from "@/app/internal-actions/comment";
 import { revalidatePage } from "@/app/internal-actions/url";
 import { getNameOfUser } from "@/app/internal-actions/user";
+import { CreateCommentSchemaT } from "@/app/schemas/comment";
+import { ActionError } from "@/utils/dto";
 import { Prisma } from "@prisma/client";
 import styles from "./comments.module.css";
+import { resolveCreateComment } from "./resolvers";
 
 type RecipeWithUser = Prisma.RecipeGetPayload<{
   include: { user: { include: { image: { select: { id: true } } } } };
@@ -13,10 +17,29 @@ type CommentsProps = {
   recipe: RecipeWithUser;
 };
 
+let page = 1;
+
+let errors: ActionError<CreateCommentSchemaT> = {};
+
 export async function Comments({ recipe }: CommentsProps) {
-  let page = 1;
+  const sessionUser = await getSessionUser();
 
   const comments = await getComments(recipe, page);
+  const commentsCount = await getCommentsCount(recipe);
+  const hasMoreComments = comments.length < commentsCount;
+
+  const submitCreateComment = async (data: FormData) => {
+    "use server";
+
+    if (sessionUser) {
+      const result = await resolveCreateComment(data, recipe, sessionUser);
+      if (result.success) {
+      } else {
+        errors = result.errors;
+      }
+      revalidatePage();
+    }
+  };
 
   const submitLoadMore = async () => {
     "use server";
@@ -26,6 +49,12 @@ export async function Comments({ recipe }: CommentsProps) {
 
   return (
     <div>
+      {sessionUser && (
+        <form action={submitCreateComment}>
+          <input type="text" name="text" placeholder="Text" />
+          <input type="submit" />
+        </form>
+      )}
       {comments.map((comment, i) => (
         <div key={i}>
           <div className={styles.imageContainer}>
@@ -37,9 +66,11 @@ export async function Comments({ recipe }: CommentsProps) {
           <span>Text: {comment.text}</span>
         </div>
       ))}
-      <form action={submitLoadMore}>
-        <input type="submit" value="Load more comments" />
-      </form>
+      {hasMoreComments && (
+        <form action={submitLoadMore}>
+          <input type="submit" value="Load more" />
+        </form>
+      )}
     </div>
   );
 }

@@ -151,3 +151,5 @@ export async function NewRecipe() {
     </div>
   );
 }
+
+// TODO: length limitations & mark required fields
