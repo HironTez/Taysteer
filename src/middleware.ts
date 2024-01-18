@@ -1,32 +1,52 @@
-import { parseSetCookie } from "next/dist/compiled/@edge-runtime/cookies";
+import {
+  RequestCookie,
+  ResponseCookie,
+  parseCookie,
+  parseSetCookie,
+  stringifyCookie,
+} from "next/dist/compiled/@edge-runtime/cookies";
 import { NextRequest, NextResponse } from "next/server";
 import { splitCookiesString } from "set-cookie-parser";
 
-const setUrlHeaders = (request: NextRequest, headers: Headers) => {
-  headers.set("x-url", request.url);
-  headers.set("x-pathname", request.nextUrl.pathname);
-  headers.set("x-search", request.nextUrl.search);
+const responseToRequestCookies = (cookies: ResponseCookie[]): RequestCookie[] =>
+  cookies.map((cookie) => ({ name: cookie.name, value: cookie.value }));
+
+const parseCookies = (headers: Headers) => {
+  const cookieHeader = headers.get("Cookie");
+  const cookiesMap = cookieHeader ? parseCookie(cookieHeader) : [];
+  const cookies: RequestCookie[] = Array.from(cookiesMap, ([name, value]) => ({
+    name,
+    value,
+  }));
+
+  const setCookieHeader = headers.get("Set-Cookie");
+  const setCookieStrings = setCookieHeader
+    ? splitCookiesString(setCookieHeader)
+    : [];
+  const setCookies = setCookieStrings
+    .map((setCookieString) => parseSetCookie(setCookieString))
+    .filter((cookie): cookie is ResponseCookie => !!cookie);
+
+  return { cookies, setCookies };
 };
 
-const renewSession = async (request: NextRequest, response: NextResponse) => {
+const setUrlHeaders = (request: NextRequest, requestHeaders: Headers) => {
+  requestHeaders.set("x-url", request.url);
+  requestHeaders.set("x-pathname", request.nextUrl.pathname);
+  requestHeaders.set("x-search", request.nextUrl.search);
+};
+
+const renewSession = async (request: NextRequest, requestHeaders: Headers) => {
   const responseRenewSession = await fetch(
     new URL("/renew-session", request.url),
     {
-      headers: response.headers,
+      headers: requestHeaders,
     },
   );
 
-  const setCookieHeader = responseRenewSession.headers.get("Set-Cookie");
-  const cookieStrings = setCookieHeader
-    ? splitCookiesString(setCookieHeader)
-    : [];
+  const { setCookies } = parseCookies(responseRenewSession.headers);
 
-  for (const cookieString of cookieStrings) {
-    const parsedCookie = parseSetCookie(cookieString);
-    if (parsedCookie) {
-      response.cookies.set(parsedCookie.name, parsedCookie.value, parsedCookie);
-    }
-  }
+  return setCookies;
 };
 
 const clearCookieVariables = (request: NextRequest, response: NextResponse) => {
@@ -38,24 +58,52 @@ const clearCookieVariables = (request: NextRequest, response: NextResponse) => {
   }
 };
 
+const setRequestCookies = (
+  headers: Headers,
+  setCookies: (RequestCookie | ResponseCookie)[],
+) => {
+  const { cookies: oldCookies } = parseCookies(headers);
+  const newCookies = responseToRequestCookies(setCookies);
+  const cookies = [...oldCookies, ...newCookies];
+  const stringifiedCookies = cookies.map((cookie) => stringifyCookie(cookie));
+  const cookieHeader = stringifiedCookies.join("; ");
+  headers.set("Cookie", cookieHeader);
+};
+
+const setResponseHeaders = (headers: Headers, setCookies: ResponseCookie[]) => {
+  const stringifiedCookies = setCookies.map((cookie) =>
+    stringifyCookie(cookie),
+  );
+  const cookieHeader = stringifiedCookies.join(", ");
+  headers.set("Set-Cookie", cookieHeader);
+};
+
 export async function middleware(request: NextRequest) {
-  const headers = new Headers(request.headers);
+  const requestHeaders = new Headers(request.headers);
 
-  setUrlHeaders(request, headers);
-
-  const response = NextResponse.next({
-    request: {
-      headers,
-    },
-  });
+  setUrlHeaders(request, requestHeaders);
 
   if (request.method === "GET") {
-    await renewSession(request, response);
+    const cookies = await renewSession(request, requestHeaders);
+
+    setRequestCookies(requestHeaders, cookies);
+    const response = NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
+    setResponseHeaders(response.headers, cookies);
 
     clearCookieVariables(request, response);
+
+    return response;
   }
 
-  return response;
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
 }
 
 export const config = {
