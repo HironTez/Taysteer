@@ -1,5 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 export const getUrl = () => {
   const headersList = headers();
@@ -22,4 +23,11 @@ export const getSearchParam = (name: string) => {
 
 export const revalidatePage = () => {
   revalidatePath(getUrl(), "page");
+};
+
+export const redirectPreserveSearchParams: (url: string) => never = (
+  url: string,
+) => {
+  const redirectTo = getSearchParam("redirectTo");
+  redirect(`${url}${redirectTo ? `?redirectTo=${redirectTo}` : ""}`);
 };

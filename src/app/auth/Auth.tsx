@@ -1,8 +1,10 @@
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { ActionError } from "../../utils/dto";
 import { unAuthGuard } from "../internal-actions/auth";
-import { getSearchParam, revalidatePage } from "../internal-actions/url";
+import {
+  redirectPreserveSearchParams,
+  revalidatePage,
+} from "../internal-actions/url";
 import { variable } from "../internal-actions/variables";
 import { LogInSchemaT } from "../schemas/auth";
 import "./auth.module.css";
@@ -22,12 +24,7 @@ export async function Auth() {
         httpOnly: true,
       });
 
-      const redirectTo = getSearchParam("redirectTo");
-      redirect(
-        `/auth/${result.data.nextStep}${
-          redirectTo ? `?redirectTo=${redirectTo}` : ""
-        }`,
-      );
+      redirectPreserveSearchParams(`/auth/${result.data.nextStep}`);
     } else {
       errorsVariable.set(result.errors);
       revalidatePage();

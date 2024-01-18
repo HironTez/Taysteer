@@ -1,5 +1,9 @@
 import { unAuthGuard } from "@/app/internal-actions/auth";
-import { getSearchParam, revalidatePage } from "@/app/internal-actions/url";
+import {
+  getSearchParam,
+  redirectPreserveSearchParams,
+  revalidatePage,
+} from "@/app/internal-actions/url";
 import { variable } from "@/app/internal-actions/variables";
 import { SignUpSchemaT } from "@/app/schemas/auth";
 import { ActionError } from "@/utils/dto";
@@ -14,7 +18,7 @@ export async function SignUp() {
   await unAuthGuard();
 
   const email = cookies().get("email")?.value;
-  if (!email) redirect("/auth");
+  if (!email) redirectPreserveSearchParams("/auth");
 
   const submit = async (data: FormData) => {
     "use server";
