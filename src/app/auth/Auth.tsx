@@ -47,6 +47,7 @@ export async function Auth() {
         maxLength={254}
       />
       {errors.email && <p>{errors.email}</p>}
+      {errors.global && <p>{errors.global}</p>}
       <button type="submit">Continue</button>
     </form>
   );

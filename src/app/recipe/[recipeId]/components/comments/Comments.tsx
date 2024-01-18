@@ -54,8 +54,8 @@ export async function Comments({ recipe }: CommentsProps) {
       {sessionUser && (
         <form action={submitCreateComment}>
           <input type="text" name="text" placeholder="Text" />
-          {errors.text}
-          {errors.global}
+          {errors.text && <p>{errors.text}</p>}
+          {errors.global && <p>{errors.global}</p>}
           <input type="submit" />
         </form>
       )}
