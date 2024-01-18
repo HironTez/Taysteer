@@ -1,6 +1,7 @@
 import { authGuard } from "@/app/internal-actions/auth";
 import { revalidatePage } from "@/app/internal-actions/url";
 import { checkAccess, getUserById } from "@/app/internal-actions/user";
+import { variable } from "@/app/internal-actions/variables";
 import { EditProfileSchemaT } from "@/app/schemas/user";
 import { ActionError } from "@/utils/dto";
 import { notFound, redirect } from "next/navigation";
@@ -11,7 +12,7 @@ type EditProfileProps = {
   userId?: string;
 };
 
-let errors: ActionError<EditProfileSchemaT> = {};
+const errorsVariable = variable<ActionError<EditProfileSchemaT>>("errors");
 
 export async function EditProfile({ userId }: EditProfileProps) {
   const requestedUser = userId ? await getUserById(userId) : null;
@@ -24,6 +25,8 @@ export async function EditProfile({ userId }: EditProfileProps) {
   const viewerHasAccess = await checkAccess(user, sessionUser);
   if (!viewerHasAccess) return "403 forbidden";
 
+  const errors = errorsVariable.get() ?? {};
+
   const submit = async (data: FormData) => {
     "use server";
 
@@ -31,7 +34,7 @@ export async function EditProfile({ userId }: EditProfileProps) {
     if (result.success) {
       redirect(`/profile${userId ? `/${userId}` : ""}`);
     } else {
-      errors = result.errors;
+      errorsVariable.set(result.errors);
       revalidatePage();
     }
   };

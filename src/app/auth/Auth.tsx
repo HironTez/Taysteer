@@ -3,11 +3,12 @@ import { redirect } from "next/navigation";
 import { ActionError } from "../../utils/dto";
 import { unAuthGuard } from "../internal-actions/auth";
 import { getSearchParam, revalidatePage } from "../internal-actions/url";
+import { variable } from "../internal-actions/variables";
 import { LogInSchemaT } from "../schemas/auth";
 import "./auth.module.css";
 import { resolveLogIn } from "./resolvers";
 
-let errors: ActionError<LogInSchemaT> = {};
+const errorsVariable = variable<ActionError<LogInSchemaT>>("errors");
 
 export async function Auth() {
   await unAuthGuard();
@@ -28,10 +29,12 @@ export async function Auth() {
         }`,
       );
     } else {
-      errors = result.errors;
+      errorsVariable.set(result.errors);
       revalidatePage();
     }
   };
+
+  const errors = errorsVariable.get() ?? {};
 
   return (
     <form action={submit}>

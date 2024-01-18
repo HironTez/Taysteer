@@ -1,5 +1,6 @@
 import { unAuthGuard } from "@/app/internal-actions/auth";
 import { getSearchParam, revalidatePage } from "@/app/internal-actions/url";
+import { variable } from "@/app/internal-actions/variables";
 import { SignInSchemaT } from "@/app/schemas/auth";
 import { ActionError } from "@/utils/dto";
 import { cookies } from "next/headers";
@@ -7,7 +8,7 @@ import { redirect } from "next/navigation";
 import { resolveSignIn } from "./resolvers";
 import "./sign-in.module.css";
 
-let errors: ActionError<SignInSchemaT> = {};
+const errorsVariable = variable<ActionError<SignInSchemaT>>("errors");
 
 export async function SignIn() {
   await unAuthGuard();
@@ -25,10 +26,12 @@ export async function SignIn() {
       const redirectTo = getSearchParam("redirectTo");
       redirect(redirectTo ?? "/");
     } else {
-      errors = result.errors;
+      errorsVariable.set(result.errors);
       revalidatePage();
     }
   };
+
+  const errors = errorsVariable.get() ?? {};
 
   return (
     <form action={submit}>

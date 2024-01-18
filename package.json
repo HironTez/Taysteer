@@ -22,7 +22,6 @@
     "prisma": "^5.8.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "set-cookie-parser": "^2.6.0",
     "typescript": "5.3.3",
     "zod": "^3.22.4",
     "zod-form-data": "^2.0.2"

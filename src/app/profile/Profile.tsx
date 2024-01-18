@@ -13,14 +13,19 @@ import {
   getUserById,
   unbanUser,
 } from "../internal-actions/user";
+import { variable } from "../internal-actions/variables";
 import styles from "./profile.module.css";
 
 type ProfileProps = {
   userId?: string;
 };
 
+const deleteUserErrorVariable = variable<string | undefined>("deleteUserError");
+const banUserErrorVariable = variable<string | undefined>("banUserError");
+const unbanUserErrorVariable = variable<string | undefined>("unbanUserError");
+
 export async function Profile({ userId }: ProfileProps) {
-  const requestedUser = userId ? await getUserById( userId ) : null;
+  const requestedUser = userId ? await getUserById(userId) : null;
   const sessionUser = await getSessionUser();
 
   if (!userId && !sessionUser) redirectToAuth();
@@ -32,29 +37,27 @@ export async function Profile({ userId }: ProfileProps) {
   const viewerIsAdmin = sessionUser?.role === Role.ADMIN;
   const userIsBanned = user.status === Status.BANNED;
   const userIsSame = user.id === sessionUser?.id;
-
   const pathEdit = urlAddToPath(getUrl(), "edit");
-
-  let deleteUserError: string | undefined = undefined;
-  let banUserError: string | undefined = undefined;
-  let unbanUserError: string | undefined = undefined;
+  const deleteUserError = deleteUserErrorVariable.get();
+  const banUserError = banUserErrorVariable.get();
+  const unbanUserError = unbanUserErrorVariable.get();
 
   const submitDelete = async () => {
     "use server";
     const result = await deleteUser(user);
-    if (!result.success) deleteUserError = result.errors.global;
+    if (!result.success) deleteUserErrorVariable.set(result.errors.global);
   };
 
   const submitBan = async () => {
     "use server";
     const result = await banUser(user);
-    if (!result.success) banUserError = result.errors.global;
+    if (!result.success) banUserErrorVariable.set(result.errors.global);
   };
 
   const submitUnban = async () => {
     "use server";
     const result = await unbanUser(user);
-    if (!result.success) unbanUserError = result.errors.global;
+    if (!result.success) unbanUserErrorVariable.set(result.errors.global);
   };
 
   return (

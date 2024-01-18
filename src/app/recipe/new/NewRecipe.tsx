@@ -1,5 +1,6 @@
 import { authGuard } from "@/app/internal-actions/auth";
 import { revalidatePage } from "@/app/internal-actions/url";
+import { variable } from "@/app/internal-actions/variables";
 import { ACCEPTED_IMAGE_TYPES } from "@/app/schemas/constants";
 import {
   CreateRecipeSchemaT,
@@ -11,13 +12,17 @@ import { resolveCreateRecipe } from "./resolvers";
 
 const acceptedImageTypes = ACCEPTED_IMAGE_TYPES.join(", ");
 
-let errors: ActionError<CreateRecipeSchemaT> = {};
+const errorsVariable = variable<ActionError<CreateRecipeSchemaT>>("errors");
 
-let ingredientKeys = [1, 2];
-let stepsKeys = [1, 2];
+const ingredientKeysVariable = variable<number[]>("ingredientKeys");
+const stepKeysVariable = variable<number[]>("stepKeys");
 
 export async function NewRecipe() {
   const sessionUser = await authGuard();
+
+  const errors = errorsVariable.get() ?? {};
+  const ingredientKeys = ingredientKeysVariable.get() ?? [1, 2];
+  const stepsKeys = stepKeysVariable.get() ?? [1, 2];
 
   const submitAddIngredient = async () => {
     "use server";
@@ -27,8 +32,10 @@ export async function NewRecipe() {
   const submitRemoveIngredient = async (data: FormData) => {
     "use server";
     const keyToRemove = data.get("key");
-    ingredientKeys = ingredientKeys.filter(
-      (ingredientKey) => ingredientKey.toString() !== keyToRemove,
+    ingredientKeysVariable.set(
+      ingredientKeys.filter(
+        (ingredientKey) => ingredientKey.toString() !== keyToRemove,
+      ),
     );
     revalidatePage();
   };
@@ -40,8 +47,8 @@ export async function NewRecipe() {
   const submitRemoveStep = async (data: FormData) => {
     "use server";
     const keyToRemove = data.get("key");
-    stepsKeys = stepsKeys.filter(
-      (stepKey) => stepKey.toString() !== keyToRemove,
+    stepKeysVariable.set(
+      stepsKeys.filter((stepKey) => stepKey.toString() !== keyToRemove),
     );
     revalidatePage();
   };
@@ -61,7 +68,7 @@ export async function NewRecipe() {
     if (result.success) {
       redirect(`/recipe/${result.data.recipe.id}`);
     } else {
-      errors = result.errors;
+      errorsVariable.set(result.errors);
       revalidatePage();
     }
   };
