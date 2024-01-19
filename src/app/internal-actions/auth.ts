@@ -202,15 +202,11 @@ export const signUp = async (email: string, password: string) => {
   // Hash the password
   const passwordHash = await hash(password, 10);
 
-  // Create a unique username
-  const username = `user${Date.now()}`; // FIXME: collision
-
   // Create the user
   const newUser = await prisma.user.create({
     data: {
       email,
       passwordHash,
-      username,
     },
   });
 
