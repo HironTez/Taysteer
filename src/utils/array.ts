@@ -1,13 +1,4 @@
-const isFunction = <F extends Function>(value: unknown | F): value is F =>
-  typeof value === "function";
-
-// type NumericRange<
-//   END extends number,
-//   START_ARR extends number[] = [],
-//   ACC extends number = never,
-// > = START_ARR["length"] extends END
-//   ? ACC
-//   : NumericRange<END, [...START_ARR, 1], ACC | START_ARR["length"]>;
+import { isFunction } from "lodash";
 
 /**
  * Create an array using your custom constructor
@@ -19,10 +10,7 @@ const isFunction = <F extends Function>(value: unknown | F): value is F =>
  * @returns new array
  */
 
-export const arrayConstructor = <
-  TLength extends number,
-  const T,
->(
+export const arrayConstructor = <TLength extends number, const T>(
   length: TLength,
   constructor: ((index: number) => T) | T,
 ) => {
