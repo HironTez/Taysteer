@@ -2,6 +2,7 @@ export default async function Home() {
   return <></>;
 }
 
+// TODO: video uploading support for recipe steps
 // TODO: recipe editing
 // TODO: recipe deletion
 // TODO: comment editing

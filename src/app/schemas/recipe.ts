@@ -49,15 +49,41 @@ export const getCreateRecipeSchema = <IC extends number, SC extends number>(
 ) => {
   const ingredientsObjectSchema = typeSafeObjectFromEntries(
     arrayConstructor(ingredientsCount, (i) => [
-      [`ingredient_${i}_count`, zfd.text()],
-      [`ingredient_${i}_name`, zfd.text()],
+      [
+        `ingredient_${i}_count`,
+        zfd.text(
+          z
+            .string()
+            .max(50, "Ingredient count can be maximal 50 characters long"),
+        ),
+      ],
+      [
+        `ingredient_${i}_name`,
+        zfd.text(
+          z
+            .string()
+            .max(250, "Ingredient name can be maximal 250 characters long"),
+        ),
+      ],
       [`ingredient_${i}_optional`, zfd.checkbox()],
     ]).flat(),
   );
   const stepsObjectSchema = typeSafeObjectFromEntries(
     arrayConstructor(stepsCount, (i) => [
-      [`step_${i}_title`, zfd.text()],
-      [`step_${i}_description`, zfd.text()],
+      [
+        `step_${i}_title`,
+        zfd.text(
+          z.string().max(50, "Step title can be maximal 50 characters long"),
+        ),
+      ],
+      [
+        `step_${i}_description`,
+        zfd.text(
+          z
+            .string()
+            .max(500, "Step description can be maximal 500 characters long"),
+        ),
+      ],
       [`step_${i}_image`, image],
     ]).flat(),
   );

@@ -93,13 +93,24 @@ export async function NewRecipe() {
       <form id="add_step" action={submitAddStep} />
       <form action={submit}>
         <label>
-          <input type="file" name="image" accept={acceptedImageTypes} />
+          <input
+            type="file"
+            name="image"
+            accept={acceptedImageTypes}
+            required
+          />
           Image
         </label>
         {errors.image}
-        <input type="text" name="title" placeholder="Title" />
+        <input type="text" name="title" placeholder="Title" required max={50} />
         {errors.title}
-        <input type="text" name="description" placeholder="Description" />
+        <input
+          type="text"
+          name="description"
+          placeholder="Description"
+          required
+          max={500}
+        />
         {errors.description}
         <span>Ingredients</span>
         {ingredientKeys.map((key, i) => (
@@ -108,12 +119,16 @@ export async function NewRecipe() {
               type="text"
               name={`ingredient_${i}_count`}
               placeholder="Count"
+              required
+              max={50}
             />
             {errors[`ingredient_${i}_count`]}
             <input
               type="text"
               name={`ingredient_${i}_name`}
               placeholder="Name"
+              required
+              max={250}
             />
             {errors[`ingredient_${i}_name`]}
             <label>
@@ -131,12 +146,20 @@ export async function NewRecipe() {
         <span>Steps</span>
         {stepsKeys.map((key, i) => (
           <div key={key}>
-            <input type="text" name={`step_${i}_title`} placeholder="Title" />
+            <input
+              type="text"
+              name={`step_${i}_title`}
+              placeholder="Title"
+              required
+              max={50}
+            />
             {errors[`step_${i}_title`]}
             <input
               type="text"
               name={`step_${i}_description`}
               placeholder="Description"
+              required
+              max={500}
             />
             {errors[`step_${i}_description`]}
             <label>
@@ -144,6 +167,7 @@ export async function NewRecipe() {
                 type="file"
                 name={`step_${i}_image`}
                 accept={acceptedImageTypes}
+                required
               />
               Image
             </label>
@@ -158,5 +182,3 @@ export async function NewRecipe() {
     </div>
   );
 }
-
-// TODO: length limitations & mark required fields
