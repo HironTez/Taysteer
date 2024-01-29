@@ -11,11 +11,10 @@ export const resolveEditUser = async (
   if (!parsed.success) return zodError<EditProfileSchemaT>(parsed.error);
   return await editUser(
     targetUser,
-    parsed.data.name,
-    parsed.data.description,
+    parsed.data.name ?? null,
+    parsed.data.description ?? null,
     parsed.data.image,
     parsed.data.username,
     parsed.data.email,
-    parsed.data.password,
   );
 };

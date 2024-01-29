@@ -11,4 +11,6 @@ export default async function Home() {
 // TODO: navbar
 // TODO: main page with recipe list
 // TODO: show user's recipe list in profile
+// TODO: profile picture deletion
+// TODO: user change password page
 // TODO?: DB logging

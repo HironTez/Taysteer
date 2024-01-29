@@ -2,17 +2,7 @@ import { arrayConstructor } from "@/utils/array";
 import { typeSafeObjectFromEntries } from "@/utils/object";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
-import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE } from "./constants";
-
-const image = zfd.file(
-  z
-    .instanceof(File)
-    .refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 20MB.`)
-    .refine(
-      (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
-      ".jpg, .jpeg, .png, svg and .webp files are accepted.",
-    ),
-);
+import { image } from "./constants";
 
 const createRecipeBase = z.object({
   title: zfd.text(

@@ -43,28 +43,35 @@ export async function EditProfile({ userId }: EditProfileProps) {
       Edit {userId ? `${user.username}'s` : "your"} profile
       <input name="image" placeholder="Image" type="file" />
       {errors.image && <p>{errors.image}</p>}
-      <input name="name" placeholder="Name" maxLength={50} />
+      <input
+        name="name"
+        placeholder="Name"
+        defaultValue={user.name ?? ""}
+        maxLength={50}
+      />
       {errors.name && <p>{errors.name}</p>}
-      <input name="username" placeholder="Username" maxLength={20} />
+      <input
+        name="username"
+        placeholder="Username"
+        defaultValue={user.username}
+        maxLength={20}
+      />
       {errors.username && <p>{errors.username}</p>}
-      <input name="description" placeholder="Description" maxLength={500} />
+      <input
+        name="description"
+        placeholder="Description"
+        defaultValue={user.description ?? ""}
+        maxLength={500}
+      />
       {errors.description && <p>{errors.description}</p>}
-      <input name="email" placeholder="Email" type="email" maxLength={254} />
+      <input
+        name="email"
+        placeholder="Email"
+        type="email"
+        defaultValue={user.email}
+        maxLength={254}
+      />
       {errors.email && <p>{errors.email}</p>}
-      <input
-        name="password"
-        placeholder="Password"
-        type="password"
-        maxLength={254}
-      />
-      {errors.password && <p>{errors.password}</p>}
-      <input
-        name="confirmPassword"
-        placeholder="Password"
-        type="password"
-        maxLength={254}
-      />
-      {errors.confirmPassword && <p>{errors.confirmPassword}</p>}
       {errors.global && <p>{errors.global}</p>}
       <input type="submit" />
     </form>

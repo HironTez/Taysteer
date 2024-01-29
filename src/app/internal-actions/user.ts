@@ -2,7 +2,6 @@ import { prisma } from "@/db";
 import { UserWithImage } from "@/types/Models";
 import { actionError, actionResponse } from "@/utils/dto";
 import { Comment, Recipe, RecipeRating, Role, Status } from "@prisma/client";
-import { hash } from "bcrypt";
 import { getURL } from "next/dist/shared/lib/utils";
 import { redirect } from "next/navigation";
 import { deleteSessionCookies, getSessionUser } from "./auth";
@@ -37,12 +36,11 @@ export const getUserById = async (id: string) => {
 
 export const editUser = async (
   targetUser: UserWithImage,
-  name: string | undefined,
-  description: string | undefined,
+  name: string | null,
+  description: string | null,
   image: File | undefined,
-  username: string | undefined,
-  email: string | undefined,
-  password: string | undefined,
+  username: string,
+  email: string,
 ) => {
   const user = await getSessionUser();
   const hasAccess = await checkAccess(targetUser, user);
@@ -50,7 +48,6 @@ export const editUser = async (
     return actionError("Forbidden");
   }
 
-  const passwordHash = password && (await hash(password, 10));
   const createImageVariable = image
     ? await getCreateImageVariable(image)
     : undefined;
@@ -62,7 +59,6 @@ export const editUser = async (
       description,
       username,
       email,
-      passwordHash,
       image: createImageVariable,
     },
   });
