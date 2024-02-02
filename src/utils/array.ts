@@ -1,4 +1,4 @@
-import { isFunction } from "lodash";
+import { isFunction } from "./typeComparison";
 
 /**
  * Create an array using your custom constructor

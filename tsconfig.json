@@ -23,7 +23,7 @@
     "noUncheckedIndexedAccess": true,
     "useUnknownInCatchVariables": true,
     "exactOptionalPropertyTypes": true,
-    "target": "es5",
+    "target": "esnext",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": false,
     "noEmit": true,
@@ -33,12 +33,12 @@
     "incremental": true,
     "plugins": [
       {
-        "name": "next"
-      }
+        "name": "next",
+      },
     ],
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "@/*": ["./src/*"],
+    },
   },
   "include": [
     "next-env.d.ts",
@@ -46,7 +46,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "next.config.js",
-    "checkEnvVars.js"
+    "checkEnvVars.js",
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
 }

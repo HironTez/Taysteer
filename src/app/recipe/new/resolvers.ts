@@ -1,14 +1,14 @@
 import { createRecipe } from "@/app/internal-actions/recipe";
 import {
-  CreateRecipeSchemaRawT,
-  CreateRecipeSchemaT,
+  RecipeSchemaRawT,
+  RecipeSchemaT,
   RecipeIngredientT,
   RecipeStepT,
 } from "@/app/schemas/recipe";
 import { UserWithImage } from "@/types/Models";
 import { zodError } from "@/utils/dto";
 
-const extractIngredientsAndSteps = (data: CreateRecipeSchemaT) => {
+const extractIngredientsAndSteps = (data: RecipeSchemaT) => {
   const ingredients: RecipeIngredientT[] = [];
   const steps: RecipeStepT[] = [];
 
@@ -50,7 +50,7 @@ const extractIngredientsAndSteps = (data: CreateRecipeSchemaT) => {
   return { ingredients, steps };
 };
 
-export const resolveCreateRecipe = async <T extends CreateRecipeSchemaRawT>(
+export const resolveCreateRecipe = async <T extends RecipeSchemaRawT>(
   data: FormData,
   user: UserWithImage,
   createRecipeSchema: T,

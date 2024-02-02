@@ -1,32 +1,26 @@
 import { cookies } from "next/headers";
 
-type BaseTypesStringsT =
-  | "string"
-  | "number"
-  | "boolean"
-  | "object"
-  | "undefined";
 type BaseTypesT = string | number | boolean | object | undefined;
 
-const baseTypes: BaseTypesT[] = [
+const types = [
   "string",
   "number",
   "boolean",
   "object",
   "undefined",
-];
+  "set",
+  "map",
+] as const;
+
+type Type = (typeof types)[number];
 
 const getVariable = <T extends BaseTypesT>(name: string): T | undefined => {
   const cookie = cookies().get(`_variable_${name}`);
-  const [_, type, value] = cookie?.value.match(/type\-([a-z]+)_(.*)/) ?? [
-    undefined,
-    undefined,
-    undefined,
-  ];
+  const [_, type, value] = cookie?.value.match(/type\-([a-z]+)_(.*)/) ?? [];
+  if (!type || !value) return undefined;
 
-  if (!value || baseTypes.includes(value)) return undefined;
   try {
-    switch (type as BaseTypesStringsT) {
+    switch (type as Type) {
       case "string":
         return value as T;
       case "number":
@@ -35,6 +29,10 @@ const getVariable = <T extends BaseTypesT>(name: string): T | undefined => {
         return Boolean(value) as T;
       case "object":
         return JSON.parse(value) as T;
+      case "map":
+        return new Map(JSON.parse(value)) as T;
+      case "set":
+        return new Set(JSON.parse(value)) as T;
       case "undefined":
         return undefined;
     }
@@ -44,14 +42,24 @@ const getVariable = <T extends BaseTypesT>(name: string): T | undefined => {
 };
 
 const setVariable = <T extends BaseTypesT>(name: string, value: T) => {
+  const isMap = value instanceof Map;
+  const isSet = value instanceof Set;
+
+  const typeStringified: Type = isMap
+    ? "map"
+    : isSet
+      ? "set"
+      : (typeof value as Type);
+
   const valueStringified = value
     ? typeof value === "object"
-      ? JSON.stringify(value)
+      ? JSON.stringify(isMap || isSet ? [...value.keys()] : value)
       : value.toString()
     : "";
+
   cookies().set(
     `_variable_${name}`,
-    `type-${typeof value}_${valueStringified}`,
+    `type-${typeStringified}_${valueStringified}`,
     {
       httpOnly: true,
     },

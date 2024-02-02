@@ -1,3 +1,3 @@
-import { NewRecipe } from "./NewRecipe";
+import { UploadRecipe } from "./UploadRecipe";
 
-export default NewRecipe;
+export default UploadRecipe;
