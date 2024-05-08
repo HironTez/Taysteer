@@ -1,11 +1,11 @@
-const checkEnvVars = () => {
-  const requiredEnvVars = ["DATABASE_URL", "AUTH_SECRET"];
-
-  for (const envVar of requiredEnvVars) {
-    if (!process.env[envVar]) {
-      console.error(`Missing environment variable: ${envVar}`);
-      process.exit(1);
-    }
+/** @param  {...string} requiredEnvVars */
+const checkEnvVars = (...requiredEnvVars) => {
+  const missingVars = requiredEnvVars.filter((envVar) => !process.env[envVar]);
+  if (missingVars.length) {
+    const wordEnding = missingVars.length > 1 ? "s" : "";
+    throw new Error(
+      `Missing environment variable${wordEnding}: ${missingVars.join(", ")}`,
+    );
   }
 };
 

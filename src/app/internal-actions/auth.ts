@@ -2,10 +2,12 @@ import { hash } from "bcrypt";
 import { LogInSchemaT, SignInSchemaT, SignUpSchemaT } from "../schemas/auth";
 
 import { prisma } from "@/db";
+import { setAllCookies } from "@/utils/cookies";
 import { validateEmail } from "@/utils/email";
 import { Status } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt, { SignOptions } from "jsonwebtoken";
+import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { actionError, actionResponse } from "../../utils/dto";
@@ -94,29 +96,38 @@ const createSession = async (userId: string) => {
     { expiresIn: "60d" },
   );
 
-  // Set tokens to cookies
-  cookies().set("accessToken", `${newAccessToken}`, {
-    httpOnly: true,
-    expires: in10Minutes,
-  });
-  cookies().set("refreshToken", `${newRefreshToken}`, {
-    httpOnly: true,
-    expires: in60Days,
-  });
+  // Prepare cookies with tokens
+  const responseCookies: ResponseCookie[] = [
+    {
+      name: "accessToken",
+      value: newAccessToken,
+      httpOnly: true,
+      expires: in10Minutes,
+    },
+    {
+      name: "refreshToken",
+      value: newRefreshToken,
+      httpOnly: true,
+      expires: in60Days,
+    },
+  ];
+
+  return responseCookies;
 };
 
 export const renewSession = async () => {
+  "use server";
   const { decodedAccessToken, decodedRefreshToken } = verifyTokens();
-  if (decodedAccessToken || !decodedRefreshToken) return;
+  if (decodedAccessToken || !decodedRefreshToken) return [];
 
   // Verify session
   const sessionId = decodedRefreshToken.jti;
   const session = await prisma.session.findUnique({ where: { id: sessionId } });
-  if (!session) return;
+  if (!session) return [];
 
   // Renew session
   await prisma.session.delete({ where: { id: sessionId } });
-  await createSession(session.userId);
+  return await createSession(session.userId);
 };
 
 export const deleteSessionCookies = () => {
@@ -178,7 +189,8 @@ export const signIn = async (email: string, password: string) => {
     return actionError<SignInSchemaT>("Password is incorrect", "password");
   }
 
-  await createSession(user.id);
+  const newCookies = await createSession(user.id);
+  setAllCookies(newCookies);
 
   return actionResponse();
 };
@@ -210,7 +222,8 @@ export const signUp = async (email: string, password: string) => {
     },
   });
 
-  await createSession(newUser.id);
+  const newCookies = await createSession(newUser.id);
+  setAllCookies(newCookies);
 
   return actionResponse();
 };

@@ -4,7 +4,6 @@
     "editorconfig.editorconfig",
     "esbenp.prettier-vscode",
     "mikestead.dotenv",
-    "orta.vscode-jest",
     "prisma.prisma"
   ],
   "unwantedRecommendations": []

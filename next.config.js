@@ -8,7 +8,7 @@ const nextConfig = {
 };
 
 module.exports = () => {
-  checkEnvVars();
+  checkEnvVars("DATABASE_URL", "AUTH_SECRET");
 
   return nextConfig;
 };

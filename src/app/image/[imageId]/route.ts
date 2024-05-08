@@ -19,8 +19,7 @@ export const GET = async (
     headers.set("Content-Length", image.value.length.toString());
 
     return new NextResponse(image.value, { headers });
-  } catch (e) {
-    console.error("🚀 ~ file: route.ts:25 ~ e:", e);
+  } catch {
     return new NextResponse(null, { status: StatusCodes.BAD_REQUEST });
   }
 };
