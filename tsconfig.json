@@ -33,12 +33,12 @@
     "incremental": true,
     "plugins": [
       {
-        "name": "next",
-      },
+        "name": "next"
+      }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-    },
+      "@/*": ["./src/*"]
+    }
   },
   "include": [
     "next-env.d.ts",
@@ -46,7 +46,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "next.config.js",
-    "checkEnvVars.js",
+    "checkEnvVars.js"
   ],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules"]
 }

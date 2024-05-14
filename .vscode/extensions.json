@@ -3,7 +3,7 @@
     "dbaeumer.vscode-eslint",
     "editorconfig.editorconfig",
     "esbenp.prettier-vscode",
-    "mikestead.dotenv",
+    "dotenv.dotenv-vscode",
     "prisma.prisma"
   ],
   "unwantedRecommendations": []
