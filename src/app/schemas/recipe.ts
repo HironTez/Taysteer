@@ -91,7 +91,6 @@ const getIngredientsObjectSchema = (count: number) => {
 const getCreateStepsObjectSchema = (count: number) => {
   return typeSafeObjectFromEntries(
     arrayConstructor(count, (i) => [
-      [`step_${i}_id`, zfd.text(idObject)],
       [
         `step_${i}_title`,
         zfd.text(
