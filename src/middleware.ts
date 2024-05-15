@@ -21,6 +21,8 @@ const renewSession = async (request: NextRequest) => {
   try {
     const cookies = await fetch(new URL("/api/renew-session", request.url), {
       headers: request.headers,
+      method: "POST",
+      body: process.env.AUTH_SECRET!,
     }).then((result) => result.json());
 
     return cookies as ResponseCookie[];
