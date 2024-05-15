@@ -1,7 +1,7 @@
 import { prisma } from "@/db";
 import { actionError, actionResponse } from "@/utils/dto";
 import { User } from "@prisma/client";
-import { CreateRecipeDataT } from "../schemas/recipe";
+import { CreateRecipeDataT, EditRecipeDataT } from "../schemas/recipe";
 import { getCreateImageVariable } from "./helpers";
 
 export const getRecipe = (recipeId: string) => {
@@ -42,5 +42,51 @@ export const createRecipe = async (
     return actionResponse({ recipe });
   } catch {
     return actionError("Could not create recipe");
+  }
+};
+
+export const editRecipe = async (
+  id: string,
+  { title, description, image, ingredients, steps }: EditRecipeDataT,
+) => {
+  try {
+    const newRecipe = await prisma.recipe.update({
+      where: { id },
+      data: {
+        title,
+        description,
+        image: await getCreateImageVariable(image),
+        ingredients,
+        steps: {
+          update: await Promise.all(
+            steps
+              .filter((step) => step.id)
+              .map(async (step) => ({
+                where: {
+                  id: step.id!,
+                },
+                data: {
+                  title: step.title,
+                  description: step.description,
+                  image: await getCreateImageVariable(step.image),
+                },
+              })),
+          ),
+          create: await Promise.all(
+            steps
+              .filter((step) => !step.id)
+              .map(async (step) => ({
+                title: step.title,
+                description: step.description,
+                image: await getCreateImageVariable(step.image),
+              })),
+          ),
+        },
+      },
+    });
+
+    return actionResponse({ recipe: newRecipe });
+  } catch {
+    return actionError("Could not edit recipe");
   }
 };

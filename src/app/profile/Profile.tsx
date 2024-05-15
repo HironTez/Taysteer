@@ -33,7 +33,7 @@ export async function Profile({ userId }: ProfileProps) {
 
   const user = (requestedUser || sessionUser)!;
 
-  const viewerHasAccess = await checkAccess(user, sessionUser);
+  const viewerHasAccess = await checkAccess(sessionUser, user);
   const viewerIsAdmin = sessionUser?.role === Role.ADMIN;
   const userIsBanned = user.status === Status.BANNED;
   const userIsSame = user.id === sessionUser?.id;

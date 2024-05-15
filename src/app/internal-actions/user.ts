@@ -9,8 +9,8 @@ import { getCreateImageVariable } from "./helpers";
 import { revalidatePage } from "./url";
 
 export const checkAccess = async (
-  target: UserWithImage | Recipe | RecipeRating | Comment | null,
   user: UserWithImage | null,
+  target: UserWithImage | Recipe | RecipeRating | Comment | null,
 ) => {
   if (!user || !target) return false;
 
@@ -43,15 +43,12 @@ export const editUser = async (
   email: string,
 ) => {
   const user = await getSessionUser();
-  const hasAccess = await checkAccess(targetUser, user);
+  const hasAccess = await checkAccess(user, targetUser);
   if (!hasAccess) {
     return actionError("Forbidden");
   }
 
-  const createImageVariable = image
-    ? await getCreateImageVariable(image)
-    : undefined;
-
+  const createImageVariable = await getCreateImageVariable(image);
   const newUser = await prisma.user.update({
     where: { id: targetUser.id },
     data: {
@@ -68,7 +65,7 @@ export const editUser = async (
 
 export const deleteUser = async (targetUser: UserWithImage) => {
   const user = await getSessionUser();
-  const hasAccess = await checkAccess(targetUser, user);
+  const hasAccess = await checkAccess(user, targetUser);
   if (!hasAccess) {
     return actionError("Forbidden");
   }
@@ -93,7 +90,7 @@ export const deleteUser = async (targetUser: UserWithImage) => {
 
 export const banUser = async (targetUser: UserWithImage) => {
   const user = await getSessionUser();
-  const hasAccess = await checkAccess(targetUser, user);
+  const hasAccess = await checkAccess(user, targetUser);
   const userIsSame = targetUser.id === user?.id;
   if (!hasAccess || userIsSame) {
     return actionError("Forbidden");
@@ -116,7 +113,7 @@ export const banUser = async (targetUser: UserWithImage) => {
 
 export const unbanUser = async (targetUser: UserWithImage) => {
   const user = await getSessionUser();
-  const hasAccess = await checkAccess(targetUser, user);
+  const hasAccess = await checkAccess(user, targetUser);
   const userIsSame = targetUser.id === user?.id;
   if (!hasAccess || userIsSame) {
     return actionError("Forbidden");

@@ -1,3 +1,4 @@
+import { Optional } from "@/types/Optional";
 import { arrayConstructor } from "@/utils/array";
 import { typeSafeObjectFromEntries } from "@/utils/object";
 import { z } from "zod";
@@ -40,25 +41,32 @@ export type RecipeStepT = {
   image: File;
 };
 
+type RecipeStepOptionalImageT = Optional<RecipeStepT, "image">;
+
 type IngredientsAndSchemaT = {
   ingredients: RecipeIngredientT[];
   steps: RecipeStepT[];
 };
 
-export type CreateRecipeDataT = CreateRecipeBaseSchemaT & IngredientsAndSchemaT;
-type EditRecipeDataT = EditRecipeBaseSchemaT & IngredientsAndSchemaT;
+type IngredientsAndSchemaOptionalT = {
+  ingredients: RecipeIngredientT[];
+  steps: RecipeStepOptionalImageT[];
+};
 
-export const getRecipeSchema = <
-  IC extends number,
-  SC extends number,
-  Edit extends boolean,
->(
-  ingredientsCount: IC,
-  stepsCount: SC,
-  edit: Edit,
-) => {
-  const ingredientsObjectSchema = typeSafeObjectFromEntries(
-    arrayConstructor(ingredientsCount, (i) => [
+export type CreateRecipeDataT = CreateRecipeBaseSchemaT & IngredientsAndSchemaT;
+export type EditRecipeDataT = EditRecipeBaseSchemaT &
+  IngredientsAndSchemaOptionalT;
+
+const idObject = z
+  .string()
+  .length(
+    24,
+    "Internal error. Try to reload page. Step id must be 24 characters long",
+  );
+
+const getIngredientsObjectSchema = (count: number) => {
+  return typeSafeObjectFromEntries(
+    arrayConstructor(count, (i) => [
       [
         `ingredient_${i}_count`,
         zfd.text(
@@ -78,22 +86,21 @@ export const getRecipeSchema = <
       [`ingredient_${i}_optional`, zfd.checkbox()],
     ]).flat(),
   );
-  const stepsObjectSchema = typeSafeObjectFromEntries(
-    arrayConstructor(stepsCount, (i) => [
-      [
-        `step_${i}_id`,
-        zfd.text(
-          z
-            .string()
-            .min(24, "Step id must be 24 characters long")
-            .max(24, "Step id must be 24 characters long")
-            .optional(),
-        ),
-      ],
+};
+
+const getCreateStepsObjectSchema = (count: number) => {
+  return typeSafeObjectFromEntries(
+    arrayConstructor(count, (i) => [
+      [`step_${i}_id`, zfd.text(idObject)],
       [
         `step_${i}_title`,
         zfd.text(
-          z.string().max(50, "Step title can be maximal 50 characters long"),
+          z
+            .string()
+            .max(
+              50,
+              `Step title can be maximal 50 characters long (step ${i + 1})`,
+            ),
         ),
       ],
       [
@@ -101,19 +108,80 @@ export const getRecipeSchema = <
         zfd.text(
           z
             .string()
-            .max(500, "Step description can be maximal 500 characters long"),
+            .max(
+              500,
+              `Step description can be maximal 500 characters long (step ${i + 1})`,
+            ),
         ),
       ],
-      [`step_${i}_image`, edit ? imageOptional : image],
+      [`step_${i}_image`, image],
     ]).flat(),
   );
+};
+
+const getEditStepsObjectSchema = (count: number) => {
+  return typeSafeObjectFromEntries(
+    arrayConstructor(count, (i) => [
+      [`step_${i}_id`, zfd.text(idObject.optional())],
+      [
+        `step_${i}_title`,
+        zfd.text(
+          z
+            .string()
+            .max(
+              50,
+              `Step title can be maximal 50 characters long (step ${i + 1})`,
+            ),
+        ),
+      ],
+      [
+        `step_${i}_description`,
+        zfd.text(
+          z
+            .string()
+            .max(
+              500,
+              `Step description can be maximal 500 characters long (step ${i + 1})`,
+            ),
+        ),
+      ],
+      [`step_${i}_image`, imageOptional],
+    ]).flat(),
+  );
+};
+
+export const getRecipeCreateSchema = (
+  ingredientsCount: number,
+  stepsCount: number,
+) => {
+  const ingredientsObjectSchema = getIngredientsObjectSchema(ingredientsCount);
+  const stepsObjectSchema = getCreateStepsObjectSchema(stepsCount);
 
   return zfd.formData(
-    (edit ? editRecipeBase : createRecipeBase)
+    createRecipeBase
       .merge(z.object(ingredientsObjectSchema))
       .merge(z.object(stepsObjectSchema)),
   );
 };
 
-export type RecipeSchemaRawT = ReturnType<typeof getRecipeSchema>;
-export type RecipeSchemaT = z.infer<RecipeSchemaRawT>;
+export const getRecipeEditSchema = (
+  ingredientsCount: number,
+  stepsCount: number,
+) => {
+  const ingredientsObjectSchema = getIngredientsObjectSchema(ingredientsCount);
+  const stepsObjectSchema = getEditStepsObjectSchema(stepsCount);
+
+  return zfd.formData(
+    editRecipeBase
+      .merge(z.object(ingredientsObjectSchema))
+      .merge(z.object(stepsObjectSchema)),
+  );
+};
+
+export type CreateRecipeSchemaRawT = ReturnType<typeof getRecipeCreateSchema>;
+type CreateRecipeSchemaT = z.infer<CreateRecipeSchemaRawT>;
+
+export type EditRecipeSchemaRawT = ReturnType<typeof getRecipeEditSchema>;
+type EditRecipeSchemaT = z.infer<EditRecipeSchemaRawT>;
+
+export type RecipeSchemaT = CreateRecipeSchemaT | EditRecipeSchemaT;

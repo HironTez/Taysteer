@@ -1,8 +1,9 @@
-import { createRecipe } from "@/app/internal-actions/recipe";
+import { createRecipe, editRecipe } from "@/app/internal-actions/recipe";
 import {
-  RecipeSchemaRawT,
-  RecipeSchemaT,
+  CreateRecipeSchemaRawT,
+  EditRecipeSchemaRawT,
   RecipeIngredientT,
+  RecipeSchemaT,
   RecipeStepT,
 } from "@/app/schemas/recipe";
 import { UserWithImage } from "@/types/Models";
@@ -21,6 +22,7 @@ const extractIngredientsAndSteps = (data: RecipeSchemaT) => {
       ingredientName !== undefined &&
       ingredientOptional !== undefined;
 
+    const stepId = data[`step_${i}_id`];
     const stepTitle = data[`step_${i}_title`];
     const stepDescription = data[`step_${i}_description`];
     const stepImage = data[`step_${i}_image`];
@@ -38,6 +40,7 @@ const extractIngredientsAndSteps = (data: RecipeSchemaT) => {
     }
     if (stepValid) {
       steps.push({
+        id: stepId,
         title: stepTitle,
         description: stepDescription,
         image: stepImage,
@@ -50,12 +53,12 @@ const extractIngredientsAndSteps = (data: RecipeSchemaT) => {
   return { ingredients, steps };
 };
 
-export const resolveCreateRecipe = async <T extends RecipeSchemaRawT>(
+export const resolveCreateRecipe = async <T extends CreateRecipeSchemaRawT>(
   data: FormData,
   user: UserWithImage,
-  createRecipeSchema: T,
+  recipeCreateSchema: T,
 ) => {
-  const parsed = createRecipeSchema.safeParse(data);
+  const parsed = recipeCreateSchema.safeParse(data);
   if (!parsed.success) return zodError<T>(parsed.error);
 
   return await createRecipe(
@@ -67,4 +70,20 @@ export const resolveCreateRecipe = async <T extends RecipeSchemaRawT>(
     },
     user,
   );
+};
+
+export const resolveEditRecipe = async <T extends EditRecipeSchemaRawT>(
+  id: string,
+  data: FormData,
+  recipeEditSchema: T,
+) => {
+  const parsed = recipeEditSchema.safeParse(data);
+  if (!parsed.success) return zodError<T>(parsed.error);
+
+  return await editRecipe(id, {
+    title: parsed.data.title,
+    description: parsed.data.description,
+    image: parsed.data.image,
+    ...extractIngredientsAndSteps(parsed.data),
+  });
 };

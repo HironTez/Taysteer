@@ -1,7 +1,9 @@
 import ProfilePicture from "@/app/components/profile-picture";
+import { getSessionUser } from "@/app/internal-actions/auth";
 import { getRecipe } from "@/app/internal-actions/recipe";
-import { getNameOfUser } from "@/app/internal-actions/user";
+import { checkAccess, getNameOfUser } from "@/app/internal-actions/user";
 import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import Comments from "./components/comments";
 import styles from "./recipe.module.css";
@@ -15,6 +17,9 @@ export async function Recipe({ params: { recipeId } }: RecipeProps) {
   if (!recipe) {
     notFound();
   }
+
+  const sessionUser = await getSessionUser();
+  const viewerHasAccess = await checkAccess(sessionUser, recipe);
 
   const nameOfUser = getNameOfUser(recipe.user);
 
@@ -35,6 +40,7 @@ export async function Recipe({ params: { recipeId } }: RecipeProps) {
       </div>
       <span>Author name: {nameOfUser}</span>
       <span>Author username: @{recipe.user?.username}</span>
+      {viewerHasAccess && <Link href={`/recipe/${recipeId}/edit`}>Edit</Link>}
       <span>Ingredients</span>
       {recipe.ingredients.map((ingredient, i) => (
         <div key={i}>

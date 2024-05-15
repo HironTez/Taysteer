@@ -1,12 +1,17 @@
 import { authGuard } from "@/app/internal-actions/auth";
 import { getRecipe } from "@/app/internal-actions/recipe";
 import { revalidatePage } from "@/app/internal-actions/url";
+import { checkAccess } from "@/app/internal-actions/user";
 import { variable } from "@/app/internal-actions/variables";
 import { ACCEPTED_IMAGE_TYPES } from "@/app/schemas/constants";
-import { RecipeSchemaT, getRecipeSchema } from "@/app/schemas/recipe";
+import {
+  RecipeSchemaT,
+  getRecipeCreateSchema,
+  getRecipeEditSchema,
+} from "@/app/schemas/recipe";
 import { ActionError } from "@/utils/dto";
 import { notFound, redirect } from "next/navigation";
-import { resolveCreateRecipe } from "./resolvers";
+import { resolveCreateRecipe, resolveEditRecipe } from "./resolvers";
 
 const acceptedImageTypes = ACCEPTED_IMAGE_TYPES.join(", ");
 
@@ -29,6 +34,11 @@ export async function UploadRecipe(props: UploadRecipeProps) {
   const sessionUser = await authGuard();
   const oldRecipe = recipeId ? await getRecipe(recipeId) : undefined;
   if (recipeId && !oldRecipe) notFound();
+
+  const viewerHasAccess = oldRecipe
+    ? await checkAccess(sessionUser, oldRecipe)
+    : false;
+  if (recipeId && !viewerHasAccess) return "403 forbidden";
 
   const errors = errorsVariable.get() ?? {};
   const ingredientsKeys =
@@ -89,13 +99,24 @@ export async function UploadRecipe(props: UploadRecipeProps) {
   const submit = async (data: FormData) => {
     "use server";
 
-    const recipeSchema = getRecipeSchema(
-      ingredientsKeys.keys.length,
-      stepsKeys.keys.length,
-      false,
-    );
+    let result;
 
-    const result = await resolveCreateRecipe(data, sessionUser, recipeSchema);
+    if (oldRecipe) {
+      const recipeEditSchema = getRecipeEditSchema(
+        ingredientsKeys.keys.length,
+        stepsKeys.keys.length,
+      );
+
+      result = await resolveEditRecipe(oldRecipe.id, data, recipeEditSchema);
+    } else {
+      const recipeCreateSchema = getRecipeCreateSchema(
+        ingredientsKeys.keys.length,
+        stepsKeys.keys.length,
+      );
+
+      result = await resolveCreateRecipe(data, sessionUser, recipeCreateSchema);
+    }
+
     if (result.success) {
       redirect(`/recipe/${result.data.recipe.id}`);
     } else {
@@ -116,19 +137,19 @@ export async function UploadRecipe(props: UploadRecipeProps) {
           <input type="hidden" name="key" value={key} readOnly />
         </form>
       ))}
+      <form id="add_step" action={submitAddStep} />
       {stepsKeys.keys.map((key) => (
         <form id={`remove_step_${key}`} action={submitRemoveStep} key={key}>
           <input type="hidden" name="key" value={key} readOnly />
         </form>
       ))}
-      <form id="add_step" action={submitAddStep} />
       <form action={submit}>
         <label>
           <input
             type="file"
             name="image"
             accept={acceptedImageTypes}
-            required
+            required={!oldRecipe}
           />
           Image
         </label>
@@ -199,6 +220,12 @@ export async function UploadRecipe(props: UploadRecipeProps) {
             <div key={key}>
               <input
                 type="text"
+                name={`step_${i}_id`}
+                defaultValue={oldStep?.id}
+                hidden
+              />
+              <input
+                type="text"
                 name={`step_${i}_title`}
                 placeholder="Title"
                 defaultValue={oldStep?.title}
@@ -220,7 +247,7 @@ export async function UploadRecipe(props: UploadRecipeProps) {
                   type="file"
                   name={`step_${i}_image`}
                   accept={acceptedImageTypes}
-                  required
+                  required={!oldStep}
                 />
                 Image
               </label>
