@@ -1,5 +1,6 @@
 import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { NextRequest, NextResponse } from "next/server";
+import { verifyTokens } from "./app/internal-actions/tokens";
 
 const setUrlHeaders = (requestHeaders: Headers, request: NextRequest) => {
   requestHeaders.set("x-url", request.url);
@@ -39,19 +40,22 @@ export async function middleware(request: NextRequest) {
   setUrlHeaders(request.headers, request);
 
   if (request.method === "GET") {
-    const cookies = await renewSession(request);
+    const { decodedAccessToken, decodedRefreshToken } = await verifyTokens();
+    if (!decodedAccessToken && decodedRefreshToken) {
+      const cookies = await renewSession(request);
 
-    setCookies(request, cookies);
-    const response = NextResponse.next({
-      request: {
-        headers: request.headers,
-      },
-    });
-    setCookies(response, cookies);
+      setCookies(request, cookies);
+      const response = NextResponse.next({
+        request: {
+          headers: request.headers,
+        },
+      });
+      setCookies(response, cookies);
 
-    clearCookieVariables(request, response);
+      clearCookieVariables(request, response);
 
-    return response;
+      return response;
+    }
   }
 
   return NextResponse.next({

@@ -6,61 +6,14 @@ import { setAllCookies } from "@/utils/cookies";
 import { validateEmail } from "@/utils/email";
 import { Status } from "@prisma/client";
 import bcrypt from "bcrypt";
-import jwt, { SignOptions } from "jsonwebtoken";
+
 import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { actionError, actionResponse } from "../../utils/dto";
+import { createToken, verifyTokens } from "./tokens";
 import { getPathname, getSearchParam } from "./url";
 import { getUserById } from "./user";
-
-type JWT = {
-  iat: number;
-  exp: number;
-};
-
-type AccessJWTInput = {
-  sub: string;
-};
-
-type RefreshJWTInput = {
-  jti: string;
-};
-
-type AccessJWT = AccessJWTInput & JWT;
-
-type RefreshJWT = RefreshJWTInput & JWT;
-
-const SECRET = process.env.AUTH_SECRET!;
-
-const createToken = <T extends AccessJWTInput | RefreshJWTInput>(
-  payload: T,
-  options?: SignOptions,
-) => jwt.sign(payload, SECRET, options);
-
-const verifyToken = <R extends JWT>(
-  token: string | undefined,
-): R | undefined => {
-  try {
-    let decodedToken = token && jwt.verify(token, SECRET);
-    if (typeof decodedToken === "string") decodedToken = undefined;
-    return decodedToken as R | undefined;
-  } catch {
-    return undefined;
-  }
-};
-
-const verifyTokens = () => {
-  // Verify access token
-  const accessToken = cookies().get("accessToken")?.value;
-  const decodedAccessToken = verifyToken<AccessJWT>(accessToken);
-
-  // Verify refresh token
-  const refreshToken = cookies().get("refreshToken")?.value;
-  const decodedRefreshToken = verifyToken<RefreshJWT>(refreshToken);
-
-  return { decodedAccessToken, decodedRefreshToken };
-};
 
 const createSession = async (userId: string) => {
   const currentTime = new Date().getTime();
@@ -87,14 +40,11 @@ const createSession = async (userId: string) => {
   });
 
   // Generate tokens
-  const newAccessToken = createToken(
+  const newAccessToken = await createToken(
     { sub: newSession.userId },
-    { expiresIn: "10m" },
+    in10Minutes,
   );
-  const newRefreshToken = createToken(
-    { jti: newSession.id },
-    { expiresIn: "60d" },
-  );
+  const newRefreshToken = await createToken({ jti: newSession.id }, in60Days);
 
   // Prepare cookies with tokens
   const responseCookies: ResponseCookie[] = [
@@ -117,7 +67,7 @@ const createSession = async (userId: string) => {
 
 export const renewSession = async () => {
   "use server";
-  const { decodedAccessToken, decodedRefreshToken } = verifyTokens();
+  const { decodedAccessToken, decodedRefreshToken } = await verifyTokens();
   if (decodedAccessToken || !decodedRefreshToken) return [];
 
   // Verify session
@@ -136,7 +86,7 @@ export const deleteSessionCookies = () => {
 };
 
 const deleteSession = async () => {
-  const { decodedAccessToken, decodedRefreshToken } = verifyTokens();
+  const { decodedAccessToken, decodedRefreshToken } = await verifyTokens();
   if (!decodedAccessToken || !decodedRefreshToken) return false;
 
   await prisma.session
@@ -236,7 +186,7 @@ export const logOut = async () => {
 };
 
 export const getSessionUser = async () => {
-  const { decodedAccessToken } = verifyTokens();
+  const { decodedAccessToken } = await verifyTokens();
   if (!decodedAccessToken) return null;
   const user = await getUserById(decodedAccessToken.sub);
   return user;
