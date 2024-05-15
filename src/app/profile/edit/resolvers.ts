@@ -1,12 +1,9 @@
 import { editUser } from "@/app/internal-actions/user";
 import { EditProfileSchemaT, editUserSchema } from "@/app/schemas/user";
-import { UserWithImage } from "@/types/Models";
 import { zodError } from "@/utils/dto";
+import { User } from "@prisma/client";
 
-export const resolveEditUser = async (
-  targetUser: UserWithImage,
-  data: FormData,
-) => {
+export const resolveEditUser = async (targetUser: User, data: FormData) => {
   const parsed = editUserSchema.safeParse(data);
   if (!parsed.success) return zodError<EditProfileSchemaT>(parsed.error);
   return await editUser(

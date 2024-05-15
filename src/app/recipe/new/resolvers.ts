@@ -6,8 +6,8 @@ import {
   RecipeSchemaT,
   RecipeStepT,
 } from "@/app/schemas/recipe";
-import { UserWithImage } from "@/types/Models";
 import { zodError } from "@/utils/dto";
+import { User } from "@prisma/client";
 
 const extractIngredientsAndSteps = (data: RecipeSchemaT) => {
   const ingredients: RecipeIngredientT[] = [];
@@ -55,7 +55,7 @@ const extractIngredientsAndSteps = (data: RecipeSchemaT) => {
 
 export const resolveCreateRecipe = async <T extends CreateRecipeSchemaRawT>(
   data: FormData,
-  user: UserWithImage,
+  user: User,
   recipeCreateSchema: T,
 ) => {
   const parsed = recipeCreateSchema.safeParse(data);

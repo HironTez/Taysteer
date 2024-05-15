@@ -1,8 +1,12 @@
 import { prisma } from "@/db";
 import { actionError, actionResponse } from "@/utils/dto";
-import { User } from "@prisma/client";
+import { Recipe, User } from "@prisma/client";
+import { getURL } from "next/dist/shared/lib/utils";
+import { redirect } from "next/navigation";
 import { CreateRecipeDataT, EditRecipeDataT } from "../schemas/recipe";
+import { getSessionUser } from "./auth";
 import { getCreateImageVariable } from "./helpers";
+import { checkAccess } from "./user";
 
 export const getRecipe = (recipeId: string) => {
   return prisma.recipe.findUnique({
@@ -88,5 +92,21 @@ export const editRecipe = async (
     return actionResponse({ recipe: newRecipe });
   } catch {
     return actionError("Could not edit recipe");
+  }
+};
+
+export const deleteRecipe = async (recipe: Recipe) => {
+  const sessionUser = await getSessionUser();
+  const hasAccess = await checkAccess(sessionUser, recipe);
+  if (!hasAccess) {
+    return actionError("Forbidden");
+  }
+
+  try {
+    await prisma.recipe.delete({ where: { id: recipe.id } });
+
+    redirect(getURL());
+  } catch {
+    return actionError("Could not delete recipe");
   }
 };

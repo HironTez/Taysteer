@@ -78,8 +78,8 @@ export async function Profile({ userId }: ProfileProps) {
             confirmText="Confirm deletion"
             onConfirm={submitDelete}
           >
-            Do you actually want to delete this profile? All recipes and
-            comments will be deleted. This action cannot be undone
+            Do you actually want to delete this profile? This action cannot be
+            undone
             {deleteUserError}
           </Confirm>
 

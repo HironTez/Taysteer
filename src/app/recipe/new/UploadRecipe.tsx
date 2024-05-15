@@ -153,7 +153,7 @@ export async function UploadRecipe(props: UploadRecipeProps) {
           />
           Image
         </label>
-        {errors.image}
+        {errors.image && <p>{errors.image}</p>}
         <input
           type="text"
           name="title"
@@ -162,7 +162,7 @@ export async function UploadRecipe(props: UploadRecipeProps) {
           required
           max={50}
         />
-        {errors.title}
+        {errors.title && <p>{errors.title}</p>}
         <input
           type="text"
           name="description"
@@ -171,7 +171,7 @@ export async function UploadRecipe(props: UploadRecipeProps) {
           required
           max={500}
         />
-        {errors.description}
+        {errors.description && <p>{errors.description}</p>}
         <span>Ingredients</span>
         {ingredientsKeys.keys.map((key, i) => {
           const oldIngredient = oldRecipe?.ingredients.at(Number(key));
@@ -185,7 +185,9 @@ export async function UploadRecipe(props: UploadRecipeProps) {
                 required
                 max={50}
               />
-              {errors[`ingredient_${i}_count`]}
+              {errors[`ingredient_${i}_count`] && (
+                <p>{errors[`ingredient_${i}_count`]}</p>
+              )}
               <input
                 type="text"
                 name={`ingredient_${i}_name`}
@@ -194,7 +196,9 @@ export async function UploadRecipe(props: UploadRecipeProps) {
                 required
                 max={250}
               />
-              {errors[`ingredient_${i}_name`]}
+              {errors[`ingredient_${i}_name`] && (
+                <p>{errors[`ingredient_${i}_name`]}</p>
+              )}
               <label>
                 <input
                   type="checkbox"
@@ -203,7 +207,9 @@ export async function UploadRecipe(props: UploadRecipeProps) {
                 />
                 Optional
               </label>
-              {errors[`ingredient_${i}_optional`]}
+              {errors[`ingredient_${i}_optional`] && (
+                <p>{errors[`ingredient_${i}_optional`]}</p>
+              )}
               <input
                 type="submit"
                 value="Remove"
@@ -232,7 +238,7 @@ export async function UploadRecipe(props: UploadRecipeProps) {
                 required
                 max={50}
               />
-              {errors[`step_${i}_title`]}
+              {errors[`step_${i}_title`] && <p>{errors[`step_${i}_title`]}</p>}
               <input
                 type="text"
                 name={`step_${i}_description`}
@@ -241,7 +247,9 @@ export async function UploadRecipe(props: UploadRecipeProps) {
                 required
                 max={500}
               />
-              {errors[`step_${i}_description`]}
+              {errors[`step_${i}_description`] && (
+                <p>{errors[`step_${i}_description`]}</p>
+              )}
               <label>
                 <input
                   type="file"
@@ -251,7 +259,7 @@ export async function UploadRecipe(props: UploadRecipeProps) {
                 />
                 Image
               </label>
-              {errors[`step_${i}_image`]}
+              {errors[`step_${i}_image`] && <p>{errors[`step_${i}_image`]}</p>}
               <input type="submit" value="Remove" form={`remove_step_${key}`} />
             </div>
           );

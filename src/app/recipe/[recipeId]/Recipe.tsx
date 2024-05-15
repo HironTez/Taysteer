@@ -1,7 +1,11 @@
+import Confirm from "@/app/components/confirm";
 import ProfilePicture from "@/app/components/profile-picture";
 import { getSessionUser } from "@/app/internal-actions/auth";
-import { getRecipe } from "@/app/internal-actions/recipe";
+import { deleteRecipe, getRecipe } from "@/app/internal-actions/recipe";
+import { getUrl } from "@/app/internal-actions/url";
 import { checkAccess, getNameOfUser } from "@/app/internal-actions/user";
+import { variable } from "@/app/internal-actions/variables";
+import { urlAddToPath } from "@/utils/url";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -11,6 +15,10 @@ import styles from "./recipe.module.css";
 type RecipeProps = {
   params: { recipeId: string };
 };
+
+const deleteRecipeErrorVariable = variable<string | undefined>(
+  "deleteRecipeError",
+);
 
 export async function Recipe({ params: { recipeId } }: RecipeProps) {
   const recipe = await getRecipe(recipeId);
@@ -22,6 +30,15 @@ export async function Recipe({ params: { recipeId } }: RecipeProps) {
   const viewerHasAccess = await checkAccess(sessionUser, recipe);
 
   const nameOfUser = getNameOfUser(recipe.user);
+  const pathEdit = urlAddToPath(getUrl(), "edit");
+
+  const deleteRecipeError = deleteRecipeErrorVariable.get();
+
+  const submitDelete = async () => {
+    "use server";
+    const result = await deleteRecipe(recipe);
+    if (!result.success) deleteRecipeErrorVariable.set(result.errors.global);
+  };
 
   return (
     <div>
@@ -40,7 +57,20 @@ export async function Recipe({ params: { recipeId } }: RecipeProps) {
       </div>
       <span>Author name: {nameOfUser}</span>
       <span>Author username: @{recipe.user?.username}</span>
-      {viewerHasAccess && <Link href={`/recipe/${recipeId}/edit`}>Edit</Link>}
+      {viewerHasAccess && (
+        <>
+          <Link href={pathEdit}>Edit</Link>
+          <Confirm
+            buttonText="Delete"
+            confirmText="Confirm deletion"
+            onConfirm={submitDelete}
+          >
+            Do you actually want to delete this recipe? This action cannot be
+            undone
+            {deleteRecipeError}
+          </Confirm>
+        </>
+      )}
       <span>Ingredients</span>
       {recipe.ingredients.map((ingredient, i) => (
         <div key={i}>

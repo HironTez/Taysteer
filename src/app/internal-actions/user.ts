@@ -1,7 +1,13 @@
 import { prisma } from "@/db";
-import { UserWithImage } from "@/types/Models";
 import { actionError, actionResponse } from "@/utils/dto";
-import { Comment, Recipe, RecipeRating, Role, Status } from "@prisma/client";
+import {
+  Comment,
+  Recipe,
+  RecipeRating,
+  Role,
+  Status,
+  User,
+} from "@prisma/client";
 import { getURL } from "next/dist/shared/lib/utils";
 import { redirect } from "next/navigation";
 import { deleteSessionCookies, getSessionUser } from "./auth";
@@ -9,8 +15,8 @@ import { getCreateImageVariable } from "./helpers";
 import { revalidatePage } from "./url";
 
 export const checkAccess = async (
-  user: UserWithImage | null,
-  target: UserWithImage | Recipe | RecipeRating | Comment | null,
+  user: User | null,
+  target: User | Recipe | RecipeRating | Comment | null,
 ) => {
   if (!user || !target) return false;
 
@@ -35,7 +41,7 @@ export const getUserById = async (id: string) => {
 };
 
 export const editUser = async (
-  targetUser: UserWithImage,
+  targetUser: User,
   name: string | null,
   description: string | null,
   image: File | undefined,
@@ -63,7 +69,7 @@ export const editUser = async (
   return actionResponse({ user: newUser });
 };
 
-export const deleteUser = async (targetUser: UserWithImage) => {
+export const deleteUser = async (targetUser: User) => {
   const user = await getSessionUser();
   const hasAccess = await checkAccess(user, targetUser);
   if (!hasAccess) {
@@ -72,10 +78,6 @@ export const deleteUser = async (targetUser: UserWithImage) => {
 
   try {
     await prisma.user.delete({ where: { id: targetUser.id } });
-
-    if (targetUser.image?.id) {
-      await prisma.image.delete({ where: { id: targetUser.image.id } });
-    }
 
     if (targetUser.id === user!.id) {
       deleteSessionCookies();
@@ -88,7 +90,7 @@ export const deleteUser = async (targetUser: UserWithImage) => {
   }
 };
 
-export const banUser = async (targetUser: UserWithImage) => {
+export const banUser = async (targetUser: User) => {
   const user = await getSessionUser();
   const hasAccess = await checkAccess(user, targetUser);
   const userIsSame = targetUser.id === user?.id;
@@ -111,7 +113,7 @@ export const banUser = async (targetUser: UserWithImage) => {
   }
 };
 
-export const unbanUser = async (targetUser: UserWithImage) => {
+export const unbanUser = async (targetUser: User) => {
   const user = await getSessionUser();
   const hasAccess = await checkAccess(user, targetUser);
   const userIsSame = targetUser.id === user?.id;
@@ -134,7 +136,7 @@ export const unbanUser = async (targetUser: UserWithImage) => {
   }
 };
 
-export const getNameOfUser = (user: UserWithImage | null | undefined) => {
+export const getNameOfUser = (user: User | null | undefined) => {
   const userExists = !!user;
   const userValid = userExists && user.status === Status.ACTIVE;
 
