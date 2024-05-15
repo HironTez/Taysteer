@@ -14,11 +14,11 @@ const extractIngredientsAndSteps = (data: RecipeSchemaT) => {
   const steps: RecipeStepT[] = [];
 
   for (let i = 0; i < Infinity; i++) {
-    const ingredientCount = data[`ingredient_${i}_count`];
+    const ingredientAmount = data[`ingredient_${i}_amount`];
     const ingredientName = data[`ingredient_${i}_name`];
     const ingredientOptional = data[`ingredient_${i}_optional`];
     const ingredientValid =
-      ingredientCount !== undefined &&
+      ingredientAmount !== undefined &&
       ingredientName !== undefined &&
       ingredientOptional !== undefined;
 
@@ -33,7 +33,7 @@ const extractIngredientsAndSteps = (data: RecipeSchemaT) => {
 
     if (ingredientValid) {
       ingredients.push({
-        count: ingredientCount,
+        amount: ingredientAmount,
         name: ingredientName,
         optional: ingredientOptional,
       });

@@ -70,7 +70,7 @@ model Recipe {
 }
 
 type RecipeIngredient {
-  count    String
+  amount    String
   name     String
   optional Boolean @default(false)
 }

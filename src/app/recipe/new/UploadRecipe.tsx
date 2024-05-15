@@ -3,12 +3,12 @@ import { getRecipe } from "@/app/internal-actions/recipe";
 import { revalidatePage } from "@/app/internal-actions/url";
 import { checkAccess } from "@/app/internal-actions/user";
 import { variable } from "@/app/internal-actions/variables";
-import { ACCEPTED_IMAGE_TYPES } from "@/app/schemas/constants";
 import {
   RecipeSchemaT,
   getRecipeCreateSchema,
   getRecipeEditSchema,
 } from "@/app/schemas/recipe";
+import { ACCEPTED_IMAGE_TYPES } from "@/app/schemas/templates";
 import { ActionError } from "@/utils/dto";
 import { notFound, redirect } from "next/navigation";
 import { resolveCreateRecipe, resolveEditRecipe } from "./resolvers";
@@ -107,7 +107,7 @@ export async function UploadRecipe(props: UploadRecipeProps) {
         stepsKeys.keys.length,
       );
 
-      result = await resolveEditRecipe(oldRecipe.id, data, recipeEditSchema);
+      result = await resolveEditRecipe(oldRecipe?.id, data, recipeEditSchema); // FIXME: remove question mark when the phantom error gets resolved
     } else {
       const recipeCreateSchema = getRecipeCreateSchema(
         ingredientsKeys.keys.length,
@@ -179,14 +179,14 @@ export async function UploadRecipe(props: UploadRecipeProps) {
             <div key={key}>
               <input
                 type="text"
-                name={`ingredient_${i}_count`}
-                placeholder="Count"
-                defaultValue={oldIngredient?.count}
+                name={`ingredient_${i}_amount`}
+                placeholder="Amount"
+                defaultValue={oldIngredient?.amount}
                 required
                 max={50}
               />
-              {errors[`ingredient_${i}_count`] && (
-                <p>{errors[`ingredient_${i}_count`]}</p>
+              {errors[`ingredient_${i}_amount`] && (
+                <p>{errors[`ingredient_${i}_amount`]}</p>
               )}
               <input
                 type="text"

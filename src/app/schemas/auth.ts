@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { zfd } from "zod-form-data";
+import { string } from "./templates";
 
 export const loginSchema = zfd.formData({
   email: zfd.text(
@@ -13,9 +14,7 @@ export const loginSchema = zfd.formData({
 export type LogInSchemaT = z.infer<typeof loginSchema>;
 
 export const signInSchema = zfd.formData({
-  password: zfd.text(
-    z.string().max(254, "Password can be maximal 254 characters long"),
-  ),
+  password: string(254, "password"),
 });
 
 export type SignInSchemaT = z.infer<typeof signInSchema>;

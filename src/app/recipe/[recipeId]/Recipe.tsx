@@ -74,7 +74,7 @@ export async function Recipe({ params: { recipeId } }: RecipeProps) {
       <span>Ingredients</span>
       {recipe.ingredients.map((ingredient, i) => (
         <div key={i}>
-          <span>Count: {ingredient.count}</span>
+          <span>Amount: {ingredient.amount}</span>
           <span>Name: {ingredient.name}</span>
           <span>Optional: {ingredient.optional}</span>
         </div>

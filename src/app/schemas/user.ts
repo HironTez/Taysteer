@@ -1,18 +1,13 @@
 import { z } from "zod";
 import { zfd } from "zod-form-data";
-import { imageOptional } from "./constants";
+import { description, image } from "./templates";
 
 export const editUserSchema = zfd.formData({
   name: zfd.text(
     z.string().max(50, "Name can be maximal 50 characters long").optional(),
   ),
-  description: zfd.text(
-    z
-      .string()
-      .max(500, "Description can be maximal 500 characters long")
-      .optional(),
-  ),
-  image: imageOptional,
+  description: description().optional(),
+  image: image().optional(),
   username: zfd.text(
     z.string().max(20, "Username can be maximal 20 characters long"),
   ),
