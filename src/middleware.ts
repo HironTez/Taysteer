@@ -17,15 +17,12 @@ const clearCookieVariables = (request: NextRequest, response: NextResponse) => {
 };
 
 const renewSession = async (request: NextRequest) => {
-  const responseRenewSession = await fetch(
-    new URL("/api/renew-session", request.url),
-    {
-      headers: request.headers,
-    },
-  );
-
   try {
-    return (await responseRenewSession.json()) as ResponseCookie[];
+    const cookies = await fetch(new URL("/api/renew-session", request.url), {
+      headers: request.headers,
+    }).then((result) => result.json());
+
+    return cookies as ResponseCookie[];
   } catch {
     return [];
   }

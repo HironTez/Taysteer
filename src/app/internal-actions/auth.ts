@@ -64,12 +64,12 @@ const verifyTokens = () => {
 
 const createSession = async (userId: string) => {
   const currentTime = new Date().getTime();
-  const in60Days = new Date(currentTime + 5184000000);
-  const in10Minutes = new Date(currentTime + 600000);
+  const in60Days = currentTime + 5184000000;
+  const in10Minutes = currentTime + 600000;
 
   // Create a session
   const newSession = await prisma.session.create({
-    data: { userId, expiresAt: in60Days },
+    data: { userId, expiresAt: new Date(in60Days) },
   });
 
   // Delete the session after 60 days
