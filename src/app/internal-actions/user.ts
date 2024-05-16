@@ -1,5 +1,6 @@
 import { prisma } from "@/db";
 import { actionError, actionResponse } from "@/utils/dto";
+import { noop } from "@/utils/function";
 import {
   Comment,
   Recipe,
@@ -8,13 +9,10 @@ import {
   Status,
   User,
 } from "@prisma/client";
-import { getURL } from "next/dist/shared/lib/utils";
-import { redirect } from "next/navigation";
 import { deleteSessionCookies, getSessionUser } from "./auth";
 import { getCreateImageVariable } from "./helpers";
-import { revalidatePage } from "./url";
 
-export const checkAccess = async (
+export const checkAccess = (
   user: User | null,
   target: User | Recipe | RecipeRating | Comment | null,
 ) => {
@@ -27,18 +25,25 @@ export const checkAccess = async (
   return false;
 };
 
-export const getUserById = async (id: string) => {
-  try {
-    return prisma.user.findUnique({
+export const checkSessionAccess = async (
+  target: User | Recipe | RecipeRating | Comment | null,
+) => {
+  const user = await getSessionUser();
+  if (!user) return false;
+
+  return checkAccess(user, target);
+};
+
+export const getUserById = async (id: string) =>
+  await prisma.user
+    .findUnique({
       where: {
         id,
       },
       include: { image: { select: { id: true } } },
-    });
-  } catch {
-    return null;
-  }
-};
+    })
+
+    .catch(noop);
 
 export const editUser = async (
   targetUser: User,
@@ -48,93 +53,60 @@ export const editUser = async (
   username: string,
   email: string,
 ) => {
-  const user = await getSessionUser();
-  const hasAccess = await checkAccess(user, targetUser);
+  const hasAccess = checkSessionAccess(targetUser);
   if (!hasAccess) {
     return actionError("Forbidden");
   }
 
   const createImageVariable = await getCreateImageVariable(image);
-  const newUser = await prisma.user.update({
-    where: { id: targetUser.id },
-    data: {
-      name,
-      description,
-      username,
-      email,
-      image: createImageVariable,
-    },
-  });
 
-  return actionResponse({ user: newUser });
-};
-
-export const deleteUser = async (targetUser: User) => {
-  const user = await getSessionUser();
-  const hasAccess = await checkAccess(user, targetUser);
-  if (!hasAccess) {
-    return actionError("Forbidden");
-  }
-
-  try {
-    await prisma.user.delete({ where: { id: targetUser.id } });
-
-    if (targetUser.id === user!.id) {
-      deleteSessionCookies();
-      redirect("/");
-    } else {
-      redirect(getURL());
-    }
-  } catch {
-    return actionError("Could not delete user");
-  }
-};
-
-export const banUser = async (targetUser: User) => {
-  const user = await getSessionUser();
-  const hasAccess = await checkAccess(user, targetUser);
-  const userIsSame = targetUser.id === user?.id;
-  if (!hasAccess || userIsSame) {
-    return actionError("Forbidden");
-  }
-
-  try {
-    await prisma.user.update({
+  return await prisma.user
+    .update({
       where: { id: targetUser.id },
+      data: {
+        name,
+        description,
+        username,
+        email,
+        image: createImageVariable,
+      },
+    })
+
+    .then((newUser) => actionResponse({ user: newUser }))
+    .catch(() => actionError("Could not edit user"));
+};
+
+export const deleteUser = async (id: string, sessionUser: User) =>
+  await prisma.user
+    .delete({ where: { id } })
+    .then(() => {
+      if (id === sessionUser.id) {
+        deleteSessionCookies();
+      }
+    })
+
+    .then(actionResponse)
+    .catch(() => actionError("Could not delete user"));
+
+export const banUser = async (id: string) =>
+  await prisma.user
+    .update({
+      where: { id },
       data: { status: Status.BANNED },
-    });
+    })
 
-    await prisma.session.deleteMany({ where: { userId: targetUser.id } });
+    .then(actionResponse)
+    .catch(() => actionError("Could not ban user"));
 
-    revalidatePage();
-    return actionResponse();
-  } catch {
-    return actionError("Could not ban user");
-  }
-};
-
-export const unbanUser = async (targetUser: User) => {
-  const user = await getSessionUser();
-  const hasAccess = await checkAccess(user, targetUser);
-  const userIsSame = targetUser.id === user?.id;
-  if (!hasAccess || userIsSame) {
-    return actionError("Forbidden");
-  }
-
-  try {
-    await prisma.user.update({
-      where: { id: targetUser.id },
+export const unbanUser = async (id: string) =>
+  await prisma.user
+    .update({
+      where: { id },
       data: { status: Status.ACTIVE },
-    });
+    })
 
-    await prisma.session.deleteMany({ where: { userId: targetUser.id } });
-
-    revalidatePage();
-    return actionResponse();
-  } catch {
-    return actionError("Could not unban user");
-  }
-};
+    .then(actionResponse)
+    .catch(() => actionError("Could not unban user"));
 
 export const getNameOfUser = (user: User | null | undefined) => {
   const userExists = !!user;

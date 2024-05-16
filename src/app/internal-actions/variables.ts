@@ -66,9 +66,14 @@ const setVariable = <T extends BaseTypesT>(name: string, value: T) => {
   );
 };
 
+const deleteVariable = (name: string) => {
+  cookies().delete(`_variable_${name}`);
+};
+
 export const variable = <T extends BaseTypesT>(name: string) => {
   return {
     get: () => getVariable<T>(name),
     set: (value: T) => setVariable<T>(name, value),
+    delete: () => deleteVariable(name),
   };
 };

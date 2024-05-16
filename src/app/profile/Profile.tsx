@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import Confirm from "../components/confirm";
 import ProfilePicture from "../components/profile-picture";
 import { getSessionUser, redirectToAuth } from "../internal-actions/auth";
-import { getUrl } from "../internal-actions/url";
+import { getUrl, revalidatePage } from "../internal-actions/url";
 import {
   banUser,
   checkAccess,
@@ -33,7 +33,7 @@ export async function Profile({ userId }: ProfileProps) {
 
   const user = (requestedUser || sessionUser)!;
 
-  const viewerHasAccess = await checkAccess(sessionUser, user);
+  const viewerHasAccess = checkAccess(sessionUser, user);
   const viewerIsAdmin = sessionUser?.role === Role.ADMIN;
   const userIsBanned = user.status === Status.BANNED;
   const userIsSame = user.id === sessionUser?.id;
@@ -44,20 +44,38 @@ export async function Profile({ userId }: ProfileProps) {
 
   const submitDelete = async () => {
     "use server";
-    const result = await deleteUser(user);
-    if (!result.success) deleteUserErrorVariable.set(result.errors.global);
+    if (viewerHasAccess) {
+      const result = await deleteUser(user.id, sessionUser!);
+      if (!result.success) deleteUserErrorVariable.set(result.errors.global);
+    } else {
+      deleteUserErrorVariable.set("Forbidden");
+    }
+
+    revalidatePage();
   };
 
   const submitBan = async () => {
     "use server";
-    const result = await banUser(user);
-    if (!result.success) banUserErrorVariable.set(result.errors.global);
+    if (viewerHasAccess && sessionUser!.id !== user.id) {
+      const result = await banUser(user.id);
+      if (!result.success) banUserErrorVariable.set(result.errors.global);
+    } else {
+      banUserErrorVariable.set("Forbidden");
+    }
+
+    revalidatePage();
   };
 
   const submitUnban = async () => {
     "use server";
-    const result = await unbanUser(user);
-    if (!result.success) unbanUserErrorVariable.set(result.errors.global);
+    if (viewerHasAccess && sessionUser!.id !== user.id) {
+      const result = await unbanUser(user.id);
+      if (!result.success) unbanUserErrorVariable.set(result.errors.global);
+    } else {
+      unbanUserErrorVariable.set("Forbidden");
+    }
+
+    revalidatePage();
   };
 
   return (

@@ -22,7 +22,7 @@ export async function EditProfile({ userId }: EditProfileProps) {
 
   const user = requestedUser || sessionUser;
 
-  const viewerHasAccess = await checkAccess(sessionUser, user);
+  const viewerHasAccess = checkAccess(sessionUser, user);
   if (!viewerHasAccess) return "403 forbidden";
 
   const errors = errorsVariable.get() ?? {};

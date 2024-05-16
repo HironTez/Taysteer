@@ -3,10 +3,7 @@ export default async function Home() {
 }
 
 // TODO: video uploading support for recipe steps
-// TODO: recipe editing
 // TODO: recipe deletion
-// TODO: comment editing
-// TODO: comment deletion
 // TODO: recipe rating
 // TODO: navbar
 // TODO: main page with recipe list

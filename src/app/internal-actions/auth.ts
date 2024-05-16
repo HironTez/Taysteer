@@ -20,49 +20,53 @@ const createSession = async (userId: string) => {
   const in60Days = currentTime + 5184000000;
   const in10Minutes = currentTime + 600000;
 
-  // Create a session
-  const newSession = await prisma.session.create({
-    data: { userId, expiresAt: new Date(in60Days) },
-  });
+  try {
+    // Create a session
+    const newSession = await prisma.session.create({
+      data: { userId, expiresAt: new Date(in60Days) },
+    });
 
-  // Delete the session after 60 days
-  await prisma.$runCommandRaw({
-    createIndexes: "Session",
-    indexes: [
-      {
-        key: {
-          expiresAt: 1,
+    // Delete the session after 60 days
+    await prisma.$runCommandRaw({
+      createIndexes: "Session",
+      indexes: [
+        {
+          key: {
+            expiresAt: 1,
+          },
+          name: "expiresAt_ttl_index",
+          expireAfterSeconds: 0,
         },
-        name: "expiresAt_ttl_index",
-        expireAfterSeconds: 0,
+      ],
+    });
+
+    // Generate tokens
+    const newAccessToken = await createToken(
+      { sub: newSession.userId },
+      in10Minutes,
+    );
+    const newRefreshToken = await createToken({ jti: newSession.id }, in60Days);
+
+    // Prepare cookies with tokens
+    const responseCookies: ResponseCookie[] = [
+      {
+        name: "accessToken",
+        value: newAccessToken,
+        httpOnly: true,
+        expires: in10Minutes,
       },
-    ],
-  });
+      {
+        name: "refreshToken",
+        value: newRefreshToken,
+        httpOnly: true,
+        expires: in60Days,
+      },
+    ];
 
-  // Generate tokens
-  const newAccessToken = await createToken(
-    { sub: newSession.userId },
-    in10Minutes,
-  );
-  const newRefreshToken = await createToken({ jti: newSession.id }, in60Days);
-
-  // Prepare cookies with tokens
-  const responseCookies: ResponseCookie[] = [
-    {
-      name: "accessToken",
-      value: newAccessToken,
-      httpOnly: true,
-      expires: in10Minutes,
-    },
-    {
-      name: "refreshToken",
-      value: newRefreshToken,
-      httpOnly: true,
-      expires: in60Days,
-    },
-  ];
-
-  return responseCookies;
+    return responseCookies;
+  } catch {
+    return [];
+  }
 };
 
 export const renewSession = async () => {
@@ -72,6 +76,7 @@ export const renewSession = async () => {
 
   // Verify session
   const sessionId = decodedRefreshToken.jti;
+
   const session = await prisma.session.findUnique({ where: { id: sessionId } });
   if (!session) return [];
 
@@ -140,6 +145,9 @@ export const signIn = async (email: string, password: string) => {
   }
 
   const newCookies = await createSession(user.id);
+  if (!newCookies.length) {
+    return actionError<SignInSchemaT>("Couldn't create a session");
+  }
   setAllCookies(newCookies);
 
   return actionResponse();
@@ -173,6 +181,11 @@ export const signUp = async (email: string, password: string) => {
   });
 
   const newCookies = await createSession(newUser.id);
+  if (!newCookies.length) {
+    return actionError<SignUpSchemaT>(
+      "User created but failed to create a session. Try to log into your new account again",
+    );
+  }
   setAllCookies(newCookies);
 
   return actionResponse();
@@ -189,7 +202,8 @@ export const getSessionUser = async () => {
   const { decodedAccessToken } = await verifyTokens();
   if (!decodedAccessToken) return null;
   const user = await getUserById(decodedAccessToken.sub);
-  return user;
+  if (user?.status === Status.BANNED) return null;
+  return user ?? null;
 };
 
 export const redirectToAuth: () => never = () => {

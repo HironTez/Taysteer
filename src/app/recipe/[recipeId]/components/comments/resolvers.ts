@@ -1,8 +1,5 @@
-import { createComment } from "@/app/internal-actions/comment";
-import {
-  CreateCommentSchemaT,
-  createCommentSchema,
-} from "@/app/schemas/comment";
+import { createComment, editComment } from "@/app/internal-actions/comment";
+import { CommentSchemaT, commentSchema } from "@/app/schemas/comment";
 import { zodError } from "@/utils/dto";
 import { Recipe, User } from "@prisma/client";
 
@@ -11,8 +8,15 @@ export const resolveCreateComment = (
   recipe: Recipe,
   user: User,
 ) => {
-  const parsed = createCommentSchema.safeParse(data);
-  if (!parsed.success) return zodError<CreateCommentSchemaT>(parsed.error);
+  const parsed = commentSchema.safeParse(data);
+  if (!parsed.success) return zodError<CommentSchemaT>(parsed.error);
 
   return createComment(parsed.data.text, recipe, user);
+};
+
+export const resolveEditComment = (data: FormData, id: string) => {
+  const parsed = commentSchema.safeParse(data);
+  if (!parsed.success) return zodError<CommentSchemaT>(parsed.error);
+
+  return editComment(id, parsed.data.text);
 };

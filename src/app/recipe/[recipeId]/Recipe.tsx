@@ -1,9 +1,8 @@
 import Confirm from "@/app/components/confirm";
 import ProfilePicture from "@/app/components/profile-picture";
-import { getSessionUser } from "@/app/internal-actions/auth";
 import { deleteRecipe, getRecipe } from "@/app/internal-actions/recipe";
-import { getUrl } from "@/app/internal-actions/url";
-import { checkAccess, getNameOfUser } from "@/app/internal-actions/user";
+import { getUrl, revalidatePage } from "@/app/internal-actions/url";
+import { checkSessionAccess, getNameOfUser } from "@/app/internal-actions/user";
 import { variable } from "@/app/internal-actions/variables";
 import { urlAddToPath } from "@/utils/url";
 import Image from "next/image";
@@ -26,8 +25,7 @@ export async function Recipe({ params: { recipeId } }: RecipeProps) {
     notFound();
   }
 
-  const sessionUser = await getSessionUser();
-  const viewerHasAccess = await checkAccess(sessionUser, recipe);
+  const viewerHasAccess = await checkSessionAccess(recipe);
 
   const nameOfUser = getNameOfUser(recipe.user);
   const pathEdit = urlAddToPath(getUrl(), "edit");
@@ -36,8 +34,15 @@ export async function Recipe({ params: { recipeId } }: RecipeProps) {
 
   const submitDelete = async () => {
     "use server";
-    const result = await deleteRecipe(recipe);
-    if (!result.success) deleteRecipeErrorVariable.set(result.errors.global);
+
+    if (viewerHasAccess) {
+      const result = await deleteRecipe(recipe.id);
+      if (!result.success) deleteRecipeErrorVariable.set(result.errors.global);
+    } else {
+      deleteRecipeErrorVariable.set("Forbidden");
+    }
+
+    revalidatePage();
   };
 
   return (

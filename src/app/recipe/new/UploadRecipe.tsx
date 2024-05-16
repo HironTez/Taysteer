@@ -9,7 +9,7 @@ import {
   getRecipeEditSchema,
 } from "@/app/schemas/recipe";
 import { ACCEPTED_IMAGE_TYPES } from "@/app/schemas/templates";
-import { ActionError } from "@/utils/dto";
+import { ActionError, actionError } from "@/utils/dto";
 import { notFound, redirect } from "next/navigation";
 import { resolveCreateRecipe, resolveEditRecipe } from "./resolvers";
 
@@ -36,7 +36,7 @@ export async function UploadRecipe(props: UploadRecipeProps) {
   if (recipeId && !oldRecipe) notFound();
 
   const viewerHasAccess = oldRecipe
-    ? await checkAccess(sessionUser, oldRecipe)
+    ? checkAccess(sessionUser, oldRecipe)
     : false;
   if (recipeId && !viewerHasAccess) return "403 forbidden";
 
@@ -102,12 +102,16 @@ export async function UploadRecipe(props: UploadRecipeProps) {
     let result;
 
     if (oldRecipe) {
-      const recipeEditSchema = getRecipeEditSchema(
-        ingredientsKeys.keys.length,
-        stepsKeys.keys.length,
-      );
+      if (viewerHasAccess) {
+        const recipeEditSchema = getRecipeEditSchema(
+          ingredientsKeys.keys.length,
+          stepsKeys.keys.length,
+        );
 
-      result = await resolveEditRecipe(oldRecipe?.id, data, recipeEditSchema); // FIXME: remove question mark when the phantom error gets resolved
+        result = await resolveEditRecipe(oldRecipe?.id, data, recipeEditSchema); // FIXME: remove question mark when the phantom error gets resolved
+      } else {
+        result = actionError("Forbidden");
+      }
     } else {
       const recipeCreateSchema = getRecipeCreateSchema(
         ingredientsKeys.keys.length,
@@ -118,11 +122,15 @@ export async function UploadRecipe(props: UploadRecipeProps) {
     }
 
     if (result.success) {
-      redirect(`/recipe/${result.data.recipe.id}`);
+      result.data;
+      if (result.data) {
+        redirect(`/recipe/${result.data.id}`);
+      }
     } else {
       errorsVariable.set(result.errors);
-      revalidatePage();
     }
+
+    revalidatePage();
   };
 
   return (
@@ -264,6 +272,7 @@ export async function UploadRecipe(props: UploadRecipeProps) {
             </div>
           );
         })}
+        {errors.global && <p>{errors.global}</p>}
         <input type="submit" value="Add step" form="add_step" />
         <input type="submit" />
       </form>
