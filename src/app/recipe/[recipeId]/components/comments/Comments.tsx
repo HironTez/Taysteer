@@ -1,144 +1,17 @@
-import Confirm from "@/app/components/confirm";
-import ProfilePicture from "@/app/components/profile-picture";
 import { getSessionUser } from "@/app/internal-actions/auth";
-import {
-  deleteComment,
-  getComments,
-  getCommentsCount,
-} from "@/app/internal-actions/comment";
+import { getComments, getCommentsCount } from "@/app/internal-actions/comment";
 import { revalidatePage } from "@/app/internal-actions/url";
-import {
-  checkAccess,
-  checkSessionAccess,
-  getNameOfUser,
-} from "@/app/internal-actions/user";
+import { checkAccess } from "@/app/internal-actions/user";
 import { variable } from "@/app/internal-actions/variables";
 import { CommentSchemaT } from "@/app/schemas/comment";
 import { CommentWithUser } from "@/types/Models";
 import { ActionError } from "@/utils/dto";
 import { User } from "@prisma/client";
-import styles from "./comments.module.css";
-import { resolveCreateComment, resolveEditComment } from "./resolvers";
-
-type BaseCommentProps = {
-  comment: CommentWithUser;
-};
+import BaseComment from "./components/base-comment";
+import EditComment from "./components/edit-comment";
+import { resolveCreateComment } from "./resolvers";
 
 const commentToEditIdVariable = variable<string>("commentToEditId");
-const commentDeleteErrorVariable = variable<string>("commentDeleteError");
-
-async function BaseComment({ comment }: BaseCommentProps) {
-  const viewerHasAccess = await checkSessionAccess(comment);
-
-  const commentDeleteError = commentDeleteErrorVariable.get();
-
-  const submitStartEditing = async () => {
-    "use server";
-
-    commentToEditIdVariable.set(comment.id);
-    revalidatePage();
-  };
-
-  const submitDelete = async () => {
-    "use server";
-
-    const viewerHasAccess = await checkSessionAccess(comment);
-    if (viewerHasAccess) {
-      const result = await deleteComment(comment.id);
-      if (result.success) {
-        commentDeleteErrorVariable.delete();
-      } else {
-        commentDeleteErrorVariable.set(result.errors.global);
-      }
-    } else {
-      commentDeleteErrorVariable.set("Forbidden");
-    }
-
-    revalidatePage();
-  };
-
-  return (
-    <div>
-      <div className={styles.imageContainer}>
-        <ProfilePicture user={comment.user} />
-      </div>
-      <span>Name: {getNameOfUser(comment.user)}</span>
-      <span>Username: @{comment.user?.username}</span>
-      <span>Created at: {comment.createdAt.toUTCString()}</span>
-      <span>Text: {comment.text}</span>
-      {viewerHasAccess && (
-        <>
-          <form action={submitStartEditing}>
-            <input type="submit" value="Edit" />
-          </form>
-          <Confirm
-            buttonText="Delete"
-            confirmText="Confirm deletion"
-            onConfirm={submitDelete}
-          >
-            Do you actually want to delete this comment? This action cannot be
-            undone
-            {commentDeleteError}
-          </Confirm>
-        </>
-      )}
-    </div>
-  );
-}
-
-type EditCommentProps = {
-  comment: CommentWithUser;
-};
-
-const errorsEditCommentVariable =
-  variable<ActionError<CommentSchemaT>>("errorsEditComment");
-
-async function EditComment({ comment }: EditCommentProps) {
-  const errors = errorsEditCommentVariable.get() ?? {};
-
-  const submitCancel = async () => {
-    "use server";
-
-    commentToEditIdVariable.delete();
-    revalidatePage();
-  };
-
-  const submitEditComment = async (data: FormData) => {
-    "use server";
-
-    const viewerHasAccess = await checkSessionAccess(comment);
-    if (viewerHasAccess) {
-      const result = await resolveEditComment(data, comment.id);
-      if (result.success) {
-        errorsEditCommentVariable.delete();
-      } else {
-        errorsEditCommentVariable.set(result.errors);
-      }
-    }
-
-    commentToEditIdVariable.delete();
-    revalidatePage();
-  };
-
-  return (
-    <>
-      <form action={submitEditComment}>
-        <input
-          type="text"
-          name="text"
-          defaultValue={comment.text}
-          placeholder="Text"
-        />
-        {errors.text && <p>{errors.text}</p>}
-        {errors.global && <p>{errors.global}</p>}
-        <input type="submit" />
-      </form>
-      <form action={submitCancel}>
-        <input type="submit" value="Cancel" />
-      </form>
-    </>
-  );
-}
 
 type CommentProps = {
   comment: CommentWithUser;
@@ -152,11 +25,17 @@ async function Comment({
   sessionUser,
 }: CommentProps) {
   const viewerHasAccess = checkAccess(sessionUser, comment);
-  if (comment.id === commentToEditId && viewerHasAccess) {
-    return <EditComment comment={comment} />;
-  } else {
-    return <BaseComment comment={comment} />;
-  }
+  return comment.id === commentToEditId && viewerHasAccess ? (
+    <EditComment
+      comment={comment}
+      commentToEditIdVariable={commentToEditIdVariable}
+    />
+  ) : (
+    <BaseComment
+      comment={comment}
+      commentToEditIdVariable={commentToEditIdVariable}
+    />
+  );
 }
 
 type CommentsProps = {
