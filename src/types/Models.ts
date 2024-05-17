@@ -11,5 +11,3 @@ type IncludeUser = {
 export type UserWithImage = Prisma.UserGetPayload<IncludeImage>;
 
 export type CommentWithUser = Prisma.CommentGetPayload<IncludeUser>;
-
-export type RecipeWithUser = Prisma.RecipeGetPayload<IncludeUser>;

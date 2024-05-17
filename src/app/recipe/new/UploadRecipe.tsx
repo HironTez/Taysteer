@@ -15,7 +15,8 @@ import { resolveCreateRecipe, resolveEditRecipe } from "./resolvers";
 
 const acceptedImageTypes = ACCEPTED_IMAGE_TYPES.join(", ");
 
-const errorsVariable = variable<ActionError<RecipeSchemaT>>("errors");
+const errorsVariable =
+  variable<ActionError<RecipeSchemaT>>("errorsUploadRecipe");
 
 type KeysList = { lastId: number; keys: string[] };
 
@@ -108,7 +109,7 @@ export async function UploadRecipe(props: UploadRecipeProps) {
           stepsKeys.keys.length,
         );
 
-        result = await resolveEditRecipe(oldRecipe?.id, data, recipeEditSchema); // FIXME: remove question mark when the phantom error gets resolved
+        result = await resolveEditRecipe(oldRecipe.id, data, recipeEditSchema);
       } else {
         result = actionError("Forbidden");
       }
@@ -122,10 +123,7 @@ export async function UploadRecipe(props: UploadRecipeProps) {
     }
 
     if (result.success) {
-      result.data;
-      if (result.data) {
-        redirect(`/recipe/${result.data.id}`);
-      }
+      redirect(`/recipe/${result.data.id}`);
     } else {
       errorsVariable.set(result.errors);
     }

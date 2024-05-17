@@ -9,6 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Comments from "./components/comments";
+import Rating from "./components/rating";
 import styles from "./recipe.module.css";
 
 type RecipeProps = {
@@ -37,7 +38,11 @@ export async function Recipe({ params: { recipeId } }: RecipeProps) {
 
     if (viewerHasAccess) {
       const result = await deleteRecipe(recipe.id);
-      if (!result.success) deleteRecipeErrorVariable.set(result.errors.global);
+      if (result.success) {
+        deleteRecipeErrorVariable.delete();
+      } else {
+        deleteRecipeErrorVariable.set(result.errors.global);
+      }
     } else {
       deleteRecipeErrorVariable.set("Forbidden");
     }
@@ -100,8 +105,8 @@ export async function Recipe({ params: { recipeId } }: RecipeProps) {
           </div>
         </div>
       ))}
-      <span>Rating: {recipe.rating}</span>
-      <Comments recipe={recipe} />
+      <Rating recipeId={recipe.id} />
+      <Comments recipeId={recipe.id} />
     </div>
   );
 }

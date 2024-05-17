@@ -73,7 +73,8 @@ const deleteVariable = (name: string) => {
 export const variable = <T extends BaseTypesT>(name: string) => {
   return {
     get: () => getVariable<T>(name),
-    set: (value: T) => setVariable<T>(name, value),
+    set: (value: T | undefined) =>
+      value === undefined ? deleteVariable(name) : setVariable<T>(name, value),
     delete: () => deleteVariable(name),
   };
 };

@@ -12,7 +12,8 @@ type EditProfileProps = {
   userId?: string;
 };
 
-const errorsVariable = variable<ActionError<EditProfileSchemaT>>("errors");
+const errorsVariable =
+  variable<ActionError<EditProfileSchemaT>>("errorsEditProfile");
 
 export async function EditProfile({ userId }: EditProfileProps) {
   const requestedUser = userId ? await getUserById(userId) : null;

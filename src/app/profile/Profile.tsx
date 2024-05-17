@@ -46,7 +46,11 @@ export async function Profile({ userId }: ProfileProps) {
     "use server";
     if (viewerHasAccess) {
       const result = await deleteUser(user.id, sessionUser!);
-      if (!result.success) deleteUserErrorVariable.set(result.errors.global);
+      if (result.success) {
+        deleteUserErrorVariable.delete();
+      } else {
+        deleteUserErrorVariable.set(result.errors.global);
+      }
     } else {
       deleteUserErrorVariable.set("Forbidden");
     }
@@ -58,7 +62,11 @@ export async function Profile({ userId }: ProfileProps) {
     "use server";
     if (viewerHasAccess && sessionUser!.id !== user.id) {
       const result = await banUser(user.id);
-      if (!result.success) banUserErrorVariable.set(result.errors.global);
+      if (result.success) {
+        banUserErrorVariable.delete();
+      } else {
+        banUserErrorVariable.set(result.errors.global);
+      }
     } else {
       banUserErrorVariable.set("Forbidden");
     }
@@ -70,7 +78,11 @@ export async function Profile({ userId }: ProfileProps) {
     "use server";
     if (viewerHasAccess && sessionUser!.id !== user.id) {
       const result = await unbanUser(user.id);
-      if (!result.success) unbanUserErrorVariable.set(result.errors.global);
+      if (result.success) {
+        unbanUserErrorVariable.delete();
+      } else {
+        unbanUserErrorVariable.set(result.errors.global);
+      }
     } else {
       unbanUserErrorVariable.set("Forbidden");
     }

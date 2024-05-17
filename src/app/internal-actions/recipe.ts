@@ -43,7 +43,7 @@ export const createRecipe = async (
     })
 
     .then(actionResponse)
-    .catch(() => actionError("Could not create recipe"));
+    .catch(() => actionError("Could not publish recipe"));
 
 export const editRecipe = async (
   id: string,

@@ -10,7 +10,7 @@ import { LogInSchemaT } from "../schemas/auth";
 import "./auth.module.css";
 import { resolveLogIn } from "./resolvers";
 
-const errorsVariable = variable<ActionError<LogInSchemaT>>("errors");
+const errorsVariable = variable<ActionError<LogInSchemaT>>("errorsLogIn");
 
 export async function Auth() {
   await unAuthGuard();

@@ -12,7 +12,7 @@ import { redirect } from "next/navigation";
 import { resolveSignIn } from "./resolvers";
 import "./sign-in.module.css";
 
-const errorsVariable = variable<ActionError<SignInSchemaT>>("errors");
+const errorsVariable = variable<ActionError<SignInSchemaT>>("errorsSignIn");
 
 export async function SignIn() {
   await unAuthGuard();

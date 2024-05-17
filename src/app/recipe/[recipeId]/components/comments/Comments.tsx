@@ -14,9 +14,8 @@ import {
 } from "@/app/internal-actions/user";
 import { variable } from "@/app/internal-actions/variables";
 import { CommentSchemaT } from "@/app/schemas/comment";
-import { CommentWithUser, RecipeWithUser } from "@/types/Models";
+import { CommentWithUser } from "@/types/Models";
 import { ActionError } from "@/utils/dto";
-import { noop } from "@/utils/function";
 import { User } from "@prisma/client";
 import styles from "./comments.module.css";
 import { resolveCreateComment, resolveEditComment } from "./resolvers";
@@ -45,9 +44,11 @@ async function BaseComment({ comment }: BaseCommentProps) {
 
     const viewerHasAccess = await checkSessionAccess(comment);
     if (viewerHasAccess) {
-      const result = await deleteComment(comment.id).catch(noop);
-      if (!result) {
-        commentDeleteErrorVariable.set("Could not delete comment");
+      const result = await deleteComment(comment.id);
+      if (result.success) {
+        commentDeleteErrorVariable.delete();
+      } else {
+        commentDeleteErrorVariable.set(result.errors.global);
       }
     } else {
       commentDeleteErrorVariable.set("Forbidden");
@@ -109,6 +110,7 @@ async function EditComment({ comment }: EditCommentProps) {
     if (viewerHasAccess) {
       const result = await resolveEditComment(data, comment.id);
       if (result.success) {
+        errorsEditCommentVariable.delete();
       } else {
         errorsEditCommentVariable.set(result.errors);
       }
@@ -158,21 +160,22 @@ async function Comment({
 }
 
 type CommentsProps = {
-  recipe: RecipeWithUser;
+  recipeId: string;
 };
 
 const pageVariable = variable<number>("page");
-const errorsCreateCommentVariable =
-  variable<ActionError<CommentSchemaT>>("errors");
+const errorsCreateCommentVariable = variable<ActionError<CommentSchemaT>>(
+  "errorsCreateComment",
+);
 
-export async function Comments({ recipe }: CommentsProps) {
+export async function Comments({ recipeId }: CommentsProps) {
   const sessionUser = await getSessionUser();
 
   const page = pageVariable.get() ?? 1;
   const errors = errorsCreateCommentVariable.get() ?? {};
   const commentToEditId = commentToEditIdVariable.get();
-  const comments = await getComments(recipe, page);
-  const commentsCount = await getCommentsCount(recipe);
+  const comments = await getComments(recipeId, page);
+  const commentsCount = await getCommentsCount(recipeId);
   const hasMoreComments = (comments?.length ?? 0) < commentsCount;
 
   const submitCreateComment = async (data: FormData) => {
@@ -180,8 +183,9 @@ export async function Comments({ recipe }: CommentsProps) {
 
     const sessionUser = await getSessionUser();
     if (sessionUser) {
-      const result = await resolveCreateComment(data, recipe, sessionUser);
+      const result = await resolveCreateComment(data, recipeId, sessionUser.id);
       if (result.success) {
+        errorsCreateCommentVariable.delete();
       } else {
         errorsCreateCommentVariable.set(result.errors);
       }
@@ -206,16 +210,18 @@ export async function Comments({ recipe }: CommentsProps) {
           <input type="submit" />
         </form>
       )}
-      {comments
-        ? comments.map((comment) => (
-            <Comment
-              comment={comment}
-              commentToEditId={commentToEditId}
-              sessionUser={sessionUser}
-              key={comment.id}
-            />
-          ))
-        : "Could not load comments"}
+      {comments ? (
+        comments.map((comment) => (
+          <Comment
+            comment={comment}
+            commentToEditId={commentToEditId}
+            sessionUser={sessionUser}
+            key={comment.id}
+          />
+        ))
+      ) : (
+        <span>Could not load comments</span>
+      )}
       {hasMoreComments && (
         <form action={submitLoadMore}>
           <input type="submit" value="Load more" />

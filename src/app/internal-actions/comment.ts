@@ -1,12 +1,11 @@
 import { prisma } from "@/db";
 import { actionError, actionResponse } from "@/utils/dto";
 import { noop } from "@/utils/function";
-import { Recipe, User } from "@prisma/client";
 
-export const getComments = async (recipe: Recipe, page: number) =>
+export const getComments = async (recipeId: string, page: number) =>
   await prisma.comment
     .findMany({
-      where: { recipeId: recipe.id },
+      where: { recipeId },
       take: page * 10,
       orderBy: { updatedAt: "desc" },
       include: { user: { include: { image: { select: { id: true } } } } },
@@ -14,10 +13,10 @@ export const getComments = async (recipe: Recipe, page: number) =>
 
     .catch(noop);
 
-export const getCommentsCount = async (recipe: Recipe) => {
+export const getCommentsCount = async (recipeId: string) => {
   const result = await prisma.comment
     .aggregate({
-      where: { recipeId: recipe.id },
+      where: { recipeId },
       _count: true,
     })
 
@@ -26,19 +25,23 @@ export const getCommentsCount = async (recipe: Recipe) => {
   return result?._count ?? 0;
 };
 
-export const createComment = async (text: string, recipe: Recipe, user: User) =>
+export const createComment = async (
+  text: string,
+  recipeId: string,
+  userId: string,
+) =>
   await prisma.comment
     .create({
       data: {
         text,
-        recipe: { connect: { id: recipe.id } },
-        user: { connect: { id: user.id } },
+        recipe: { connect: { id: recipeId } },
+        user: { connect: { id: userId } },
       },
       include: { user: { include: { image: { select: { id: true } } } } },
     })
 
     .then(actionResponse)
-    .catch(() => actionError("Could not create comment"));
+    .catch(() => actionError("Could not publish comment"));
 
 export const editComment = async (id: string, text: string) =>
   await prisma.comment
