@@ -1,5 +1,11 @@
 import { prisma } from "@/db";
-import { actionError, actionResponse } from "@/utils/dto";
+import {
+  ActionError,
+  ActionResponseError,
+  ActionResponseSuccess,
+  actionError,
+  actionResponse,
+} from "@/utils/dto";
 import { noop } from "@/utils/function";
 import {
   Comment,
@@ -11,6 +17,7 @@ import {
 } from "@prisma/client";
 import { deleteSessionCookies, getSessionUser } from "./auth";
 import { getCreateImageVariable } from "./helpers";
+import { Variable } from "./variables";
 
 export const checkAccess = (
   user: User | null,
@@ -32,6 +39,37 @@ export const checkSessionAccess = async (
   if (!user) return false;
 
   return checkAccess(user, target);
+};
+
+const handleIfHasAccess = async <T, E extends object>(
+  action: () => Promise<ActionResponseSuccess<T> | ActionResponseError<E>>,
+  user: User | null,
+  target: User | Recipe | RecipeRating | Comment | null,
+  errorsVariable: Variable<ActionError<E>>,
+) => {
+  const hasAccess = checkAccess(user, target);
+  if (!hasAccess) {
+    return errorsVariable.set({ global: "Forbidden" } as Partial<
+      Record<"global" | keyof E, string>
+    >);
+  }
+
+  const result = await action();
+  if (result.success) {
+    errorsVariable.delete();
+    return result.data;
+  } else {
+    errorsVariable.set(result.errors);
+  }
+};
+
+export const handleIfSessionHasAccess = async <T, E extends object>(
+  action: () => Promise<ActionResponseSuccess<T> | ActionResponseError<E>>,
+  target: User | Recipe | RecipeRating | Comment | null,
+  errorsVariable: Variable<ActionError<E>>,
+) => {
+  const sessionUser = await getSessionUser();
+  return handleIfHasAccess(action, sessionUser, target, errorsVariable);
 };
 
 export const getUserById = async (id: string) =>

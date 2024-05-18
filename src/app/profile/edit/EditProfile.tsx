@@ -1,6 +1,10 @@
 import { authGuard } from "@/app/internal-actions/auth";
 import { revalidatePage } from "@/app/internal-actions/url";
-import { checkAccess, getUserById } from "@/app/internal-actions/user";
+import {
+  checkAccess,
+  getUserById,
+  handleIfSessionHasAccess,
+} from "@/app/internal-actions/user";
 import { variable } from "@/app/internal-actions/variables";
 import { EditProfileSchemaT } from "@/app/schemas/user";
 import { ActionError } from "@/utils/dto";
@@ -31,13 +35,15 @@ export async function EditProfile({ userId }: EditProfileProps) {
   const submit = async (data: FormData) => {
     "use server";
 
-    const result = await resolveEditUser(user, data);
-    if (result.success) {
+    const newUser = await handleIfSessionHasAccess(
+      () => resolveEditUser(user, data),
+      user,
+      errorsVariable,
+    );
+    if (newUser) {
       redirect(`/profile${userId ? `/${userId}` : ""}`);
-    } else {
-      errorsVariable.set(result.errors);
-      revalidatePage();
     }
+    revalidatePage();
   };
   return (
     <form action={submit}>
