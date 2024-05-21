@@ -1,6 +1,6 @@
 import { revalidatePage } from "@/app/internal-actions/url";
 import { checkSessionAccess } from "@/app/internal-actions/user";
-import { Variable, variable } from "@/app/internal-actions/variables";
+import { variable } from "@/app/internal-actions/variables";
 import { CommentSchemaT } from "@/app/schemas/comment";
 import { CommentWithUser } from "@/types/Models";
 import { ActionError } from "@/utils/dto";
@@ -8,16 +8,13 @@ import { resolveEditComment } from "../../resolvers";
 
 type EditCommentProps = {
   comment: CommentWithUser;
-  commentToEditIdVariable: Variable<string>;
 };
 
+const commentToEditIdVariable = variable<string>("commentToEditId");
 const errorsEditCommentVariable =
   variable<ActionError<CommentSchemaT>>("errorsEditComment");
 
-export async function EditComment({
-  comment,
-  commentToEditIdVariable,
-}: EditCommentProps) {
+export async function EditComment({ comment }: EditCommentProps) {
   const errors = errorsEditCommentVariable.get() ?? {};
 
   const submitCancel = async () => {

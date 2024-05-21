@@ -3,21 +3,18 @@ import ProfilePicture from "@/app/components/profile-picture";
 import { deleteComment } from "@/app/internal-actions/comment";
 import { revalidatePage } from "@/app/internal-actions/url";
 import { checkSessionAccess, getNameOfUser } from "@/app/internal-actions/user";
-import { Variable, variable } from "@/app/internal-actions/variables";
+import { variable } from "@/app/internal-actions/variables";
 import { CommentWithUser } from "@/types/Models";
 import styles from "./base-comment.module.css";
 
 type BaseCommentProps = {
   comment: CommentWithUser;
-  commentToEditIdVariable: Variable<string>;
 };
 
+const commentToEditIdVariable = variable<string>("commentToEditId");
 const commentDeleteErrorVariable = variable<string>("commentDeleteError");
 
-export async function BaseComment({
-  comment,
-  commentToEditIdVariable,
-}: BaseCommentProps) {
+export async function BaseComment({ comment }: BaseCommentProps) {
   const viewerHasAccess = await checkSessionAccess(comment);
 
   const commentDeleteError = commentDeleteErrorVariable.get();

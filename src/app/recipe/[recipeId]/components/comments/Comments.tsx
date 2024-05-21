@@ -26,15 +26,9 @@ async function Comment({
 }: CommentProps) {
   const viewerHasAccess = checkAccess(sessionUser, comment);
   return comment.id === commentToEditId && viewerHasAccess ? (
-    <EditComment
-      comment={comment}
-      commentToEditIdVariable={commentToEditIdVariable}
-    />
+    <EditComment comment={comment} />
   ) : (
-    <BaseComment
-      comment={comment}
-      commentToEditIdVariable={commentToEditIdVariable}
-    />
+    <BaseComment comment={comment} />
   );
 }
 
