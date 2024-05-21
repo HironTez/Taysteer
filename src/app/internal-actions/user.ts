@@ -9,7 +9,8 @@ import {
   Status,
   User,
 } from "@prisma/client";
-import { deleteSessionCookies, getSessionUser } from "./auth";
+import { hash } from "bcrypt";
+import { checkPassword, deleteSessionCookies, getSessionUser } from "./auth";
 import { getCreateImageVariable } from "./helpers";
 
 export const checkAccess = (
@@ -45,6 +46,14 @@ export const getUserById = async (id: string) =>
 
     .catch(noop);
 
+export const getUserByEmail = async (email: string) =>
+  await prisma.user
+    .findUnique({
+      where: { email },
+      include: { image: { select: { id: true } } },
+    })
+    .catch(noop);
+
 export const editUser = async (
   targetUser: User,
   name: string | null,
@@ -74,6 +83,24 @@ export const editUser = async (
 
     .then((newUser) => actionResponse({ user: newUser }))
     .catch(() => actionError("Could not edit user"));
+};
+
+export const changePassword = async (
+  user: User,
+  oldPassword: string,
+  password: string,
+) => {
+  const oldPasswordValid = checkPassword(user, oldPassword);
+  if (!oldPasswordValid) {
+    return actionError("Old password is incorrect");
+  }
+
+  const passwordHash = await hash(password, 10);
+  return await prisma.user
+    .update({ where: { id: user.id }, data: { passwordHash } })
+
+    .then(actionResponse)
+    .catch(() => actionError("Could not update password"));
 };
 
 export const deleteUser = async (id: string, sessionUser: User) =>

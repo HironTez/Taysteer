@@ -38,6 +38,7 @@ export async function Profile({ userId }: ProfileProps) {
   const userIsBanned = user.status === Status.BANNED;
   const userIsSame = user.id === sessionUser?.id;
   const pathEdit = urlAddToPath(getUrl(), "edit");
+  const pathChangePassword = new URL("/profile/change-password", getUrl());
   const deleteUserError = deleteUserErrorVariable.get();
   const banUserError = banUserErrorVariable.get();
   const unbanUserError = unbanUserErrorVariable.get();
@@ -112,6 +113,7 @@ export async function Profile({ userId }: ProfileProps) {
             undone
             {deleteUserError}
           </Confirm>
+          {userIsSame && <Link href={pathChangePassword}>Change password</Link>}
 
           {viewerIsAdmin &&
             !userIsSame &&

@@ -36,6 +36,15 @@ export const string = (max: number, prefix?: string, suffix?: string) =>
       ),
   );
 
+export const password = string(254, "password");
+
+export const newPassword = zfd.text(
+  z
+    .string()
+    .min(8, "Password must be at least 8 characters long")
+    .max(254, "Password can be maximal 254 characters long"),
+);
+
 export const title = (prefix?: string, suffix?: string) =>
   string(50, `${prefix} title`.trimStart(), suffix);
 

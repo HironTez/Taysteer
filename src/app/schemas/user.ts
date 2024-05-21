@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { zfd } from "zod-form-data";
-import { description, image } from "./templates";
+import { description, image, newPassword, password } from "./templates";
 
 export const editUserSchema = zfd.formData({
   name: zfd.text(
@@ -20,3 +20,16 @@ export const editUserSchema = zfd.formData({
 });
 
 export type EditProfileSchemaT = z.infer<typeof editUserSchema>;
+
+export const changePasswordSchema = zfd
+  .formData({
+    oldPassword: password,
+    password: newPassword,
+    confirmPassword: zfd.text(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
+
+export type ChangePasswordSchemaT = z.infer<typeof changePasswordSchema>;

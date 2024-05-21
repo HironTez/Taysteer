@@ -4,7 +4,7 @@ import { LogInSchemaT, SignInSchemaT, SignUpSchemaT } from "../schemas/auth";
 import { prisma } from "@/db";
 import { setAllCookies } from "@/utils/cookies";
 import { validateEmail } from "@/utils/email";
-import { Status } from "@prisma/client";
+import { Status, User } from "@prisma/client";
 import bcrypt from "bcrypt";
 
 import { noop } from "@/utils/function";
@@ -14,7 +14,7 @@ import { redirect } from "next/navigation";
 import { actionError, actionResponse } from "../../utils/dto";
 import { createToken, verifyTokens } from "./tokens";
 import { getPathname, getSearchParam } from "./url";
-import { getUserById } from "./user";
+import { getUserByEmail, getUserById } from "./user";
 
 const createSession = async (userId: string) => {
   const currentTime = new Date().getTime();
@@ -106,19 +106,19 @@ const deleteSession = async () => {
   return true;
 };
 
+const checkUser = (user: User | null | undefined): user is User =>
+  user?.status === Status.ACTIVE;
+
+export const checkPassword = async (user: User, password: string) =>
+  await bcrypt.compare(password, user.passwordHash);
+
 export const logIn = async (email: string) => {
   const emailValid = validateEmail(email);
   if (!emailValid) {
     return actionError<LogInSchemaT>("Invalid email", "email");
   }
 
-  const user = await prisma.user
-    .findUnique({
-      where: {
-        email,
-      },
-    })
-    .catch(noop);
+  const user = await getUserByEmail(email);
 
   if (user) {
     if (user.status === Status.BANNED) {
@@ -132,22 +132,14 @@ export const logIn = async (email: string) => {
 };
 
 export const signIn = async (email: string, password: string) => {
-  const user =
-    email &&
-    (await prisma.user
-      .findUnique({
-        where: {
-          email,
-        },
-      })
-      .catch(noop));
+  const user = email ? await getUserByEmail(email) : null;
 
-  // Exit email is not provided or if user doesn't exist or is banned
-  if (!email || !user || user.status === Status.BANNED) {
+  // Exit if email is not provided or if user doesn't exist or is banned
+  if (!email || !checkUser(user)) {
     return actionError<SignInSchemaT>("Could not sign in");
   }
 
-  if (!(await bcrypt.compare(password, user.passwordHash))) {
+  if (!(await checkPassword(user, password))) {
     return actionError<SignInSchemaT>("Password is incorrect", "password");
   }
 
@@ -161,16 +153,7 @@ export const signIn = async (email: string, password: string) => {
 };
 
 export const signUp = async (email: string, password: string) => {
-  const user =
-    email &&
-    (await prisma.user
-      .findUnique({
-        where: {
-          email,
-        },
-      })
-      .catch(noop));
-
+  const user = email && (await getUserByEmail(email));
   const emailValid = email && validateEmail(email);
 
   // Exit if email is not valid or already used
@@ -190,6 +173,7 @@ export const signUp = async (email: string, password: string) => {
       },
     })
     .catch(noop);
+
   if (!newUser) {
     return actionError<SignUpSchemaT>("Could not create user");
   }

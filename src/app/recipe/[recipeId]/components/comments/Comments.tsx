@@ -77,7 +77,7 @@ export async function Comments({ recipeId }: CommentsProps) {
     <div>
       {sessionUser && (
         <form action={submitCreateComment}>
-          <input type="text" name="text" placeholder="Text" />
+          <input type="text" name="text" placeholder="Text" maxLength={1000} />
           {errors.text && <p>{errors.text}</p>}
           {errors.global && <p>{errors.global}</p>}
           <input type="submit" />

@@ -49,6 +49,7 @@ export async function EditComment({ comment }: EditCommentProps) {
           name="text"
           defaultValue={comment.text}
           placeholder="Text"
+          maxLength={1000}
         />
         {errors.text && <p>{errors.text}</p>}
         {errors.global && <p>{errors.global}</p>}
