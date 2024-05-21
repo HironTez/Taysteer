@@ -1,10 +1,9 @@
 import Confirm from "@/app/components/confirm";
 import ProfilePicture from "@/app/components/profile-picture";
 import { deleteRecipe, getRecipe } from "@/app/internal-actions/recipe";
-import { getUrl, revalidatePage } from "@/app/internal-actions/url";
+import { newUrl, revalidatePage } from "@/app/internal-actions/url";
 import { checkSessionAccess, getNameOfUser } from "@/app/internal-actions/user";
 import { variable } from "@/app/internal-actions/variables";
-import { urlAddToPath } from "@/utils/url";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -29,7 +28,7 @@ export async function Recipe({ params: { recipeId } }: RecipeProps) {
   const viewerHasAccess = await checkSessionAccess(recipe);
 
   const nameOfUser = getNameOfUser(recipe.user);
-  const pathEdit = urlAddToPath(getUrl(), "edit");
+  const pathEdit = newUrl("edit");
 
   const deleteRecipeError = deleteRecipeErrorVariable.get();
 
@@ -63,7 +62,7 @@ export async function Recipe({ params: { recipeId } }: RecipeProps) {
       <span>Title: {recipe.title}</span>
       <span>Description: {recipe.description}</span>
       <div className={styles.imageContainer}>
-        <ProfilePicture user={recipe.user} />
+        <ProfilePicture user={recipe.user} sizes="50px" />
       </div>
       <span>Author name: {nameOfUser}</span>
       <span>Author username: @{recipe.user?.username}</span>

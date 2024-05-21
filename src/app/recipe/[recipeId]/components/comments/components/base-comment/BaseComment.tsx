@@ -47,7 +47,7 @@ export async function BaseComment({ comment }: BaseCommentProps) {
   return (
     <div>
       <div className={styles.imageContainer}>
-        <ProfilePicture user={comment.user} />
+        <ProfilePicture user={comment.user} sizes="50px" />
       </div>
       <span>Name: {getNameOfUser(comment.user)}</span>
       <span>Username: @{comment.user?.username}</span>

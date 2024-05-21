@@ -21,6 +21,13 @@ export const getSearchParam = (name: string) => {
   return searchParams.get(name);
 };
 
+export const newUrl = (path: string, url?: string) => {
+  if (!url) url = getUrl();
+
+  const suffix = url.endsWith("/") ? "" : "/";
+  return new URL(path, url.concat(suffix)).href;
+};
+
 export const revalidatePage = () => {
   revalidatePath(getUrl(), "page");
 };

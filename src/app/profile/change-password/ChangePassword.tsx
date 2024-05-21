@@ -1,4 +1,4 @@
-import { getSessionUser } from "@/app/internal-actions/auth";
+import { authGuard, getSessionUser } from "@/app/internal-actions/auth";
 import { revalidatePage } from "@/app/internal-actions/url";
 import { variable } from "@/app/internal-actions/variables";
 import { ChangePasswordSchemaT } from "@/app/schemas/user";
@@ -10,7 +10,9 @@ const errorsVariable = variable<ActionError<ChangePasswordSchemaT>>(
   "errorsChangePassword",
 );
 
-export function ChangePassword() {
+export async function ChangePassword() {
+  await authGuard();
+
   const errors = errorsVariable.get() ?? {};
 
   const submit = async (data: FormData) => {

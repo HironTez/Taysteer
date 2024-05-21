@@ -6,4 +6,4 @@ export default async function Home() {
 // TODO: navbar
 // TODO: main page with recipe list
 // TODO: show user's recipe list in profile
-// TODO: preview image
+// TODO: preview image on upload

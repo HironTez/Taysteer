@@ -1,11 +1,10 @@
-import { urlAddToPath } from "@/utils/url";
 import { Role, Status } from "@prisma/client";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Confirm from "../components/confirm";
 import ProfilePicture from "../components/profile-picture";
 import { getSessionUser, redirectToAuth } from "../internal-actions/auth";
-import { getUrl, revalidatePage } from "../internal-actions/url";
+import { newUrl, revalidatePage } from "../internal-actions/url";
 import {
   banUser,
   checkAccess,
@@ -37,8 +36,8 @@ export async function Profile({ userId }: ProfileProps) {
   const viewerIsAdmin = sessionUser?.role === Role.ADMIN;
   const userIsBanned = user.status === Status.BANNED;
   const userIsSame = user.id === sessionUser?.id;
-  const pathEdit = urlAddToPath(getUrl(), "edit");
-  const pathChangePassword = new URL("/profile/change-password", getUrl());
+  const pathEdit = newUrl("edit");
+  const pathChangePassword = newUrl("/profile/change-password");
   const deleteUserError = deleteUserErrorVariable.get();
   const banUserError = banUserErrorVariable.get();
   const unbanUserError = unbanUserErrorVariable.get();
@@ -94,7 +93,7 @@ export async function Profile({ userId }: ProfileProps) {
   return (
     <div>
       <div className={styles.imageContainer}>
-        <ProfilePicture user={user} />
+        <ProfilePicture user={user} sizes="50%" />
       </div>
       <p>Name: {user.name}</p>
       <p>Username: {user.username}</p>

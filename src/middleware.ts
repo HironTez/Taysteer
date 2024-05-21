@@ -1,6 +1,7 @@
 import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyTokens } from "./app/internal-actions/tokens";
+import { newUrl } from "./app/internal-actions/url";
 
 const setUrlHeaders = (requestHeaders: Headers, request: NextRequest) => {
   requestHeaders.set("x-url", request.url);
@@ -19,7 +20,7 @@ const clearCookieVariables = (request: NextRequest, response: NextResponse) => {
 
 const renewSession = async (request: NextRequest) => {
   try {
-    const cookies = await fetch(new URL("/api/renew-session", request.url), {
+    const cookies = await fetch(newUrl("/api/renew-session", request.url), {
       headers: request.headers,
       method: "POST",
       body: process.env.AUTH_SECRET!,
