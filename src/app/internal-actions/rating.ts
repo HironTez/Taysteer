@@ -47,3 +47,12 @@ export const uploadRating = async (
 
     .then(actionResponse)
     .catch(() => actionError("Could not publish rating"));
+
+export const deleteRating = async (recipeId: string, userId: string) =>
+  await prisma.recipeRating
+    .delete({
+      where: { userId_recipeId: { recipeId, userId } },
+    })
+
+    .then(actionResponse)
+    .catch(() => actionError("Could not delete rating"));
