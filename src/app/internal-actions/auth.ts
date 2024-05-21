@@ -7,6 +7,7 @@ import { validateEmail } from "@/utils/email";
 import { Status } from "@prisma/client";
 import bcrypt from "bcrypt";
 
+import { noop } from "@/utils/function";
 import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -77,11 +78,13 @@ export const renewSession = async () => {
   // Verify session
   const sessionId = decodedRefreshToken.jti;
 
-  const session = await prisma.session.findUnique({ where: { id: sessionId } });
+  const session = await prisma.session
+    .findUnique({ where: { id: sessionId } })
+    .catch(noop);
   if (!session) return [];
 
   // Renew session
-  await prisma.session.delete({ where: { id: sessionId } });
+  await prisma.session.delete({ where: { id: sessionId } }).catch(noop);
   return await createSession(session.userId);
 };
 
@@ -96,7 +99,7 @@ const deleteSession = async () => {
 
   await prisma.session
     .delete({ where: { id: decodedRefreshToken.jti } })
-    .catch(null);
+    .catch(noop);
 
   deleteSessionCookies();
 
@@ -109,11 +112,13 @@ export const logIn = async (email: string) => {
     return actionError<LogInSchemaT>("Invalid email", "email");
   }
 
-  const user = await prisma.user.findUnique({
-    where: {
-      email,
-    },
-  });
+  const user = await prisma.user
+    .findUnique({
+      where: {
+        email,
+      },
+    })
+    .catch(noop);
 
   if (user) {
     if (user.status === Status.BANNED) {
@@ -129,15 +134,17 @@ export const logIn = async (email: string) => {
 export const signIn = async (email: string, password: string) => {
   const user =
     email &&
-    (await prisma.user.findUnique({
-      where: {
-        email,
-      },
-    }));
+    (await prisma.user
+      .findUnique({
+        where: {
+          email,
+        },
+      })
+      .catch(noop));
 
   // Exit email is not provided or if user doesn't exist or is banned
   if (!email || !user || user.status === Status.BANNED) {
-    return actionError<SignInSchemaT>("Couldn't sign in");
+    return actionError<SignInSchemaT>("Could not sign in");
   }
 
   if (!(await bcrypt.compare(password, user.passwordHash))) {
@@ -146,7 +153,7 @@ export const signIn = async (email: string, password: string) => {
 
   const newCookies = await createSession(user.id);
   if (!newCookies.length) {
-    return actionError<SignInSchemaT>("Couldn't create a session");
+    return actionError<SignInSchemaT>("Could not create a session");
   }
   setAllCookies(newCookies);
 
@@ -156,29 +163,36 @@ export const signIn = async (email: string, password: string) => {
 export const signUp = async (email: string, password: string) => {
   const user =
     email &&
-    (await prisma.user.findUnique({
-      where: {
-        email,
-      },
-    }));
+    (await prisma.user
+      .findUnique({
+        where: {
+          email,
+        },
+      })
+      .catch(noop));
 
   const emailValid = email && validateEmail(email);
 
   // Exit if email is not valid or already used
   if (!email || !emailValid || user) {
-    return actionError<SignUpSchemaT>("Couldn't sign up");
+    return actionError<SignUpSchemaT>("Could not sign up");
   }
 
   // Hash the password
   const passwordHash = await hash(password, 10);
 
   // Create the user
-  const newUser = await prisma.user.create({
-    data: {
-      email,
-      passwordHash,
-    },
-  });
+  const newUser = await prisma.user
+    .create({
+      data: {
+        email,
+        passwordHash,
+      },
+    })
+    .catch(noop);
+  if (!newUser) {
+    return actionError<SignUpSchemaT>("Could not create user");
+  }
 
   const newCookies = await createSession(newUser.id);
   if (!newCookies.length) {

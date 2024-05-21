@@ -1,4 +1,5 @@
 import { prisma } from "@/db";
+import { noop } from "@/utils/function";
 import { StatusCodes } from "http-status-codes";
 import { NextResponse, type NextRequest } from "next/server";
 
@@ -7,7 +8,9 @@ export const GET = async (
   { params: { imageId } }: { params: { imageId: string } },
 ) => {
   try {
-    const image = await prisma.image.findUnique({ where: { id: imageId } });
+    const image = await prisma.image
+      .findUnique({ where: { id: imageId } })
+      .catch(noop);
 
     if (!image?.value) {
       return new NextResponse(null, { status: StatusCodes.NOT_FOUND });
