@@ -8,3 +8,4 @@ export default async function Home() {
 // TODO: show user's recipe list in profile
 // TODO: preview image on upload
 // TODO: favorite recipes
+// TODO: recipe tags
