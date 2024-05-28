@@ -26,6 +26,7 @@ export async function SignUp() {
     const result = await resolveSignUp(data, email);
     if (result.success) {
       cookies().delete("email");
+      errorsVariable.delete();
 
       const redirectTo = getSearchParam("redirectTo");
       redirect(redirectTo ?? "/");

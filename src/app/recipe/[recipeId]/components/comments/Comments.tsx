@@ -57,13 +57,14 @@ export async function Comments({ recipeId }: CommentsProps) {
     const sessionUser = await getSessionUser();
     if (sessionUser) {
       const result = await resolveCreateComment(data, recipeId, sessionUser.id);
-      if (result.success) {
-        errorsCreateCommentVariable.delete();
-      } else {
-        errorsCreateCommentVariable.set(result.errors);
-      }
-      revalidatePage();
+      errorsCreateCommentVariable.set(
+        result.success ? undefined : result.errors,
+      );
+    } else {
+      errorsCreateCommentVariable.set({ global: "Forbidden" });
     }
+
+    revalidatePage();
   };
 
   const submitPagePrevious = async () => {

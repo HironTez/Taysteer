@@ -1,8 +1,13 @@
 import Confirm from "@/app/components/confirm";
 import ProfilePicture from "@/app/components/profile-picture";
+import { getSessionUser } from "@/app/internal-actions/auth";
 import { deleteRecipe, getRecipe } from "@/app/internal-actions/recipe";
 import { newUrl, revalidatePage } from "@/app/internal-actions/url";
-import { checkSessionAccess, getNameOfUser } from "@/app/internal-actions/user";
+import {
+  checkAccess,
+  checkSessionAccess,
+  getNameOfUser,
+} from "@/app/internal-actions/user";
 import { variable } from "@/app/internal-actions/variables";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,6 +23,7 @@ type RecipeProps = {
 const deleteRecipeErrorVariable = variable<string | undefined>(
   "deleteRecipeError",
 );
+const ratingErrorVariable = variable<string | undefined>("ratingError");
 
 export async function Recipe({ params: { recipeId } }: RecipeProps) {
   const recipe = await getRecipe(recipeId);
@@ -25,7 +31,9 @@ export async function Recipe({ params: { recipeId } }: RecipeProps) {
     notFound();
   }
 
-  const viewerHasAccess = await checkSessionAccess(recipe);
+  const viewer = await getSessionUser();
+  const viewerHasAccess = checkAccess(viewer, recipe);
+  const isFavoriteOfViewer = viewer?.favoriteRecipesIds.includes(recipeId);
 
   const nameOfUser = getNameOfUser(recipe.user);
   const pathEdit = newUrl("edit");
@@ -35,17 +43,29 @@ export async function Recipe({ params: { recipeId } }: RecipeProps) {
   const submitDelete = async () => {
     "use server";
 
+    const viewerHasAccess = await checkSessionAccess(recipe);
     if (viewerHasAccess) {
       const result = await deleteRecipe(recipe.id);
-      if (result.success) {
-        deleteRecipeErrorVariable.delete();
-      } else {
-        deleteRecipeErrorVariable.set(result.errors.global);
-      }
+      ratingErrorVariable.set(
+        result.success ? undefined : result.errors.global,
+      );
     } else {
       deleteRecipeErrorVariable.set("Forbidden");
     }
 
+    revalidatePage();
+  };
+
+  const submitAddToFavorites = async () => {
+    "use server";
+    const result = await deleteRecipe(recipe.id);
+    ratingErrorVariable.set(result.success ? undefined : result.errors.global);
+    revalidatePage();
+  };
+  const submitRemoveFromFavorites = async () => {
+    "use server";
+    const result = await deleteRecipe(recipe.id);
+    ratingErrorVariable.set(result.success ? undefined : result.errors.global);
     revalidatePage();
   };
 
@@ -67,6 +87,16 @@ export async function Recipe({ params: { recipeId } }: RecipeProps) {
       </div>
       <span>Author name: {nameOfUser}</span>
       <span>Author username: @{recipe.user?.username}</span>
+      {viewer &&
+        (isFavoriteOfViewer ? (
+          <form action={submitRemoveFromFavorites}>
+            <input type="submit" value="Remove from favorites" />
+          </form>
+        ) : (
+          <form action={submitAddToFavorites}>
+            <input type="submit" value="Add to favorites" />
+          </form>
+        ))}
       {viewerHasAccess && (
         <>
           <Link href={pathEdit}>Edit</Link>

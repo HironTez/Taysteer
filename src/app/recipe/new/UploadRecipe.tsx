@@ -109,7 +109,7 @@ export async function UploadRecipe(props: UploadRecipeProps) {
           stepsKeys.keys.length,
         );
 
-        result = await resolveEditRecipe(oldRecipe?.id, data, recipeEditSchema); // FIXME: remove question mark when the phantom error fades
+        result = await resolveEditRecipe(oldRecipe.id, data, recipeEditSchema);
       } else {
         result = actionError("Forbidden");
       }
@@ -123,6 +123,7 @@ export async function UploadRecipe(props: UploadRecipeProps) {
     }
 
     if (result.success) {
+      errorsVariable.delete();
       redirect(`/recipe/${result.data.id}`);
     } else {
       errorsVariable.set(result.errors);

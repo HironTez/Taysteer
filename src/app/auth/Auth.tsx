@@ -23,6 +23,7 @@ export async function Auth() {
       cookies().set("email", result.data.email, {
         httpOnly: true,
       });
+      errorsVariable.delete();
 
       redirectPreserveSearchParams(`/auth/${result.data.nextStep}`);
     } else {

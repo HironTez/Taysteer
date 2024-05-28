@@ -60,11 +60,9 @@ export async function EditProfile({ userId }: EditProfileProps) {
     const hasAccess = await checkSessionAccess(user);
     if (hasAccess) {
       const result = await deleteUserImage(user.id);
-      if (result.success) {
-        errorDeleteUserImageVariable.delete();
-      } else {
-        errorDeleteUserImageVariable.set(result.errors.global);
-      }
+      errorDeleteUserImageVariable.set(
+        result.success ? undefined : result.errors.global,
+      );
     } else {
       errorDeleteUserImageVariable.set("Forbidden");
     }

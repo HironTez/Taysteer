@@ -11,11 +11,11 @@ type EditCommentProps = {
 };
 
 const commentToEditIdVariable = variable<string>("commentToEditId");
-const errorsEditCommentVariable =
+const errorsVariable =
   variable<ActionError<CommentSchemaT>>("errorsEditComment");
 
 export async function EditComment({ comment }: EditCommentProps) {
-  const errors = errorsEditCommentVariable.get() ?? {};
+  const errors = errorsVariable.get() ?? {};
 
   const submitCancel = async () => {
     "use server";
@@ -30,14 +30,11 @@ export async function EditComment({ comment }: EditCommentProps) {
     const viewerHasAccess = await checkSessionAccess(comment);
     if (viewerHasAccess) {
       const result = await resolveEditComment(data, comment.id);
-      if (result.success) {
-        errorsEditCommentVariable.delete();
-      } else {
-        errorsEditCommentVariable.set(result.errors);
-      }
+      errorsVariable.set(result.success ? undefined : result.errors);
+    } else {
+      errorsVariable.delete();
     }
 
-    commentToEditIdVariable.delete();
     revalidatePage();
   };
 

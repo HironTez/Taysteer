@@ -30,11 +30,7 @@ export async function Rating({ recipe }: Props) {
     const sessionUser = await getSessionUser();
     if (sessionUser) {
       const result = await resolveUploadRating(data, recipe.id, sessionUser.id);
-      if (result.success) {
-        errorsCreateVariable.delete();
-      } else {
-        errorsCreateVariable.set(result.errors);
-      }
+      errorsCreateVariable.set(result.success ? undefined : result.errors);
     } else {
       errorsCreateVariable.set({ global: "Forbidden" });
     }
@@ -48,11 +44,9 @@ export async function Rating({ recipe }: Props) {
     const sessionUser = await getSessionUser();
     if (sessionUser) {
       const result = await deleteRating(recipe.id, sessionUser.id);
-      if (result.success) {
-        errorDeleteVariable.delete();
-      } else {
-        errorDeleteVariable.set(result.errors.global);
-      }
+      errorDeleteVariable.set(
+        result.success ? undefined : result.errors.global,
+      );
     } else {
       errorDeleteVariable.set("Forbidden");
     }

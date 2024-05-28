@@ -32,11 +32,9 @@ export async function BaseComment({ comment }: BaseCommentProps) {
     const viewerHasAccess = await checkSessionAccess(comment);
     if (viewerHasAccess) {
       const result = await deleteComment(comment.id);
-      if (result.success) {
-        commentDeleteErrorVariable.delete();
-      } else {
-        commentDeleteErrorVariable.set(result.errors.global);
-      }
+      commentDeleteErrorVariable.set(
+        result.success ? undefined : result.errors.global,
+      );
     } else {
       commentDeleteErrorVariable.set("Forbidden");
     }

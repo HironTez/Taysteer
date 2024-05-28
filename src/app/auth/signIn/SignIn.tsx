@@ -26,6 +26,7 @@ export async function SignIn() {
     const result = await resolveSignIn(data, email);
     if (result.success) {
       cookies().delete("email");
+      errorsVariable.delete();
 
       const redirectTo = getSearchParam("redirectTo");
       redirect(redirectTo ?? "/");

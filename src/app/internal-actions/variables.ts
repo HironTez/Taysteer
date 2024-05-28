@@ -2,12 +2,6 @@ import { cookies } from "next/headers";
 
 type BaseTypesT = string | number | boolean | object | undefined;
 
-export type Variable<T> = {
-  get: () => T | undefined;
-  set: (value: T | undefined) => void;
-  delete: () => void;
-};
-
 const types = [
   "string",
   "number",
@@ -76,7 +70,7 @@ const deleteVariable = (name: string) => {
   cookies().delete(`_variable_${name}`);
 };
 
-export const variable = <T extends BaseTypesT>(name: string): Variable<T> => {
+export const variable = <T extends BaseTypesT>(name: string) => {
   return {
     get: () => getVariable<T>(name),
     set: (value: T | undefined) =>
