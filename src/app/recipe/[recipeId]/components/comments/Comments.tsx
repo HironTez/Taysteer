@@ -66,9 +66,13 @@ export async function Comments({ recipeId }: CommentsProps) {
     }
   };
 
-  const submitLoadMore = async () => {
+  const submitPagePrevious = async () => {
     "use server";
-
+    pageVariable.set(page - 1);
+    revalidatePage();
+  };
+  const submitPageNext = async () => {
+    "use server";
     pageVariable.set(page + 1);
     revalidatePage();
   };
@@ -95,11 +99,13 @@ export async function Comments({ recipeId }: CommentsProps) {
       ) : (
         <span>Could not load comments</span>
       )}
-      {hasMoreComments && (
-        <form action={submitLoadMore}>
-          <input type="submit" value="Load more" />
-        </form>
-      )}
+      <form action={submitPagePrevious}>
+        <input type="submit" value="Previous" disabled={page <= 1} />
+      </form>
+      Page: {page}
+      <form action={submitPageNext}>
+        <input type="submit" value="Next" disabled={!hasMoreComments} />
+      </form>
     </div>
   );
 }

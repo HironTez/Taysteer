@@ -18,9 +18,13 @@ export async function Recipes({ userId }: Props) {
   const recipesCount = await getRecipesCount(userId);
   const hasMoreRecipes = (recipes?.length ?? 0) < recipesCount;
 
-  const submitLoadMore = async () => {
+  const submitPagePrevious = async () => {
     "use server";
-
+    pageVariable.set(page - 1);
+    revalidatePage();
+  };
+  const submitPageNext = async () => {
+    "use server";
     pageVariable.set(page + 1);
     revalidatePage();
   };
@@ -46,11 +50,13 @@ export async function Recipes({ userId }: Props) {
           <span>Rating: {recipe.rating.value}</span>
         </Link>
       ))}
-      {hasMoreRecipes && (
-        <form action={submitLoadMore}>
-          <input type="submit" value="Load more" />
-        </form>
-      )}
+      <form action={submitPagePrevious}>
+        <input type="submit" value="Previous" disabled={page <= 1} />
+      </form>
+      Page: {page}
+      <form action={submitPageNext}>
+        <input type="submit" value="Next" disabled={!hasMoreRecipes} />
+      </form>
     </>
   );
 }
