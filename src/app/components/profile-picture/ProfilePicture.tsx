@@ -12,6 +12,12 @@ export function ProfilePicture({ user, sizes }: ProfilePictureProps) {
     : "/assets/profile.svg";
 
   return (
-    <Image fill sizes={sizes} src={profilePicture} alt="Profile picture" />
+    <Image
+      fill
+      sizes={sizes}
+      src={profilePicture}
+      alt="Profile picture"
+      loading="lazy"
+    />
   );
 }

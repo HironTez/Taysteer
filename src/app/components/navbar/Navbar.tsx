@@ -11,7 +11,7 @@ export async function Navbar() {
     return (
       <>
         <div className={styles.imageContainer}>
-          <ProfilePicture user={sessionUser} sizes="10px" />
+          <ProfilePicture user={sessionUser} sizes="50px" />
         </div>
         <p>Name: {sessionUser.name}</p>
       </>

@@ -56,12 +56,13 @@ export async function Recipe({ params: { recipeId } }: RecipeProps) {
           fill
           sizes="50%"
           src={`/image/${recipe.image?.id}`}
-          alt="Main picture of"
+          alt="main picture of the dish"
+          loading="lazy"
         />
       </div>
       <span>Title: {recipe.title}</span>
       <span>Description: {recipe.description}</span>
-      <div className={styles.imageContainer}>
+      <div className={styles.profileImageContainer}>
         <ProfilePicture user={recipe.user} sizes="50px" />
       </div>
       <span>Author name: {nameOfUser}</span>
@@ -98,13 +99,14 @@ export async function Recipe({ params: { recipeId } }: RecipeProps) {
               fill
               sizes="50%"
               src={`/image/${step.image?.id}`}
-              alt="Profile picture"
+              alt="step picture"
+              loading="lazy"
             />
             ;
           </div>
         </div>
       ))}
-      <Rating recipeId={recipe.id} />
+      <Rating recipe={recipe} />
       <Comments recipeId={recipe.id} />
     </div>
   );

@@ -2,7 +2,7 @@ import { prisma } from "@/db";
 import { actionError, actionResponse } from "@/utils/dto";
 import { noop } from "@/utils/function";
 
-export const getRating = async (recipeId: string) => {
+const getRating = async (recipeId: string) => {
   const result = await prisma.recipeRating
     .aggregate({
       where: { recipeId },
@@ -12,10 +12,10 @@ export const getRating = async (recipeId: string) => {
 
     .catch(noop);
 
-  const rating = result?._avg.value ?? 0;
+  const value = result?._avg.value ?? 0;
   const count = result?._count ?? 0;
 
-  return { rating, count };
+  return { value, count };
 };
 
 export const getRatingByUser = async (recipeId: string, userId: string) =>
@@ -31,9 +31,9 @@ export const uploadRating = async (
   value: number,
   recipeId: string,
   userId: string,
-) =>
-  await prisma.recipeRating
-    .upsert({
+) => {
+  try {
+    const createdRating = await prisma.recipeRating.upsert({
       where: { userId_recipeId: { recipeId, userId } },
       create: {
         value,
@@ -43,10 +43,24 @@ export const uploadRating = async (
       update: {
         value,
       },
-    })
+    });
 
-    .then(actionResponse)
-    .catch(() => actionError("Could not publish rating"));
+    const calculatedRating = createdRating && (await getRating(recipeId));
+
+    const updatedRecipe =
+      calculatedRating &&
+      (await prisma.recipe.update({
+        where: { id: recipeId },
+        data: { rating: calculatedRating },
+      }));
+
+    if (updatedRecipe) {
+      return actionResponse(createdRating);
+    }
+  } catch {}
+
+  return actionError("Could not publish rating");
+};
 
 export const deleteRating = async (recipeId: string, userId: string) =>
   await prisma.recipeRating
