@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Confirm from "../components/confirm";
 import ProfilePicture from "../components/profile-picture";
+import Recipes from "../components/recipes";
 import { getSessionUser, redirectToAuth } from "../internal-actions/auth";
 import { newUrl, revalidatePage } from "../internal-actions/url";
 import {
@@ -36,8 +37,8 @@ export async function Profile({ userId }: ProfileProps) {
   const viewerIsAdmin = sessionUser?.role === Role.ADMIN;
   const userIsBanned = user.status === Status.BANNED;
   const userIsSame = user.id === sessionUser?.id;
-  const pathEdit = newUrl("edit");
-  const pathChangePassword = newUrl("/profile/change-password");
+  const editUrl = newUrl("edit");
+  const changePasswordUrl = newUrl("/profile/change-password");
   const deleteUserError = deleteUserErrorVariable.get();
   const banUserError = banUserErrorVariable.get();
   const unbanUserError = unbanUserErrorVariable.get();
@@ -85,7 +86,7 @@ export async function Profile({ userId }: ProfileProps) {
   };
 
   return (
-    <div>
+    <>
       <div className={styles.imageContainer}>
         <ProfilePicture user={user} sizes="50%" />
       </div>
@@ -96,7 +97,7 @@ export async function Profile({ userId }: ProfileProps) {
       <p>Status: {user.status}</p>
       {viewerHasAccess && (
         <>
-          <Link href={pathEdit}>Edit</Link>
+          <Link href={editUrl}>Edit</Link>
           <Confirm
             buttonText="Delete"
             confirmText="Confirm deletion"
@@ -106,7 +107,7 @@ export async function Profile({ userId }: ProfileProps) {
             undone
             {deleteUserError}
           </Confirm>
-          {userIsSame && <Link href={pathChangePassword}>Change password</Link>}
+          {userIsSame && <Link href={changePasswordUrl}>Change password</Link>}
 
           {viewerIsAdmin &&
             !userIsSame &&
@@ -133,6 +134,9 @@ export async function Profile({ userId }: ProfileProps) {
             ))}
         </>
       )}
-    </div>
+
+      <p>{user.name}'s recipes:</p>
+      <Recipes userId={user.id} />
+    </>
   );
 }

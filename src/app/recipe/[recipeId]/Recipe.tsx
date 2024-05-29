@@ -38,7 +38,8 @@ export async function Recipe({ params: { recipeId } }: RecipeProps) {
   const isFavoriteOfViewer = viewer?.favoriteRecipesIds.includes(recipeId);
 
   const nameOfUser = getNameOfUser(recipe.user);
-  const pathEdit = newUrl("edit");
+  const editUrl = newUrl("edit");
+  const profileOfViewerUrl = newUrl(`/profile/${recipe.userId}`);
 
   const deleteRecipeError = deleteRecipeErrorVariable.get();
 
@@ -98,11 +99,13 @@ export async function Recipe({ params: { recipeId } }: RecipeProps) {
       </div>
       <span>Title: {recipe.title}</span>
       <span>Description: {recipe.description}</span>
-      <div className={styles.profileImageContainer}>
-        <ProfilePicture user={recipe.user} sizes="50px" />
-      </div>
-      <span>Author name: {nameOfUser}</span>
-      <span>Author username: @{recipe.user?.username}</span>
+      <Link href={profileOfViewerUrl}>
+        <div className={styles.profileImageContainer}>
+          <ProfilePicture user={recipe.user} sizes="50px" />
+        </div>
+        <span>Author name: {nameOfUser}</span>
+        <span>Author username: @{recipe.user?.username}</span>
+      </Link>
       {viewer &&
         (isFavoriteOfViewer ? (
           <form action={submitRemoveFromFavorites}>
@@ -115,7 +118,7 @@ export async function Recipe({ params: { recipeId } }: RecipeProps) {
         ))}
       {viewerHasAccess && (
         <>
-          <Link href={pathEdit}>Edit</Link>
+          <Link href={editUrl}>Edit</Link>
           <Confirm
             buttonText="Delete"
             confirmText="Confirm deletion"
@@ -153,6 +156,7 @@ export async function Recipe({ params: { recipeId } }: RecipeProps) {
         </div>
       ))}
       <Rating recipe={recipe} />
+      <p>Comments:</p>
       <Comments recipeId={recipe.id} />
     </div>
   );

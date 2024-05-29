@@ -33,7 +33,7 @@ export async function Recipes({ userId, favorites }: Props) {
   return (
     <>
       {recipes?.map((recipe) => (
-        <Link href={newUrl(`./recipe/${recipe.id}`)} key={recipe.id}>
+        <Link href={newUrl(`/recipe/${recipe.id}`)} key={recipe.id}>
           <div className={styles.imageContainer}>
             <Image
               fill

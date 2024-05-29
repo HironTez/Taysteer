@@ -1,7 +1,12 @@
 import Recipes from "./components/recipes";
 
 export default async function Home() {
-  return <Recipes />;
+  return (
+    <>
+      <p>Discover recipes:</p>
+      <Recipes />;
+    </>
+  );
 }
 
 // TODO: video uploading support for recipe steps
