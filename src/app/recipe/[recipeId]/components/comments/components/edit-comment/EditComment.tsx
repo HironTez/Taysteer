@@ -30,7 +30,12 @@ export async function EditComment({ comment }: EditCommentProps) {
     const viewerHasAccess = await checkSessionAccess(comment);
     if (viewerHasAccess) {
       const result = await resolveEditComment(data, comment.id);
-      errorsVariable.set(result.success ? undefined : result.errors);
+      if (result.success) {
+        commentToEditIdVariable.delete();
+        errorsVariable.delete();
+      } else {
+        errorsVariable.set(result.errors);
+      }
     } else {
       errorsVariable.delete();
     }
