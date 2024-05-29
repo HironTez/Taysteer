@@ -6,7 +6,7 @@ export const getComments = async (recipeId: string, page: number) =>
   await prisma.comment
     .findMany({
       where: { recipeId },
-      orderBy: { updatedAt: "desc" },
+      orderBy: { createdAt: "desc" },
       include: { user: { include: { image: { select: { id: true } } } } },
       take: page * 10,
       skip: page * 10 - 10,
