@@ -148,3 +148,26 @@ export const getNameOfUser = (user: User | null | undefined) => {
 
   return userExists ? (userValid ? user.name : "Banned user") : "Deleted user";
 };
+
+export const addRecipeToFavorites = async (userId: string, recipeId: string) =>
+  await prisma.user
+    .update({
+      where: { id: userId },
+      data: { favoriteRecipes: { connect: { id: recipeId } } },
+    })
+
+    .then(actionResponse)
+    .catch(() => actionError("Could not add recipe to favorites"));
+
+export const removeRecipeFromFavorites = async (
+  userId: string,
+  recipeId: string,
+) =>
+  await prisma.user
+    .update({
+      where: { id: userId },
+      data: { favoriteRecipes: { disconnect: { id: recipeId } } },
+    })
+
+    .then(actionResponse)
+    .catch(() => actionError("Could not remove recipe from favorites"));

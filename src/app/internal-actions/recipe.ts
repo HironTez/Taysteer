@@ -5,17 +5,28 @@ import { User } from "@prisma/client";
 import { CreateRecipeDataT, EditRecipeDataT } from "../schemas/recipe";
 import { getCreateImageVariable } from "./helpers";
 
-export const getRecipes = async (page: number, userId?: string) =>
-  await prisma.recipe
-    .findMany({
-      where: { ...(userId ? { userId } : null) },
-      orderBy: { rating: { value: "desc" } }, // TODO: sort as well by count of ratings
-      take: page * 10,
-      skip: page * 10 - 10,
-      include: { image: { select: { id: true } } },
-    })
-
-    .catch(noop);
+export const getRecipes = async (
+  page: number,
+  userId?: string,
+  favorites?: boolean,
+) =>
+  await (
+    favorites && userId
+      ? prisma.recipe.findMany({
+          where: { favoriteOfUsersIds: { has: userId } },
+          orderBy: { rating: { value: "desc" } }, // TODO: sort as well by count of ratings
+          take: page * 10,
+          skip: page * 10 - 10,
+          include: { image: { select: { id: true } } },
+        })
+      : prisma.recipe.findMany({
+          where: { ...(userId ? { userId } : null) },
+          orderBy: { rating: { value: "desc" } }, // TODO: sort as well by count of ratings
+          take: page * 10,
+          skip: page * 10 - 10,
+          include: { image: { select: { id: true } } },
+        })
+  ).catch(noop);
 
 export const getRecipesCount = async (userId?: string) => {
   const result = await prisma.recipe

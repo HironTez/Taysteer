@@ -4,9 +4,11 @@ import { getSessionUser } from "@/app/internal-actions/auth";
 import { deleteRecipe, getRecipe } from "@/app/internal-actions/recipe";
 import { newUrl, revalidatePage } from "@/app/internal-actions/url";
 import {
+  addRecipeToFavorites,
   checkAccess,
   checkSessionAccess,
   getNameOfUser,
+  removeRecipeFromFavorites,
 } from "@/app/internal-actions/user";
 import { variable } from "@/app/internal-actions/variables";
 import Image from "next/image";
@@ -58,14 +60,28 @@ export async function Recipe({ params: { recipeId } }: RecipeProps) {
 
   const submitAddToFavorites = async () => {
     "use server";
-    const result = await deleteRecipe(recipe.id);
-    ratingErrorVariable.set(result.success ? undefined : result.errors.global);
+    const viewer = await getSessionUser();
+    if (viewer) {
+      const result = await addRecipeToFavorites(viewer.id, recipe.id);
+      ratingErrorVariable.set(
+        result.success ? undefined : result.errors.global,
+      );
+    } else {
+      ratingErrorVariable.set("Forbidden");
+    }
     revalidatePage();
   };
   const submitRemoveFromFavorites = async () => {
     "use server";
-    const result = await deleteRecipe(recipe.id);
-    ratingErrorVariable.set(result.success ? undefined : result.errors.global);
+    const viewer = await getSessionUser();
+    if (viewer) {
+      const result = await removeRecipeFromFavorites(viewer.id, recipe.id);
+      ratingErrorVariable.set(
+        result.success ? undefined : result.errors.global,
+      );
+    } else {
+      ratingErrorVariable.set("Forbidden");
+    }
     revalidatePage();
   };
 

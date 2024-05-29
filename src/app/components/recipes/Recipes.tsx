@@ -7,13 +7,14 @@ import styles from "./recipes.module.css";
 
 type Props = {
   userId?: string;
+  favorites?: boolean;
 };
 
 const pageVariable = variable<number>("page");
 
-export async function Recipes({ userId }: Props) {
+export async function Recipes({ userId, favorites }: Props) {
   const page = pageVariable.get() ?? 1;
-  const recipes = await getRecipes(page, userId);
+  const recipes = await getRecipes(page, userId, favorites);
 
   const recipesCount = await getRecipesCount(userId);
   const hasMoreRecipes = (recipes?.length ?? 0) < recipesCount;
