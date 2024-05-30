@@ -8,14 +8,20 @@ export async function Navbar() {
   const sessionUser = await getSessionUser();
 
   if (sessionUser) {
+    const favoritesUrl = newUrl("/favorites");
     const profileUrl = newUrl("/profile");
     return (
-      <Link href={profileUrl}>
-        <div className={styles.imageContainer}>
-          <ProfilePicture user={sessionUser} sizes="50px" />
-        </div>
-        <p>Name: {sessionUser.name}</p>
-      </Link>
+      <>
+        <Link href={favoritesUrl}>
+          <p>Favorites</p>
+        </Link>
+        <Link href={profileUrl}>
+          <div className={styles.imageContainer}>
+            <ProfilePicture user={sessionUser} sizes="50px" />
+          </div>
+          <p>Name: {sessionUser.name}</p>
+        </Link>
+      </>
     );
   } else {
     const authUrl = newUrl("/auth");

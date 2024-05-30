@@ -9,7 +9,7 @@ export default async function Home() {
   );
 }
 
-// TODO: video uploading support for recipe steps
-// TODO: show user's recipe list in profile
 // TODO: preview image on upload
-// TODO: recipe tags
+// TODO?: recipe tags
+// TODO?: video uploading support for recipe steps
+// TODO?: recipe search -- relevant prisma functionality required

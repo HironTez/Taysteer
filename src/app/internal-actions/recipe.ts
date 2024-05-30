@@ -7,20 +7,20 @@ import { getCreateImageVariable } from "./helpers";
 
 export const getRecipes = async (
   page: number,
-  userId?: string,
-  favorites?: boolean,
+  userId: string | undefined,
+  favorites: boolean | undefined,
 ) =>
   await (
     favorites && userId
       ? prisma.recipe.findMany({
-          where: { favoriteOfUsersIds: { has: userId } },
+          where: { favoriteOfUsersIds: { has: userId }, title: {} },
           orderBy: { rating: { value: "desc" } }, // TODO: sort as well by count of ratings
           take: page * 10,
           skip: page * 10 - 10,
           include: { image: { select: { id: true } } },
         })
       : prisma.recipe.findMany({
-          where: { ...(userId ? { userId } : null) },
+          where: { ...(userId ? { userId } : null), title: {} },
           orderBy: { rating: { value: "desc" } }, // TODO: sort as well by count of ratings
           take: page * 10,
           skip: page * 10 - 10,
