@@ -4,11 +4,12 @@ export default async function Home() {
   return (
     <>
       <p>Discover recipes:</p>
-      <Recipes />;
+      <Recipes />
     </>
   );
 }
 
+// FIXME: cache revalidation in TOR Browser
 // TODO: preview image on upload
 // TODO?: recipe tags
 // TODO?: video uploading support for recipe steps

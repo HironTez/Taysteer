@@ -1,7 +1,7 @@
 import "./globals.css";
 
 import { Inter } from "next/font/google";
-import { PropsWithChildren, Suspense } from "react";
+import { PropsWithChildren } from "react";
 import Navbar from "./components/navbar";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -17,10 +17,8 @@ export default function RootLayout({ children }: LayoutProps) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Suspense fallback="Loading...">
-          <Navbar />
-        </Suspense>
-        <Suspense fallback="Loading...">{children}</Suspense>
+        <Navbar />
+        {children}
       </body>
     </html>
   );
