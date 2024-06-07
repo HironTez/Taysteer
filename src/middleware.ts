@@ -9,11 +9,11 @@ const setUrlHeaders = (requestHeaders: Headers, request: NextRequest) => {
   requestHeaders.set("x-search", request.nextUrl.search);
 };
 
-const clearCookieVariables = (request: NextRequest, response: NextResponse) => {
+const clearCookieVariables = (request: NextRequest) => {
   const cookies = request.cookies.getAll();
   for (const cookie of cookies) {
     if (cookie.name.startsWith("_variable_")) {
-      response.cookies.delete(cookie.name);
+      request.cookies.delete(cookie.name);
     }
   }
 };
@@ -43,6 +43,8 @@ export async function middleware(request: NextRequest) {
   setUrlHeaders(request.headers, request);
 
   if (request.method === "GET") {
+    clearCookieVariables(request);
+
     const { decodedAccessToken, decodedRefreshToken } = await verifyTokens();
     if (!decodedAccessToken && decodedRefreshToken) {
       const cookies = await renewSession(request);
@@ -54,8 +56,6 @@ export async function middleware(request: NextRequest) {
         },
       });
       setCookies(response, cookies);
-
-      clearCookieVariables(request, response);
 
       return response;
     }
@@ -70,6 +70,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|robots.txt|images?|__nextjs_original-stack-frame).*)",
+    "/((?!api|_next/static(?!.+\\.module\\.css)|_next/image|favicon\\.ico|robots\\.txt|images?|__nextjs_original-stack-frame).*)",
   ],
 };
