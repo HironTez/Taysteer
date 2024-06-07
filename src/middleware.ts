@@ -1,4 +1,7 @@
-import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
+import {
+  RequestCookies,
+  ResponseCookie,
+} from "next/dist/compiled/@edge-runtime/cookies";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyTokens } from "./app/internal-actions/tokens";
 import { newUrl } from "./app/internal-actions/url";
@@ -9,11 +12,21 @@ const setUrlHeaders = (requestHeaders: Headers, request: NextRequest) => {
   requestHeaders.set("x-search", request.nextUrl.search);
 };
 
-const clearCookieVariables = (request: NextRequest) => {
+const clearRequestCookieVariables = (request: NextRequest) => {
   const cookies = request.cookies.getAll();
   for (const cookie of cookies) {
     if (cookie.name.startsWith("_variable_")) {
       request.cookies.delete(cookie.name);
+    }
+  }
+};
+const invalidateResponseCookieVariables = (
+  requestCookies: RequestCookies,
+  response: NextResponse,
+) => {
+  for (const cookie of requestCookies.getAll()) {
+    if (cookie.name.startsWith("_variable_")) {
+      response.cookies.delete(cookie.name);
     }
   }
 };
@@ -40,32 +53,40 @@ const setCookies = (
 };
 
 export async function middleware(request: NextRequest) {
-  setUrlHeaders(request.headers, request);
+  const originalCookies = new RequestCookies(request.headers);
 
-  if (request.method === "GET") {
-    clearCookieVariables(request);
+  setUrlHeaders(request.headers, request);
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
+
+  if (request.method === "GET" && !request.nextUrl.pathname.includes("_next")) {
+    clearRequestCookieVariables(request);
+    response = NextResponse.next({
+      request: {
+        headers: request.headers,
+      },
+    });
 
     const { decodedAccessToken, decodedRefreshToken } = await verifyTokens();
     if (!decodedAccessToken && decodedRefreshToken) {
       const cookies = await renewSession(request);
 
       setCookies(request, cookies);
-      const response = NextResponse.next({
+      response = NextResponse.next({
         request: {
           headers: request.headers,
         },
       });
       setCookies(response, cookies);
-
-      return response;
     }
+
+    invalidateResponseCookieVariables(originalCookies, response);
   }
 
-  return NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  });
+  return response;
 }
 
 export const config = {
