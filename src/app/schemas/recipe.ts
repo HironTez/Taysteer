@@ -57,6 +57,7 @@ const idObject = z
   );
 
 const getIngredientsObjectSchema = (amount: number) => {
+  if (amount < 2) amount = 2;
   return typeSafeObjectFromEntries(
     arrayConstructor(amount, (i) => [
       [
@@ -73,6 +74,7 @@ const getIngredientsObjectSchema = (amount: number) => {
 };
 
 const getCreateStepsObjectSchema = (amount: number) => {
+  if (amount < 2) amount = 2;
   return typeSafeObjectFromEntries(
     arrayConstructor(amount, (i) => {
       const suffix = `(step ${i + 1})`;
@@ -86,6 +88,7 @@ const getCreateStepsObjectSchema = (amount: number) => {
 };
 
 const getEditStepsObjectSchema = (amount: number) => {
+  if (amount < 2) amount = 2;
   return typeSafeObjectFromEntries(
     arrayConstructor(amount, (i) => {
       const suffix = `(step ${i + 1})`;

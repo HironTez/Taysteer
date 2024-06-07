@@ -225,6 +225,7 @@ export async function UploadRecipe(props: UploadRecipeProps) {
                 type="submit"
                 value="Remove"
                 form={`remove_ingredient_${key}`}
+                disabled={ingredientsKeys.keys.length <= 2}
               />
             </div>
           );
@@ -271,7 +272,12 @@ export async function UploadRecipe(props: UploadRecipeProps) {
                 Image
               </label>
               {errors[`step_${i}_image`] && <p>{errors[`step_${i}_image`]}</p>}
-              <input type="submit" value="Remove" form={`remove_step_${key}`} />
+              <input
+                type="submit"
+                value="Remove"
+                form={`remove_step_${key}`}
+                disabled={stepsKeys.keys.length <= 2}
+              />
             </div>
           );
         })}
