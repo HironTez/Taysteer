@@ -38,8 +38,8 @@ export async function EditProfile({ userId }: EditProfileProps) {
   const submit = async (data: FormData) => {
     "use server";
 
-    const hasAccess = await checkSessionAccess(user);
-    if (hasAccess) {
+    const viewerHasAccess = await checkSessionAccess(user);
+    if (viewerHasAccess) {
       const result = await resolveEditUser(user, data);
       if (result.success) {
         errorsVariable.delete();
@@ -57,8 +57,8 @@ export async function EditProfile({ userId }: EditProfileProps) {
   const submitDeleteImage = async () => {
     "use server";
 
-    const hasAccess = await checkSessionAccess(user);
-    if (hasAccess) {
+    const viewerHasAccess = await checkSessionAccess(user);
+    if (viewerHasAccess) {
       const result = await deleteUserImage(user.id);
       errorDeleteUserImageVariable.set(
         result.success ? undefined : result.errors.global,

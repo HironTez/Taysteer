@@ -9,6 +9,7 @@ import { newUrl, revalidatePage } from "../internal-actions/url";
 import {
   banUser,
   checkAccess,
+  checkSessionAccess,
   deleteUser,
   getUserById,
   unbanUser,
@@ -45,6 +46,7 @@ export async function Profile({ userId }: ProfileProps) {
 
   const submitDelete = async () => {
     "use server";
+    const viewerHasAccess = await checkSessionAccess(user);
     if (viewerHasAccess) {
       const result = await deleteUser(user.id, sessionUser!);
       deleteUserErrorVariable.set(
@@ -59,6 +61,7 @@ export async function Profile({ userId }: ProfileProps) {
 
   const submitBan = async () => {
     "use server";
+    const viewerHasAccess = await checkSessionAccess(user);
     if (viewerHasAccess && sessionUser!.id !== user.id) {
       const result = await banUser(user.id);
       banUserErrorVariable.set(
@@ -73,6 +76,7 @@ export async function Profile({ userId }: ProfileProps) {
 
   const submitUnban = async () => {
     "use server";
+    const viewerHasAccess = await checkSessionAccess(user);
     if (viewerHasAccess && sessionUser!.id !== user.id) {
       const result = await unbanUser(user.id);
       unbanUserErrorVariable.set(

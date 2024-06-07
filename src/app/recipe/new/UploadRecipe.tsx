@@ -1,4 +1,4 @@
-import { authGuard } from "@/app/internal-actions/auth";
+import { authGuard, getSessionUser } from "@/app/internal-actions/auth";
 import { getRecipe } from "@/app/internal-actions/recipe";
 import { revalidatePage } from "@/app/internal-actions/url";
 import { checkAccess } from "@/app/internal-actions/user";
@@ -102,7 +102,11 @@ export async function UploadRecipe(props: UploadRecipeProps) {
 
     let result;
 
+    const viewer = await getSessionUser();
+    if (!viewer) result = actionError("Forbidden");
+
     if (oldRecipe) {
+      const viewerHasAccess = checkAccess(viewer, oldRecipe);
       if (viewerHasAccess) {
         const recipeEditSchema = getRecipeEditSchema(
           ingredientsKeys.keys.length,
